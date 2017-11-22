@@ -3,6 +3,7 @@
 #include "ui/sdl2/sdl2types.hpp"
 #include "ui/sdl2/Color.hpp"
 #include "ui/sdl2/Rect.hpp"
+#include "ui/sdl2/KeyDownEvent.hpp"
 #include "ui/sdl2/Surface.hpp"
 #include "ui/sdl2/Font.hpp"
 
@@ -20,6 +21,7 @@ class Application
 
 		virtual Result initialize() = 0;
 		virtual void render() = 0;
+		virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) = 0;
 
 		Result loadSurface(Surface& surface, const char* filename);
 		Result loadFont(Font& font, const char* filename);
@@ -35,7 +37,8 @@ class Application
 
 	private:
 
-		Result renderLoop();		
+		Result renderLoop();
+		void dispatchEvent(const SDL_Event& sdlEvent);		
 
 		bool mQuit;
 

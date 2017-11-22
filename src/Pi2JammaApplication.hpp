@@ -9,6 +9,9 @@ private:
 
 	virtual void render() override;
 
+	virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) override;
+
+
 	Surface mBackground;
 	Surface mTitle;
 	Font mFont;

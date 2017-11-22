@@ -24,7 +24,7 @@ Result Pi2JammaApplication::initialize()
 		renderText(
 			mTitle,
 			mFont,
-			Color(),
+			Color(0xFF, 0, 0),
 			"Title");
 
 	if(result.peekFailed()) {
@@ -38,4 +38,9 @@ void Pi2JammaApplication::render()
 {
 	draw(mBackground, Point(0,0));
 	draw(mTitle, Point(0,0));
+}
+
+void Pi2JammaApplication::keyDownEvent(const KeyDownEvent& keyDownEvent)
+{
+	quit();
 }

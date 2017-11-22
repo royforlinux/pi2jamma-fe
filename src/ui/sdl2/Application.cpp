@@ -17,7 +17,7 @@ Application::~Application()
 
 Result Application::run()
 {
-	int sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
+	int sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
 	if(0 != sdlInitResult) {
 		return Result::makeFailureWithString(SDL_GetError());
@@ -67,12 +67,18 @@ Result Application::run()
 
 Result Application::renderLoop()
 {
-	//while(!mQuit)
+	SDL_Event sdlEvent = {};
+
+	while(!mQuit)
 	{
+		if( 0 != SDL_PollEvent(&sdlEvent))
+		{
+			dispatchEvent(sdlEvent);
+		}
+
 		SDL_RenderClear(muptSdlRenderer.get());
 		render();
 		SDL_RenderPresent(muptSdlRenderer.get());
-		SDL_Delay(1000);	
 	}
 
 	return Result::makeSuccess();
@@ -98,7 +104,8 @@ Result Application::loadSurface(Surface& surface, const char* filePath)
 }
 
 
-void Application::draw(Surface& surface, const Point& targetPoint){
+void Application::draw(Surface& surface, const Point& targetPoint)
+{
 	SDL_Rect dst = {
 		targetPoint.getX(),
 		targetPoint.getY(),
@@ -110,8 +117,6 @@ void Application::draw(Surface& surface, const Point& targetPoint){
 		surface.muptSdlTexture.get(),
 		nullptr,
 		&dst);
-
-
 }
 
 Result Application::loadFont(Font& font, const char* filename)
@@ -157,4 +162,17 @@ Result Application::renderText(
 
 	return Result::makeSuccess();
 
+}
+
+
+void Application::dispatchEvent(const SDL_Event& sdlEvent)
+{
+	if(SDL_QUIT == sdlEvent.type)
+	{
+		quit();
+	}
+	else if (SDL_KEYDOWN == sdlEvent.type)
+	{
+		keyDownEvent(KeyDownEvent(sdlEvent));
+	}
 }
