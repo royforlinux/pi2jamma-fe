@@ -12,6 +12,9 @@ public:
 	UnitType getY() const;
 	UnitType getWidth() const;
 	UnitType getHeight() const;
+
+	Point getPosition() const;
+	void setPosition(const Point& position);
 	
 private:
 	SDL_Rect mSdlRect;
@@ -47,4 +50,15 @@ inline UnitType Rect::getWidth() const
 inline UnitType Rect::getHeight() const
 {
 	return mSdlRect.h;
+}
+
+inline Point Rect::getPosition() const
+{
+	return Point(getX(), getY());
+}
+
+inline void Rect::setPosition(const Point& position)
+{
+	mSdlRect.x = position.getX();
+	mSdlRect.y = position.getY();
 }

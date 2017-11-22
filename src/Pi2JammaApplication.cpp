@@ -20,16 +20,12 @@ Result Pi2JammaApplication::initialize()
 		return result;
 	}
 
-	result =
-		renderText(
-			mTitle,
+	muptTitle =
+		std::make_unique<Label>(
+			nullptr,
 			mFont,
-			Color(0xFF, 0, 0),
+			Color(0, 0xFF, 0),
 			"Title");
-
-	if(result.peekFailed()) {
-		return result;
-	}
 
 	return Result::makeSuccess();
 }
@@ -37,7 +33,7 @@ Result Pi2JammaApplication::initialize()
 void Pi2JammaApplication::render()
 {
 	draw(mBackground, Point(0,0));
-	draw(mTitle, Point(0,0));
+	muptTitle->renderTree(*this);
 }
 
 void Pi2JammaApplication::keyDownEvent(const KeyDownEvent& keyDownEvent)

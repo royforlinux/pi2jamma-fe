@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/ui.hpp"
+#include "ui/Label.hpp"
 
 class Pi2JammaApplication : public Application
 {
@@ -13,6 +14,8 @@ private:
 
 
 	Surface mBackground;
-	Surface mTitle;
+	
+	std::unique_ptr<Label> muptTitle;
+
 	Font mFont;
 };

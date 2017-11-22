@@ -16,8 +16,10 @@ class Application
 		Application();
 		~Application();
 
+		static Application* get();
+
 		Result run();
-		inline void quit();
+		void quit();
 
 		virtual Result initialize() = 0;
 		virtual void render() = 0;
@@ -44,8 +46,16 @@ class Application
 
 		std::unique_ptr<SDL_Renderer> muptSdlRenderer;
 		std::unique_ptr<SDL_Window> muptSdlWindow;
+
+		static Application* spSingleton;
 	
 };
+
+inline Application* Application::get()
+{
+	ASSERT(nullptr != spSingleton);
+	return spSingleton;
+}
 
 inline void Application::quit()
 {

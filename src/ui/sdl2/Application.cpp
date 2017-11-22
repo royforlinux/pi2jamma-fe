@@ -1,8 +1,12 @@
 #include "ui/sdl2/Application.hpp"
 
+Application* Application::spSingleton = nullptr;
+
 Application::Application()
 	: mQuit(false)
 {
+	ASSERT(nullptr == spSingleton);
+	spSingleton = this;
 }
 
 Application::~Application()
@@ -13,6 +17,8 @@ Application::~Application()
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
+
+	spSingleton = nullptr;
 }
 
 Result Application::run()
@@ -161,9 +167,7 @@ Result Application::renderText(
 	surface = Surface(std::move(uptSdlTexture));
 
 	return Result::makeSuccess();
-
 }
-
 
 void Application::dispatchEvent(const SDL_Event& sdlEvent)
 {
