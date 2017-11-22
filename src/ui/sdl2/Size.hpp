@@ -2,7 +2,7 @@
 
 #include "ui/sdl2/sdl2types.hpp"
 
-class Size
+class Size final
 {
 public:
 	Size(UnitType width = 0, UnitType height = 0);

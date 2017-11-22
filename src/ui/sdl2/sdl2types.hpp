@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include <memory>
 
@@ -28,6 +29,14 @@ namespace std
 	{
 		void operator()(SDL_Texture* pSdlTexture) {
 			SDL_DestroyTexture(pSdlTexture);
+		}
+	};
+
+	template<>
+	struct default_delete<TTF_Font>
+	{
+		void operator()(TTF_Font* pSdlTtf) {
+			TTF_CloseFont(pSdlTtf);
 		}
 	};
 }

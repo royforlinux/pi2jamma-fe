@@ -25,8 +25,9 @@ public:
 	bool peekFailed();
 	bool peekSucceeded();
 
-	const char* getMessage();
+	void ignore();
 
+	const char* getMessage();
 
 private:
 
@@ -124,6 +125,11 @@ inline bool Result::peekFailed()
 inline bool Result::peekSucceeded()
 {
 	return mSucceeded;
+}
+
+inline void Result::ignore()
+{
+	mWasChecked = true;
 }
 
 inline void Result::catastrophic()

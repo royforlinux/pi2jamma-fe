@@ -1,4 +1,4 @@
-#include "ui/application.hpp"
+#include "ui/sdl2/Application.hpp"
 
 Application::Application()
 	: mQuit(false)
@@ -10,6 +10,7 @@ Application::~Application()
 	muptSdlRenderer.release();
 	muptSdlWindow.release();
 
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
@@ -19,11 +20,8 @@ Result Application::run()
 	int sdlInitResult = SDL_Init(SDL_INIT_VIDEO);
 
 	if(0 != sdlInitResult) {
-
 		return Result::makeFailureWithString(SDL_GetError());
 	}
-
-	Log("SDL_Init");
 
 	int imgInitFlags = IMG_INIT_PNG;
 	int imgInitResult = IMG_Init(imgInitFlags);
@@ -32,7 +30,10 @@ Result Application::run()
 		return Result::makeFailureWithString(IMG_GetError());
 	}
 
-	Log("IMG_Init");
+	int ttfInitResult = TTF_Init();
+	if(0 != ttfInitResult) {
+		return Result::makeFailureWithString(TTF_GetError());
+	}
 
 	muptSdlWindow.reset(
 		SDL_CreateWindow(
@@ -47,8 +48,6 @@ Result Application::run()
 		return Result::makeFailureWithString(SDL_GetError());
 	}
 
-	Log("SDL_CreateWindow");
-
 	muptSdlRenderer.reset(
 			SDL_CreateRenderer(
 				muptSdlWindow.get(),
@@ -57,8 +56,6 @@ Result Application::run()
 	if(!muptSdlRenderer) {
 		return Result::makeFailureWithString(SDL_GetError());
 	}
-
-	Log("SDL_CreateRenderer");
 
 	Result result = initialize();
 	if (result.peekFailed()) {
@@ -114,5 +111,50 @@ void Application::draw(Surface& surface, const Point& targetPoint){
 		nullptr,
 		&dst);
 
+
+}
+
+Result Application::loadFont(Font& font, const char* filename)
+{
+	std::unique_ptr<TTF_Font> uptSdlFont(
+		TTF_OpenFont(filename, 28));
+
+	if(!uptSdlFont) {
+		return Result::makeFailureWithString(TTF_GetError());
+	}
+
+	font = Font(std::move(uptSdlFont));
+
+	return Result::makeSuccess();
+}
+
+Result Application::renderText(
+	Surface& surface,
+	const Font& font,
+	const Color& color,
+	const char* text)
+{
+	std::unique_ptr<SDL_Surface> uptSdlSurface(
+		TTF_RenderText_Solid(
+			font.muptSdlFont.get(),
+			text,
+			color.mSdlColor));
+
+	if(!uptSdlSurface) {
+		return Result::makeFailureWithString(TTF_GetError());
+	}
+
+	std::unique_ptr<SDL_Texture> uptSdlTexture(
+		SDL_CreateTextureFromSurface(
+			muptSdlRenderer.get(),
+			uptSdlSurface.get()));
+
+	if(!uptSdlTexture) {
+		return Result::makeFailureWithString(SDL_GetError());
+	}
+
+	surface = Surface(std::move(uptSdlTexture));
+
+	return Result::makeSuccess();
 
 }
