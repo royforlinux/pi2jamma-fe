@@ -2,15 +2,13 @@
 
 #include "ui/Element.hpp"
 
-class Label final : public Element
+class Image final : public Element
 {
 	public:
 
-		Label(
+		Image(
 			Element* pParent,
-			const Font& font,
-			const Color& color,
-			const char* text);		
+			const char* filePath);
 
 	protected:
 
@@ -19,5 +17,4 @@ class Label final : public Element
 	private:
 
 		Surface mSurface;
-
 };

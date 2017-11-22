@@ -2,6 +2,7 @@
 
 #include "ui/ui.hpp"
 #include "ui/Label.hpp"
+#include "ui/Image.hpp"
 
 class Pi2JammaApplication : public Application
 {
@@ -13,9 +14,8 @@ private:
 	virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) override;
 
 
-	Surface mBackground;
-	
-	std::unique_ptr<Label> muptTitle;
+	ref<Image> mrefBackground;
+	ref<Label> mrefTitle;
 
 	Font mFont;
 };

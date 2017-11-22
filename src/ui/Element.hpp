@@ -1,9 +1,11 @@
 #pragma once
 
 #include "ui/ui.hpp"
+#include "core/container/DlList.hpp"
+#include "core/RefCounted.hpp"
 #include <vector>
 
-class Element
+class Element : public RefCounted
 {
 	public:
 
@@ -22,7 +24,10 @@ class Element
 
 		Rect mRect;
 		Element* mpParent;
-		std::vector<Element*> mChildren;
+
+		using ListType = DlList<ref<Element>>;
+		ListType mChildren;
+		ListType::Node mListNode;
 };
 
 

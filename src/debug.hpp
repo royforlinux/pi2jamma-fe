@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#define DEBUG_CONTAINER
+
 #define PRINT(message) \
 	fprintf(stderr, "%s", message)
 

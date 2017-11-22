@@ -2,16 +2,12 @@
 
 Result Pi2JammaApplication::initialize()
 {
-	Result result =
-		loadSurface(
-			mBackground,
+	mrefBackground =
+		make_ref<Image>(
+			nullptr,
 			"/home/x/arcade/pi2jamma-fe/themes/burgertime/background.png");
 
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	result =
+	Result result =
 		loadFont(
 			mFont,
 			"/home/x/arcade/pi2jamma-fe/themes/burgertime/ARCADECLASSIC.TTF");
@@ -20,8 +16,8 @@ Result Pi2JammaApplication::initialize()
 		return result;
 	}
 
-	muptTitle =
-		std::make_unique<Label>(
+	mrefTitle =
+		make_ref<Label>(
 			nullptr,
 			mFont,
 			Color(0, 0xFF, 0),
@@ -32,8 +28,8 @@ Result Pi2JammaApplication::initialize()
 
 void Pi2JammaApplication::render()
 {
-	draw(mBackground, Point(0,0));
-	muptTitle->renderTree(*this);
+	mrefBackground->renderTree(*this);
+	mrefTitle->renderTree(*this);
 }
 
 void Pi2JammaApplication::keyDownEvent(const KeyDownEvent& keyDownEvent)

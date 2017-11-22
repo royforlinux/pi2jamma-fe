@@ -3,22 +3,17 @@
 
 Element::Element(Element* pParent)
 	: mpParent(pParent)
+	, mListNode(this)
 {
 	if(mpParent) {
-		mpParent->mChildren.push_back(this);
+		mpParent->mChildren.insertTail(&mListNode);
 	}
 }
 
 Element::~Element()
 {
 	if(mpParent) {
-		mpParent->mChildren.erase(
-			std::find(
-				mpParent->mChildren.begin(),
-				mpParent->mChildren.end(),
-				this
-			)
-		);
+		mpParent->mChildren.remove(&mListNode);
 	}
 }
 
@@ -26,7 +21,7 @@ void Element::renderTree(RenderContext& renderContext)
 {
 	render(renderContext);
 	
-	for(Element* e : mChildren) {
-		e->render(renderContext);
+	for(auto && child : mChildren) {
+		child->render(renderContext);
 	}
 }
