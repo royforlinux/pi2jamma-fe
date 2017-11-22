@@ -1,3 +1,6 @@
+#pragma once
+
+#include "debug.hpp"
 
 class RefCounted
 {
@@ -40,7 +43,13 @@ class ref
 {
 	public:
 		ref(T* pT = nullptr);
-		ref(ref<T>&& rhs);
+		ref(const ref<T>& rhs);		
+
+		template<typename RhsType>
+		ref(ref<RhsType>&& rhs);
+
+		template<typename RhsType>
+		ref(const ref<RhsType>& rhs);
 
 		~ref();
 		T* operator->() const;
@@ -72,10 +81,30 @@ ref<T>::ref(T* pT)
 }
 
 template<typename T >
-ref<T>::ref(ref<T>&& rhs)
+ref<T>::ref(const ref<T>& rhs)
+	: mpT(rhs.mpT)
+{
+	if(nullptr != mpT) {
+		mpT->AddRef();
+	}
+}
+
+template<typename T >
+template<typename RhsType>
+ref<T>::ref(ref<RhsType>&& rhs)
 	: mpT(rhs.mpT)
 {
 	rhs.mpT = nullptr;
+}
+
+template<typename T >
+template<typename RhsType>
+ref<T>::ref(const ref<RhsType>& rhs)
+	: mpT(rhs.mpT)
+{
+	if(nullptr != mpT) {
+		mpT->AddRef();
+	}
 }
 
 template<typename T >

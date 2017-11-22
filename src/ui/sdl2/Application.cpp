@@ -90,7 +90,9 @@ Result Application::renderLoop()
 	return Result::makeSuccess();
 }
 
-Result Application::loadSurface(Surface& surface, const char* filePath)
+Result Application::loadSurface(
+	ref<Surface>& refSurface,
+	const char* filePath)
 {
 	ASSERT(nullptr != filePath);
 
@@ -104,28 +106,30 @@ Result Application::loadSurface(Surface& surface, const char* filePath)
 		return Result::makeFailureWithString(IMG_GetError());
 	}
 
-	surface = Surface(std::move(uptSdlTexture));
+	refSurface = make_ref<Surface>(std::move(uptSdlTexture));
 
 	return Result::makeSuccess();
 }
 
 
-void Application::draw(Surface& surface, const Point& targetPoint)
+void Application::draw(
+	const ref<Surface>& refSurface,
+	const Point& targetPoint)
 {
 	SDL_Rect dst = {
 		targetPoint.getX(),
 		targetPoint.getY(),
-		surface.getSize().getWidth(),
-		surface.getSize().getHeight() };
+		refSurface->getSize().getWidth(),
+		refSurface->getSize().getHeight() };
 
 	SDL_RenderCopy(
 		muptSdlRenderer.get(),
-		surface.muptSdlTexture.get(),
+		refSurface->muptSdlTexture.get(),
 		nullptr,
 		&dst);
 }
 
-Result Application::loadFont(Font& font, const char* filename)
+Result Application::loadFont(ref<Font>& refFont, const char* filename)
 {
 	std::unique_ptr<TTF_Font> uptSdlFont(
 		TTF_OpenFont(filename, 28));
@@ -134,20 +138,20 @@ Result Application::loadFont(Font& font, const char* filename)
 		return Result::makeFailureWithString(TTF_GetError());
 	}
 
-	font = Font(std::move(uptSdlFont));
+	refFont = make_ref<Font>(std::move(uptSdlFont));
 
 	return Result::makeSuccess();
 }
 
 Result Application::renderText(
-	Surface& surface,
-	const Font& font,
+	ref<Surface>& refSurface,
+	const ref<Font>& refFont,
 	const Color& color,
 	const char* text)
 {
 	std::unique_ptr<SDL_Surface> uptSdlSurface(
 		TTF_RenderText_Solid(
-			font.muptSdlFont.get(),
+			refFont->muptSdlFont.get(),
 			text,
 			color.mSdlColor));
 
@@ -164,7 +168,7 @@ Result Application::renderText(
 		return Result::makeFailureWithString(SDL_GetError());
 	}
 
-	surface = Surface(std::move(uptSdlTexture));
+	refSurface = make_ref<Surface>(std::move(uptSdlTexture));
 
 	return Result::makeSuccess();
 }

@@ -16,5 +16,5 @@ class Image final : public Element
 
 	private:
 
-		Surface mSurface;
+		ref<Surface> mrefSurface;
 };

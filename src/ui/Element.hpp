@@ -30,7 +30,6 @@ class Element : public RefCounted
 		ListType::Node mListNode;
 };
 
-
 inline const Rect& Element::getRect() const
 {
 	return mRect;

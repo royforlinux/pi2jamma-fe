@@ -3,12 +3,12 @@
 
 Label::Label(
 	Element* pParent,
-	const Font& font,
+	const ref<Font>& refFont,
 	const Color& color,
 	const char* text)
 	: Element(pParent)
 {
-	Result r = Application::get()->renderText(mSurface, font, color, text);
+	Result r = Application::get()->renderText(mrefSurface, refFont, color, text);
 	r.ignore();
 }
 
@@ -16,6 +16,6 @@ Label::Label(
 void Label::render(RenderContext& renderContext)
 {
 	renderContext.draw(
-		mSurface,
+		mrefSurface,
 		getRect().getPosition());
 }

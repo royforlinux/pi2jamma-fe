@@ -3,6 +3,7 @@
 #include "ui/ui.hpp"
 #include "ui/Label.hpp"
 #include "ui/Image.hpp"
+#include "ui/List.hpp"
 
 class Pi2JammaApplication : public Application
 {
@@ -16,6 +17,7 @@ private:
 
 	ref<Image> mrefBackground;
 	ref<Label> mrefTitle;
+	ref<List> mrefList;
 
-	Font mFont;
+	ref<Font> mrefFont;
 };

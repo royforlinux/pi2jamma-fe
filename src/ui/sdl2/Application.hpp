@@ -25,17 +25,17 @@ class Application
 		virtual void render() = 0;
 		virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) = 0;
 
-		Result loadSurface(Surface& surface, const char* filename);
-		Result loadFont(Font& font, const char* filename);
+		Result loadSurface(ref<Surface>& surface, const char* filename);
+		Result loadFont(ref<Font>& refFont, const char* filename);
 		
 		Result renderText(
-			Surface& surface,
-			const Font& font,
+			ref<Surface>& refSurface,
+			const ref<Font>& font,
 			const Color& color,
 			const char* text);
 
-		void draw(Surface& surface, const Rect& source, const Rect& target);
-		void draw(Surface& surface, const Point& targetPoint);
+		void draw(const ref<Surface>& refSurface, const Rect& source, const Rect& target);
+		void draw(const ref<Surface>& refSurface, const Point& targetPoint);
 
 	private:
 

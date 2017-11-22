@@ -1,14 +1,15 @@
 #pragma once
 
 #include "ui/sdl2/sdl2types.hpp"
+#include "core/RefCounted.hpp"
 
-class Font final
+class Font final : public RefCounted
 {
 public:
-	Font() = default;
+
+	Font(std::unique_ptr<TTF_Font> uptSdlFont);
 
 private:
-	Font(std::unique_ptr<TTF_Font> uptSdlFont);
 
 	std::unique_ptr<TTF_Font> muptSdlFont;
 

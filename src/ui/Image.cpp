@@ -5,7 +5,7 @@ Image::Image(
 	const char* pFilePath)
 	: Element(pParent)
 {
-	Result r = Application::get()->loadSurface(mSurface, pFilePath);
+	Result r = Application::get()->loadSurface(mrefSurface, pFilePath);
 	r.ignore();
 }
 
@@ -13,6 +13,6 @@ Image::Image(
 void Image::render(RenderContext& renderContext)
 {
 	renderContext.draw(
-		mSurface,
+		mrefSurface,
 		getRect().getPosition());
 }

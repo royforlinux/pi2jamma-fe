@@ -4,20 +4,20 @@
 
 class Label final : public Element
 {
-	public:
+public:
 
-		Label(
-			Element* pParent,
-			const Font& font,
-			const Color& color,
-			const char* text);		
+	Label(
+		Element* pParent,
+		const ref<Font>& refFont,
+		const Color& color,
+		const char* text);		
 
-	protected:
+protected:
 
-		virtual void render(RenderContext& renderContext) override;
+	virtual void render(RenderContext& renderContext) override;
 
-	private:
+private:
 
-		Surface mSurface;
+	ref<Surface> mrefSurface;
 
 };
