@@ -1,17 +1,29 @@
 #pragma once
 
-#include "result.hpp"
-
-#include <SDL.h>
-#include <memory>
+#include "ui/sdl2/Size.hpp"
 
 class Surface
 {
+
 public:
-	Surface();
+
+	Surface() = default;
+
+	Surface(
+		std::unique_ptr<SDL_Texture> uptSdlTexture);
+
+	const Size& getSize() const;
 
 private:
 
-	std::unique_ptr<SDL_Surface, void(*)(SDL_Surface*)> muptSdlSurface;
-	
+	Size mSize;
+	std::unique_ptr<SDL_Texture> muptSdlTexture;
+
+friend class Application;
 };
+
+inline const Size& Surface::getSize() const
+{
+	return mSize;
+}
+

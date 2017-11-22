@@ -22,6 +22,9 @@ public:
 	bool failed();
 	void catastrophic();
 
+	bool peekFailed();
+	bool peekSucceeded();
+
 	const char* getMessage();
 
 
@@ -79,6 +82,8 @@ inline Result::Result(Result&& rhs)
 
 inline Result& Result::operator=(Result&& rhs)
 {
+	ASSERT(mWasChecked);
+
 	mSucceeded = rhs.mSucceeded;
 	mWasChecked = false;
 	mInfoFunction = std::move(rhs.mInfoFunction);
@@ -102,6 +107,23 @@ inline bool Result::failed()
 {
 	mWasChecked = true;
 	return !mSucceeded;
+}
+
+inline bool Result::peekFailed()
+{
+	if(!mSucceeded)
+	{
+		return true;
+	}
+
+	mWasChecked = true;
+
+	return false;
+}
+
+inline bool Result::peekSucceeded()
+{
+	return mSucceeded;
 }
 
 inline void Result::catastrophic()

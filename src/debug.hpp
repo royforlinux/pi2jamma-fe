@@ -12,7 +12,7 @@
 
 #define ASSERTMSG(x, message) \
 	{ \
-		if(!x) { \
+		if(!(x)) { \
 			PRINTFMT("Assertion Failed!: %s\n", #x); \
 			PRINT(message); \
 			PRINT("\n"); \
@@ -21,7 +21,7 @@
 	}
 
 #define ASSERT(x) \
-	ASSERT_MSG(x, "")
+	ASSERTMSG(x, "")
 
 inline void Log(const char* msg)
 {
@@ -29,7 +29,7 @@ inline void Log(const char* msg)
 	printf("\n");
 }
 
-
-
-
-
+#define LogFmt(fmt, ...) \
+{ \
+	printf(fmt, __VA_ARGS__); \
+}

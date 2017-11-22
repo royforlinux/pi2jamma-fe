@@ -1,19 +1,31 @@
 #include "ui/application.hpp"
 
-int main(int argv, const char* argc[])
+class Pi2JammaApplication : public Application
 {
-	Application application;
+	virtual Result initialize() override;
 
-	auto result = application.initialize();
-
-	result.catastrophic();
-
-	result = application.run();
-
-	if(result.succeeded())
+	virtual void render() override
 	{
-		return 0;
+		draw(mBackground, Point(0,0));
 	}
 
-	return -1;
+	Surface mBackground;
+};
+
+Result Pi2JammaApplication::initialize()
+{
+	return
+		loadSurface(
+			mBackground,
+			"/home/x/arcade/pi2jamma-fe/themes/burgertime/background.png");
+
+}
+	
+
+int main(int argv, const char* argc[])
+{
+
+	Pi2JammaApplication application;
+
+	return application.run().succeeded() ? 0 : -1;
 }

@@ -1,7 +1,10 @@
 #pragma once
 
+#include "ui/sdl2/sdl2types.hpp"
+#include "ui/sdl2/Rect.hpp"
 #include "ui/surface.hpp"
-#include "ui/window.hpp"
+
+#include "result.hpp"
 
 class Application
 {
@@ -10,18 +13,28 @@ class Application
 		Application();
 		~Application();
 
-		Result initialize();
 		Result run();
+		inline void quit();
 
-		Surface& getPrimarySurface();
+		virtual Result initialize() = 0;
+		virtual void render() = 0;
+
+		Result loadSurface(Surface& surface, const char* filename);
+		void draw(Surface& surface, const Rect& source, const Rect& target);
+		void draw(Surface& surface, const Point& targetPoint);
 
 	private:
 
-		Surface mPrimarySurface;
-		Window mWindow;
+		Result renderLoop();		
+
+		bool mQuit;
+
+		std::unique_ptr<SDL_Renderer> muptSdlRenderer;
+		std::unique_ptr<SDL_Window> muptSdlWindow;
+	
 };
 
-inline Surface& Application::getPrimarySurface()
+inline void Application::quit()
 {
-	return mPrimarySurface;
+	mQuit = true;
 }
