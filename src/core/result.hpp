@@ -11,6 +11,7 @@ public:
 	static Result makeSuccess();
 	static Result makeFailureWithStringLiteral(const char* msg);
 	static Result makeFailureWithString(std::string msg);
+	static Result makeFailureNotImplemented();
 
 	Result(Result&& result);
 	~Result();
@@ -70,6 +71,11 @@ inline Result Result::makeFailureWithString(std::string msg)
 				return m.c_str();
 			} );
 
+}
+
+inline Result Result::makeFailureNotImplemented()
+{
+	return makeFailureWithStringLiteral("Not Implemented.");
 }
 
 inline Result::Result(Result&& rhs)

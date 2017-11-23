@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/cast.hpp"
 #include "debug.hpp"
 #include <memory>
 
@@ -60,9 +61,11 @@ class ref
 			mpT = nullptr;
 		}
 
-
 		ref& operator=(const ref& rhs);
 		ref& operator=(ref&& rhs);
+
+		template<typename NewType>
+		ref<NewType> downCast();
 
 	private:
 
@@ -164,5 +167,10 @@ ref<T>& ref<T>::operator=(ref&& rhs)
 	rhs.mpT = nullptr;
 
 	return *this;
+}
 
+template<typename T>
+template<typename NewType>
+ref<NewType> ref<T>::downCast() {
+	return ::downCast<NewType*, T*>(mpT);
 }

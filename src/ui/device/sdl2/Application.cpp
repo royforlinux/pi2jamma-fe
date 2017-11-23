@@ -46,8 +46,8 @@ Result Application::run()
 			"My Window",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			640,
-			480,
+			240,
+			320,
 			SDL_WINDOW_SHOWN));
 
 	if(!muptSdlWindow) {

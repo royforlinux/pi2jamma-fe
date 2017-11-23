@@ -1,39 +1,74 @@
 #pragma once
 
-template<typename T, typename KEY_TYPE, typename GET_KEY>
+#include "core/Arg.hpp"
+
+#include <vector>
+#include <algorithm>
+
+template<typename T>
+class RbTreeNode
+{
+public:
+    RbTreeNode(const T& item)
+        : mItem(item) {
+    }
+
+    T mItem;
+};
+
+template<typename T>
+struct LifetimePolicyNone
+{
+    public:
+
+        static void addRef(T t) { }
+        static void release(T t) { }
+};
+
+template<
+    typename T, 
+    typename KEY_TYPE,
+    typename Arg<KEY_TYPE>::Type(*GET_KEY)(const T& item),
+    typename LIFETIME_POLICY = LifetimePolicyNone<T>>
 class RbTree final
 {
-    class Node
-    {
-        T mItem;
-    };
+public:
 
-    void insert(Node* pNode)
+    void insert(RbTreeNode<T>& node)
     {
-        mItems.push_back(pNode);
+        LIFETIME_POLICY::addRef(node.mItem);
+        mItems.push_back(&node);
     }
 
-    void remove(Node* pNode)
+    void remove(RbTreeNode<T>& node)
     {
+        LIFETIME_POLICY::release(node.mItem);
+
         mItems.erase(
-            std::find_(
+            std::find(
                 mItems.begin(),
                 mItems.end(),
-                pNode));
+                & node));
     }
 
-    Node* find( const KEY_TYPE& key) {
+    T* find( const KEY_TYPE& key) {
 
-        for( n : mItems ) {
-            if(keyType == GET_KEY(n->mItem)) {
-                return n;
+        for( auto&& n : mItems ) {
+            if(key == GET_KEY(n->mItem)) {
+                return & n->mItem;
             }
         }
-
         return nullptr;
     }
 
-    std::vector<Node*> mItems;
+    ~RbTree() {
+        for(auto& i : mItems) {
+            LIFETIME_POLICY::release(i->mItem);
+        }
+    }
+private:
+
+    std::vector<RbTreeNode<T>*> mItems;
 
 
 };

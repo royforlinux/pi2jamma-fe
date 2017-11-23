@@ -4,27 +4,44 @@
 #include <memory>
 #include <unordered_map>
 
-class MetaEnumValueBase 
+#define META_ENUM(E) \
+	MetaEnum<E> gMetaEnum##E(#E)
+
+#define META_ENUM_VALUE(E, V) \
+	MetaEnumValue<E> gMetaEnumValue##E##V(&gMetaEnum##E, #V, E::V)
+
+class MetaEnumBase;
+template<typename T> class MetaEnum;
+
+class MetaEnumValueBase
 {
 public:
-	MetaEnumValueBase(const char* pName)
-		: mpName(pName)
+	MetaEnumValueBase(
+		MetaEnumBase* pMetaEnumBase,
+		CStrArg name)
+		: mName(name)
 	{}
 
-	const char* getName() const {
-		return mpName;
+	Arg<CStr>::Type getName() const {
+		return mName;
 	}
 
+
 private:
-	const char* mpName;
+	CStr mName;
 };
 
 template<typename T>
 class MetaEnumValue final : public MetaEnumValueBase
 {
 	public:
-		MetaEnumValue(const char* pName, T value)
-			: MetaEnumValueBase(pName)
+		MetaEnumValue(
+			MetaEnum<T>* pEnum,
+			CStrArg name,
+			T value)
+			: MetaEnumValueBase(
+				pEnum,
+				name)
 			, mValue(value)
 		{}
 
@@ -43,6 +60,8 @@ public:
 	{
 	}
 
+	virtual Result load(LoadTextContext& loadTextContext) override { return Result::makeFailureNotImplemented(); }
+
 private:
 
 	size_t mNumBytes;
@@ -54,7 +73,14 @@ template<typename T>
 class MetaEnum final : public MetaEnumBase
 {
 public:
-	MetaEnum(std::string name)
-		: MetaEnumBase(std::move(name), sizeof(T))
+	MetaEnum(const char* pName)
+		: MetaEnumBase(pName, sizeof(T))
 	{}
+
+	void addValue(const char* pName, T v) {
+		make_ref<MetaEnumValue<T>>(pName, v);
+	}
+private:
+
+	virtual const std::type_info& getTypeInfo() const override { return typeid(T); }	
 };
