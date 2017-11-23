@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ui/sdl2/sdl2types.hpp"
-#include "ui/sdl2/Color.hpp"
-#include "ui/sdl2/Rect.hpp"
-#include "ui/sdl2/KeyDownEvent.hpp"
-#include "ui/sdl2/Surface.hpp"
-#include "ui/sdl2/Font.hpp"
+#include "ui/device/sdl2/sdl2types.hpp"
+#include "ui/device/sdl2/Color.hpp"
+#include "ui/device/sdl2/Rect.hpp"
+#include "ui/device/sdl2/KeyDownEvent.hpp"
+#include "ui/device/sdl2/Surface.hpp"
+#include "ui/device/sdl2/Font.hpp"
 
 #include "result.hpp"
 
@@ -26,7 +26,11 @@ class Application
 		virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) = 0;
 
 		Result loadSurface(ref<Surface>& surface, const char* filename);
-		Result loadFont(ref<Font>& refFont, const char* filename);
+		
+		Result loadFont(
+			ref<Font>& refFont,
+			UnitType sizePx,
+			const char* filename);
 		
 		Result renderText(
 			ref<Surface>& refSurface,
@@ -36,7 +40,8 @@ class Application
 
 		void draw(const ref<Surface>& refSurface, const Rect& source, const Rect& target);
 		void draw(const ref<Surface>& refSurface, const Point& targetPoint);
-
+		void drawRect(const Rect& rect, const Color& color);
+		
 	private:
 
 		Result renderLoop();

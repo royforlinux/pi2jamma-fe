@@ -1,4 +1,4 @@
-#include "ui/sdl2/Surface.hpp"
+#include "ui/device/sdl2/Surface.hpp"
 
 #include "debug.hpp"
 

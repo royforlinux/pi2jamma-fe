@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/sdl2/sdl2types.hpp"
+#include "ui/device/sdl2/sdl2types.hpp"
 
 class Point
 {

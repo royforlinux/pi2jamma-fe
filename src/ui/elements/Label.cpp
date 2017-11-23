@@ -1,5 +1,5 @@
 
-#include "ui/Label.hpp"
+#include "ui/elements/Label.hpp"
 
 Label::Label(
 	Element* pParent,
@@ -19,3 +19,8 @@ void Label::render(RenderContext& renderContext)
 		mrefSurface,
 		getRect().getPosition());
 }
+
+void Label::resize(const Size& oldSize, const Size& newSize)
+{
+}
+

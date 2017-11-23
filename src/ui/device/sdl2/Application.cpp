@@ -1,4 +1,4 @@
-#include "ui/sdl2/Application.hpp"
+#include "ui/device/sdl2/Application.hpp"
 
 Application* Application::spSingleton = nullptr;
 
@@ -124,15 +124,38 @@ void Application::draw(
 
 	SDL_RenderCopy(
 		muptSdlRenderer.get(),
-		refSurface->muptSdlTexture.get(),
+		refSurface->getSdlTexture(),
 		nullptr,
 		&dst);
 }
 
-Result Application::loadFont(ref<Font>& refFont, const char* filename)
+void Application::drawRect(const Rect& rect, const Color& color)
+{
+	auto pRenderer = muptSdlRenderer.get();
+
+	auto result =
+		SDL_SetRenderDrawColor(
+			pRenderer,
+			color.getRed(),
+			color.getGreen(),
+			color.getBlue(),
+			color.getAlpha());
+
+	ASSERT(0 == result);
+
+	result =
+		SDL_RenderDrawRect(
+			pRenderer,
+			rect.getSdlRect());
+
+	ASSERT(0 == result);
+}
+
+
+Result Application::loadFont(ref<Font>& refFont, UnitType sizePx, const char* filename)
 {
 	std::unique_ptr<TTF_Font> uptSdlFont(
-		TTF_OpenFont(filename, 28));
+		TTF_OpenFont(filename, sizePx));
 
 	if(!uptSdlFont) {
 		return Result::makeFailureWithString(TTF_GetError());

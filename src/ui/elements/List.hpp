@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ui/Element.hpp"
+#include "ui/elements/Element.hpp"
+#include "ui/HorizontalAlignment.hpp"
 
 class List final : public Element
 {
@@ -11,9 +12,11 @@ public:
 		ref<Font> refFont,
 		const Color& unselectedColor,
 		const Color& selectedColor,
-		std::vector<std::string> items);
+		UnitType lineHeight,		
+		std::vector<std::string> items,
+		HorizontalAlignment = HorizontalAlignment::Center);
 
-	void setSelection(const size_t itemIndex);
+	void setSelection(const int itemIndex);
 
 	void up();
 	void down();
@@ -21,6 +24,7 @@ public:
 protected:
 
 	virtual void render(RenderContext& renderContext) override;
+	virtual void resize(const Size& oldSize, const Size& newSize) override;
 
 private:
 
@@ -31,12 +35,15 @@ private:
 	ref<Font> mrefFont;
 	Color mUnselectedColor;
 	Color mSelectedColor;
+	UnitType mLineHeight;
+	HorizontalAlignment mHorizontalAlignment;
 
 	std::vector<std::string> mItems;
 	std::vector<ref<Surface>> mLabels;
 
 	ref<Surface> mrefSelectedSurface;
 
-	size_t mSelectedItem;
+	int mSelectedItem = -1;
+	int mNumItemsToDisplay = 0;
 };
 

@@ -1,4 +1,4 @@
-#include "ui/Image.hpp"
+#include "ui/elements/Image.hpp"
 
 Image::Image(
 	Element* pParent,
@@ -9,6 +9,10 @@ Image::Image(
 	r.ignore();
 }
 
+void Image::resize(const Size& oldSize, const Size& newSize)
+{
+
+}
 
 void Image::render(RenderContext& renderContext)
 {

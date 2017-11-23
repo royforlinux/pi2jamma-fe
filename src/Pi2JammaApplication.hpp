@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ui/ui.hpp"
-#include "ui/Label.hpp"
-#include "ui/Image.hpp"
-#include "ui/List.hpp"
+#include "ui/device/ui.hpp"
+#include "ui/elements/Label.hpp"
+#include "ui/elements/Image.hpp"
+#include "ui/elements/List.hpp"
 
 class Pi2JammaApplication : public Application
 {

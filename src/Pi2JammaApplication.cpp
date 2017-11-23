@@ -10,6 +10,7 @@ Result Pi2JammaApplication::initialize()
 	Result result =
 		loadFont(
 			mrefFont,
+			20,
 			"/home/x/arcade/pi2jamma-fe/themes/burgertime/ARCADECLASSIC.TTF");
 
 	if(result.peekFailed()) {
@@ -23,7 +24,16 @@ Result Pi2JammaApplication::initialize()
 			Color(0, 0xFF, 0),
 			"Title");
 
-	std::vector<std::string> items( { "pacman", "dig-dig", "ms.pacman"});
+	std::vector<std::string> items({
+		"pacman",
+		"dig-dig",
+		"ms.pacman",
+		"burgertime (Midway) V1",
+		"galaxian V1",
+		"galaxian V2",
+		"galaxian V3",
+		"galaxian V5",
+		"halo"});
 
 	mrefList =
 		make_ref<List>(
@@ -31,7 +41,10 @@ Result Pi2JammaApplication::initialize()
 			mrefFont,
 			Color(0x80, 0x80, 0x80),
 			Color(0xFF, 0x00, 0x00),
+			24,
 			std::move(items));
+
+	mrefList->setRect(Rect(100, 100, 100, 150));
 
 	return Result::makeSuccess();
 }
@@ -47,15 +60,16 @@ void Pi2JammaApplication::keyDownEvent(const KeyDownEvent& keyDownEvent)
 {
 	if (keyDownEvent.getKey() == Key::UpArrow) {
 		mrefList->up();
-		Log("up\n");
 		return;
 	}
 
 	if (keyDownEvent.getKey() == Key::DownArrow) {
 		mrefList->down();
-		Log("down\n");
 		return;
 	}
 
-	quit();
+	if(keyDownEvent.getKey() == Key::Escape)
+	{
+		quit();
+	}
 }

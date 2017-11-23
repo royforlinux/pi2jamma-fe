@@ -1,4 +1,5 @@
 #pragma once
 
-#include "ui/sdl2/Application.hpp"
+#include "ui/device/sdl2/Application.hpp"
+
 using RenderContext = Application;

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "ui/ui.hpp"
+#include "ui/device/ui.hpp"
 #include "core/container/DlList.hpp"
 #include "core/RefCounted.hpp"
 #include <vector>
+
+#define DEBUG_ELEMENT
 
 class Element : public RefCounted
 {
@@ -16,9 +18,15 @@ class Element : public RefCounted
 		const Rect& getRect() const;
 		void setRect(const Rect& rect);
 
+		UnitType getX() const;
+		UnitType getY() const;
+
 		void renderTree(RenderContext& renderContext);
 
+	protected:
+
 		virtual void render(RenderContext& renderContext) = 0;
+		virtual void resize(const Size& oldSize, const Size& newSize) = 0;
 
 	private:
 
@@ -35,7 +43,12 @@ inline const Rect& Element::getRect() const
 	return mRect;
 }
 
-inline void Element::setRect(const Rect& rect)
+inline UnitType Element::getX() const
 {
-	mRect = rect;
+	return mRect.getX();
+}
+
+inline UnitType Element::getY() const
+{
+	return mRect.getY();
 }

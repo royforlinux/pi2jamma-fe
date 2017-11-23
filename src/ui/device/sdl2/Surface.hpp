@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/sdl2/Size.hpp"
+#include "ui/device/sdl2/Size.hpp"
 #include "core/RefCounted.hpp"
 
 class Surface : public RefCounted
@@ -16,12 +16,12 @@ public:
 	UnitType getWidth() const;
 	UnitType getHeight() const;
 
+	SDL_Texture* getSdlTexture() const;
+
 private:
 
 	Size mSize;
 	std::unique_ptr<SDL_Texture> muptSdlTexture;
-
-friend class Application;
 };
 
 inline const Size& Surface::getSize() const
@@ -37,5 +37,10 @@ inline UnitType Surface::getWidth() const
 inline UnitType Surface::getHeight() const
 {
 	return mSize.getHeight();
+}
+
+inline SDL_Texture* Surface:: getSdlTexture() const
+{
+	return muptSdlTexture.get();
 }
 
