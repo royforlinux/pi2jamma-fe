@@ -5,13 +5,13 @@ Result Pi2JammaApplication::initialize()
 	mrefBackground =
 		make_ref<Image>(
 			nullptr,
-			"/home/x/arcade/pi2jamma-fe/themes/burgertime/background.png");
+			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/background.png");
 
 	Result result =
 		loadFont(
 			mrefFont,
 			20,
-			"/home/x/arcade/pi2jamma-fe/themes/burgertime/ARCADECLASSIC.TTF");
+			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/vgafix.fon");
 
 	if(result.peekFailed()) {
 		return result;

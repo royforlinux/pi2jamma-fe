@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug.hpp"
+#include <memory>
 
 class RefCounted
 {
@@ -53,7 +54,11 @@ class ref
 
 		~ref();
 		T* operator->() const;
-		T* get();
+		T* get() const;
+
+		void abandon() {
+			mpT = nullptr;
+		}
 
 
 		ref& operator=(const ref& rhs);
@@ -92,15 +97,15 @@ ref<T>::ref(const ref<T>& rhs)
 template<typename T >
 template<typename RhsType>
 ref<T>::ref(ref<RhsType>&& rhs)
-	: mpT(rhs.mpT)
+	: mpT(rhs.get())
 {
-	rhs.mpT = nullptr;
+	rhs.abandon();
 }
 
 template<typename T >
 template<typename RhsType>
 ref<T>::ref(const ref<RhsType>& rhs)
-	: mpT(rhs.mpT)
+	: mpT(rhs.get())
 {
 	if(nullptr != mpT) {
 		mpT->AddRef();
@@ -124,7 +129,7 @@ T* ref<T>::operator->() const
 }
 
 template<typename T>
-T* ref<T>::get()
+T* ref<T>::get() const
 {
 	return mpT;
 }

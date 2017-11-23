@@ -1,19 +1,45 @@
-//-----------------------------------------------------------------------------
-//
-// Copyright 2010-2011 (c) Timothy E. Hinds <timothyehinds@gmail.com>.
-//
-// All rights reserved.
-//
-// This file is part of the om C++ toolkit.
-//
-// The om C++ toolkit is NOT free software, you can NOT redistribute, view it,
-// modify it, or distribute it under any conditions except by express
-// permission from the author.
-//
-//-----------------------------------------------------------------------------
+#pragma once
 
-#ifndef OMRBTREE_HPP
-#define OMRBTREE_HPP
+template<typename T, typename KEY_TYPE, typename GET_KEY>
+class RbTree final
+{
+    class Node
+    {
+        T mItem;
+    };
+
+    void insert(Node* pNode)
+    {
+        mItems.push_back(pNode);
+    }
+
+    void remove(Node* pNode)
+    {
+        mItems.erase(
+            std::find_(
+                mItems.begin(),
+                mItems.end(),
+                pNode));
+    }
+
+    Node* find( const KEY_TYPE& key) {
+
+        for( n : mItems ) {
+            if(keyType == GET_KEY(n->mItem)) {
+                return n;
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::vector<Node*> mItems;
+
+
+};
+
+
+#if 0
 
 #include "om/OmCompare.h"
 #include "om/OmContainer.h"
