@@ -41,16 +41,6 @@ public:
 		return downCast<MetaEnum<T>*>(findType(typeid(T)));
 	}
 
-	template<typename T>
-	Result load(T& item, const ref<Json>& refJson) {
-		MetaType* pType = findType<T>();
-		if(nullptr == pType) {
-			return Result::makeFailureWithString(std::string("No such type: ") + std::to_string(typeid(T)));
-		}
-
-		return pType->load(&item, refJson);
-	}
-
 	static CStrArg getMetaTypeName(const MetaType* pMetaType);
 	static const std::type_info& getMetaTypeInfo(const MetaType* pMetaType);
 

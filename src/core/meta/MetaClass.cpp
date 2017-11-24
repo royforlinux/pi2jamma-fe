@@ -21,8 +21,10 @@ MetaClassProperty::MetaClassProperty(
 	pMetaClassBase->addProperty(this);
 }
 
-Result MetaClassBase::load(void* object, const ref<Json>& refJson)
+Result MetaClassBase::load(void* object, const Json& refJson)
 {
+	return Result::makeFailureNotImplemented();
+	#if 0
 	ref<JsonClass> refClass;
 	Result r = Json::asClass(refClass,refJson);
 	if(r.peekFailed()) {
@@ -40,6 +42,7 @@ Result MetaClassBase::load(void* object, const ref<Json>& refJson)
 	}
 
 	return Result::makeSuccess();
+	#endif
 }
 
 

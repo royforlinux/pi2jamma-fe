@@ -20,7 +20,7 @@ public:
 	}
 
 	virtual const std::type_info& getTypeInfo() const = 0;	
-	virtual Result load(void* pItem, const ref<Json>& refJson) = 0;
+	virtual Result load(void* pItem, const Json& refJson) = 0;
 
 protected:
 

@@ -2,6 +2,8 @@
 
 #include "Pi2Jamma/Theme.hpp"
 #include "core/meta/Meta.hpp"
+#include "core/json/JsonParser.hpp"
+#include "core/serialize/Serialize.hpp"
 
 Result Pi2JammaApplication::initialize()
 {
@@ -32,10 +34,12 @@ Result Pi2JammaApplication::initialize()
 			"Title");
 
 	Theme theme;
-	ref<JsonClass> refJson = make_ref<JsonClass>();
-	refJson->setMember("bob", make_ref<JsonInt>(4));
+	Json json(4);
 
-	Result r = Meta::get().load<Theme>(theme, refJson);
+	int i;
+	loadText(i, json);
+
+	Result r = Meta::get().load<Theme>(theme, json);
 	r.catastrophic();
 
 	std::vector<std::string> items({

@@ -41,7 +41,7 @@ public:
 		return mName;
 	}
 
-	virtual Result load(void* object, const ref<Json>& refJson) = 0;
+	virtual Result load(void* object, const Json& json) = 0;
 
 private:
 
@@ -88,7 +88,7 @@ public:
 
 		}
 
-	virtual Result load(void* object, const ref<Json>& refJson) override
+	virtual Result load(void* object, const Json& refJson) override
 	{
 		return Result::makeFailureNotImplemented();
 	}
@@ -121,7 +121,7 @@ public:
 		, mGetter(std::move(getter)) {
 	}
 
-	virtual Result load(void* object, const ref<Json>& refJson) override
+	virtual Result load(void* object, const Json& json) override
 	{
 		return Result::makeFailureNotImplemented();
 	}
@@ -147,7 +147,7 @@ public:
 		mProperties.insert(pMetaClassProperty->mTreeNode);
 	}
 
-	Result load(void* object, const ref<Json>& refJson);
+	Result load(void* object, const Json& refJson);
 
 private:
 

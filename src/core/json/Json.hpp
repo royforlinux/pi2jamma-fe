@@ -1,169 +1,480 @@
 #pragma once
 
-#include "core/container/RbTree.hpp"
+#include "core/RefCounted.hpp"
+#include "core/String.hpp"
+#include "core/StringUtil.hpp"
+#include <map>
+#include <vector>
 
-class Json;
-class JsonClass;
+using JsonIntType = uint64_t;
+using JsonFloatType = double;
 
-class Json : public RefCounted
+class JsonBase : public RefCounted
 {
-public:
+    public:
+    
+        typedef ref< JsonBase > Ref;
 
-	using FloatType = double;
-	using IntType = int64_t;
-	using ArrayType = std::vector<ref<Json>>;
+        enum class Type { Null, Class, Array, String, Integer, Real, Boolean };
 
-	enum class Type {
-		Class,
-		Array,
-		Int,
-		Float,
-		String
-	};
+        inline Type GetType( void ) const { return mType; }
+    
+        virtual const String GetString( ) { return String(); }
+    
+        // Formatted for debugging
+    
+        virtual const String Dump( JsonIntType indent ) = 0;
+    
+        // Mimized
+    
+        virtual const String Stringify( ) const = 0;
 
-	Json(Type t )
-		: mType(t) {
-	}
+        virtual JsonIntType GetCount( void ) { return 0; }
+        virtual Ref GetAt( JsonIntType i ) { return NULL; }
+    
+    	virtual void push_back( Arg< JsonBase::Ref >::Type refValue ) { }
+    
+        virtual Ref GetValueForKey( Arg< String >::Type key );
+        virtual void SetValueForKey( Arg< String >::Type key, Arg< JsonBase::Ref >::Type refJson );
+    	virtual void SetIntegerValueForKey( Arg< String >::Type key, Arg< JsonIntType >::Type val );
+        virtual void SetStringValueForKey( Arg< String >::Type key, Arg< String >::Type val );
+    
+        virtual Ref GetFirst( ) { return NULL; }
+        virtual Ref GetNext( ) { return NULL; }
 
-	virtual ~Json() = default;	
-
-	Type getType() const {
-		return mType;
-	}
-
-	static Result asClass(ref<JsonClass>& refClass, const ref<Json>& refJson);
-
-private:
-
-	Type mType;
+        virtual const bool GetBool( ) { return false; }
+        virtual const JsonFloatType GetFloat64( void ) { return 0.0; }
+        virtual const JsonIntType GetUInt( void ) { return 0; }
+    
+        virtual ~JsonBase( ) { }
+    
+    protected:
+    
+        JsonBase( Type type ) : mType( type ) { }
+    
+    private:
+    
+        Type mType;
 };
 
-class JsonClassMember
+class JsonNull : public JsonBase
 {
-public:
-	JsonClassMember(
-		std::string name,
-		ref<Json> value)
-		: mName(std::move(name))
-		, mrefValue(std::move(value))
-		, mTreeNode(this)
-	{}
-	
-	const std::string& getName() const {
-		return mName;
-	}
-
-	const ref<Json> getValue() const {
-		return mrefValue;
-	}
-
-	std::string mName;
-	ref<Json> mrefValue;
-	RbTreeNode<JsonClassMember*> mTreeNode;
+    public:
+    
+        JsonNull( void ) : JsonBase( Type::Null ) { }
+    
+        virtual const String Dump( JsonIntType indent )
+        {
+            return Sl( "null" );
+        }
+    
+        virtual const String Stringify( ) const
+        {
+        	return Sl( "null" );
+    	}
 };
 
-class JsonClass final : public Json
+class JsonString : public JsonBase
 {
-public:
-	JsonClass()
-		: Json(Type::Class) {
-	}
-
-	void setMember(std::string name, ref<Json> refValue) {
-		JsonClassMember* pMember =
-			new JsonClassMember(name, std::move(refValue));
-
-		mMembers.insert(pMember->mTreeNode);
-	}
-
-	ref<Json> getMember(CStrArg name) {
-		JsonClassMember* pMember = safeDeRef(mMembers.find(name.c_str()));
-		if(nullptr==pMember) {
-			return nullptr;
-		}
-		return pMember->getValue();
-	}
-
-	static const std::string& getMemberName( const JsonClassMember* pMember) {
-		return pMember->getName();
-	} 
-private:
-	
-	RbTree<
-		JsonClassMember*,
-		std::string,
-		getMemberName,
-		DeleteLifetimePolicy<JsonClassMember*>> mMembers;
-	
+    public:
+    
+        inline JsonString( Arg< String >::Type s ) : JsonBase( Type::String ), mString( s ) { }
+    
+        virtual const String GetString( void ) { return mString; }
+    
+        virtual const String Dump( JsonIntType i )
+        {
+            return Fs( "\"%s\"", mString.c_str() );
+        }
+    
+        virtual const String Stringify( ) const
+    	{
+        	const String s =
+            	Sl( "\"" ) +
+                OmStringEscape( mString, OM_STRING_C_ESCAPE_ITEMS ) +
+                Sl( "\"" );
+            
+            return s;
+    	}
+    
+    private:
+    
+        String mString;
 };
 
-class JsonInt : public Json
+class JsonInteger : public JsonBase
 {
-public:
-
-	JsonInt(IntType value)
-		: Json(Type::Int)
-		, mValue(value)
-	{}
-
-private:
-
-	IntType mValue;
+    public:
+    
+        inline JsonInteger( JsonIntType value )
+            :
+            JsonBase( Type::Integer ),
+            mValue( value )
+        { }
+    
+        virtual const String Dump( JsonIntType i )
+        {
+            return Fs( "%i", (int) mValue );
+        }
+    
+    	virtual const String Stringify( ) const
+    	{
+        	return Fs( "%i", (int) mValue );
+        }
+    
+        virtual const JsonFloatType GetFloat64( void )
+        {
+            return static_cast< JsonFloatType >( mValue );
+        }
+    
+        virtual const JsonIntType GetUInt( void )
+        {
+            return static_cast< JsonIntType >( mValue );
+        }
+    
+    private:
+    
+        JsonIntType mValue;
+        
 };
 
-class JsonFloat: public Json
+class JsonReal : public JsonBase
 {
-public:
-	
-	JsonFloat(FloatType v)
-		: Json(Type::Float)
-		, mValue(v)
-	{}
-private:
-	FloatType mValue;
+    public:
+    
+        inline JsonReal( JsonFloatType real ) : JsonBase( Type::Real ), mReal( real ) { }
+    
+        virtual const String Dump( JsonIntType indent )
+        {
+            return Stringify();
+        }
+    
+        virtual const String Stringify(  ) const
+        {
+            return Fs( "%g", mReal );
+        }
+    
+        virtual const JsonFloatType GetFloat64( void )
+        {
+            return mReal;
+        }
+    
+        virtual const JsonIntType GetUInt( void )
+        {
+            return static_cast< JsonIntType >( mReal );
+        }    
+    
+    private:
+    
+        JsonFloatType mReal;
 };
 
-class JsonString : public Json
+
+class JsonBoolean : public JsonBase
 {
-public:
-	JsonString(std::string s)
-		: Json(Type::String)
-		, mString(std::move(s)) {
-	}
-private:
-	std::string mString;
+    public:
+    
+        inline JsonBoolean( bool value ) : JsonBase( Type::Boolean ), mValue( value ) { }
+    
+        virtual const String Dump( JsonIntType indent )
+        {
+        	return Stringify();
+        }
+    
+        virtual const String Stringify( ) const
+    	{
+            return mValue ? Sl( "true" ) : Sl( "false" );
+        }
+    
+        virtual const bool GetBool( void )
+        {
+            return mValue;
+        }
+    
+    private:
+    
+        bool mValue;
 };
 
-
-
-class JsonArray : public Json
+class JsonObject : public JsonBase
 {
-	public:
-		using ArrayType = std::vector<ref<Json>>;
-
-		JsonArray()
-			: Json(Type::Array)
-		{}
-
-		const ArrayType& get() {
-			return mValues;
-		}
-
-	private:
-
-		ArrayType mValues;
+    public:
+    
+        typedef std::map< String, JsonBase::Ref > DictType;
+    
+        inline JsonObject( void ) : JsonBase( Type::Class ) { }
+    
+        inline void Put(
+        	Arg< String >::Type key,
+            Arg< JsonBase::Ref >::Type value )
+            { mDictionary[ key ] = value; }
+    
+        virtual JsonBase::Ref GetValueForKey( Arg< String >::Type key )
+        {
+            JsonBase::Ref refJson = mDictionary[ key ];
+            
+            if ( ! refJson.isValid() )
+            {
+                return new JsonNull();
+            }
+            
+            return refJson;
+        }
+    
+        virtual void SetValueForKey(
+        	Arg< String >::Type key,
+            Arg< JsonBase::Ref >::Type jsonRef )
+        {
+            mDictionary.insert(std::make_pair(key,jsonRef));
+        }
+    
+    	virtual void SetIntegerValueForKey(
+        	Arg< String >::Type key,
+            Arg< JsonIntType >::Type intValue )
+    	{
+        	SetValueForKey( key, new JsonInteger( intValue ) );
+        }
+    
+        virtual void SetStringValueForKey(
+        	Arg< String >::Type key,
+            Arg< String >::Type value )
+    	{
+        	SetValueForKey( key, new JsonString( value ) );
+        }
+    
+        virtual const String Dump( JsonIntType indentAmount )
+        {
+            String s = Sl( "{\n" );
+            
+            for(auto&& pair: mDictionary)
+            {
+                s += indent( indentAmount + 1 ) + pair.first;
+                s += Sl( " : " );
+                s += pair.second->Dump( indentAmount + 2 );
+                s += Sl( "\n" );
+            }
+            
+            s += Sl( "\n" ) + indent( indentAmount ) + Sl( "}" );
+            
+            return s;
+        }
+    
+        virtual const String Stringify( ) const
+    	{
+           	String s = Sl( "{" );
+            
+            bool first = true;
+            for(auto&& pair : mDictionary)
+            {
+            	if (first)
+            	{
+                    first = false;
+                	s += Sl( "," );
+            	}
+                
+                s += Sl( "\"" ) + pair.first + Sl( "\"" );
+                s += Sl( ":" );
+                s += pair.second->Stringify();
+            }
+            
+            s += Sl( "}" );
+            
+            return s;
+    	}
+    
+    private:
+    
+        DictType mDictionary;
 };
 
-inline Result Json::asClass(ref<JsonClass>& refClass, const ref<Json>& refJson) {
-	if(refJson.isNull()) {
-		return Result::makeFailureWithStringLiteral("null is not a class.");
-	}
+class JsonArray : public JsonBase
+{
+    public:
+    
+        inline JsonArray( void ) : JsonBase( Type::Array ) { }
 
-	if(refJson->getType() != Type::Class) {
-		return Result::makeFailureWithStringLiteral("not null but not a class.");
-	}
+        inline void push_back( Arg< JsonBase::Ref >::Type refJson )
+        {
+            mVector.push_back( refJson );
+        }
+    
+        virtual const String Dump( JsonIntType indentAmount )
+        {
+            String s = Sl( "\n" ) + indent( indentAmount ) + Fs( "[ (%d)\n", mVector.size() );
+            
+            for(size_t i = 0; i < mVector.size(); i ++ )
+            {
+                s += indent( indentAmount + 1 ) + Fs( "%d. ", i ) + mVector[ i ]->Dump( indentAmount + 2 ) + Sl( "\n" );
+            }
+            
+            s += indent( indentAmount ) + Sl( "]" );
+            
+            return s;
+        }
+    
+        virtual const String Stringify( ) const
+    	{
+          	String s = Sl( "[" );
+            
+            for(size_t i = 0; i < mVector.size(); i ++ )
+            {
+            	if ( i > 0 )
+            	{
+                	s += Sl( "," );
+            	}
+                
+                s += mVector[ i ]->Stringify( );
+            }
+            
+            s += Sl( "]" );
+            
+            return s;
+        }
+    
+        virtual JsonIntType GetCount( void )
+        {
+            return mVector.size();
+        }
+    
+        virtual JsonBase::Ref GetAt( JsonIntType i )
+        {
+            return mVector[i];
+        }
+    
+    private:
+    
+        std::vector< JsonBase::Ref > mVector;
+};
 
-	refClass = refJson.downCast<JsonClass>();
+class Json
+{
+    public:
+    
+        Json( JsonBase::Ref refJson )
+        {
+            ASSERT( refJson.isValid() );
 
-	return Result::makeSuccess();
-}
+            mrefJson = refJson;
+        }
+    
+        Json( Arg< String >::Type string )
+        {
+            mrefJson = new JsonString( string );
+        }
+    
+        Json( Arg< JsonIntType >::Type integer )
+    	{
+        	mrefJson = new JsonInteger( integer );
+        }
+    
+        Json( )
+        {
+            mrefJson = new JsonNull();
+        }
+    
+        inline void push_back( Json json )
+        {
+        	mrefJson->push_back( json.mrefJson );
+    	}
+    
+        inline const Json GetAt( JsonIntType i ) const
+        {
+            return Json( mrefJson->GetAt( i ) );
+        }
+        
+        inline JsonIntType GetCount( void ) const
+        {
+            return mrefJson->GetCount();
+        }
+    
+        inline const String Dump( JsonIntType indent ) const
+        {
+            return mrefJson->Dump( indent );
+        }
+    
+    	inline const String Stringify( ) const
+    	{
+        	return mrefJson->Stringify();
+        }
+    
+        inline const Json GetValueForKey( Arg< String >::Type json ) const
+        {
+            return Json( mrefJson->GetValueForKey( json ) );
+        }
+    
+        inline const void SetValueForKey(
+            Arg< String >::Type key,
+            Arg< Json >::Type json )
+        {
+            mrefJson->SetValueForKey( key, json.mrefJson );
+        }
+    
+    	inline void SetIntegerValueForKey(
+        	Arg< String >::Type key,
+            Arg< JsonIntType >::Type intValue )
+    	{
+        	SetValueForKey( key, Json( new JsonInteger( intValue ) ) );
+        }
+    
+        inline void SetStringValueForKey(
+        	Arg< String >::Type key,
+            Arg< String >::Type value )
+    	{
+        	SetValueForKey( key, Json( new JsonString( value ) ) );
+        }
+    
+        inline const String GetString( void ) const
+        {
+            return mrefJson->GetString();
+        }
+    
+        inline const JsonFloatType GetFloat64( void ) const
+        {
+            return mrefJson->GetFloat64();
+        }
+    
+        inline const JsonIntType GetUInt( void ) const
+        {
+            return mrefJson->GetUInt();
+        }
+    
+        inline const bool GetBool( void ) const
+        {
+            return mrefJson->GetBool();
+        }
+    
+        inline bool IsNull( void ) const
+        {
+        	return JsonBase::Type::Null == mrefJson->GetType();
+    	}
+    
+        inline const Json operator[] ( const char* pChar ) const
+        {
+            return Json( mrefJson->GetValueForKey( Ts( pChar ) ) );
+        }
+        
+        inline const Json operator[] ( Arg< String >::Type s ) const
+        {
+            return Json( mrefJson->GetValueForKey( s ) );
+        }
+    
+        inline const Json operator[] ( JsonIntType i ) const
+        {
+            return Json( mrefJson->GetAt( i ) );
+        }
+
+        inline bool operator==( Arg< String >::Type s ) const
+        {
+            return mrefJson->GetString() == s;
+        }
+    
+        inline bool operator==( const char* pCString ) const
+        {
+            return mrefJson->GetString() == Ts( pCString );
+        }
+
+    
+    private:
+    
+        JsonBase::Ref mrefJson;
+};
