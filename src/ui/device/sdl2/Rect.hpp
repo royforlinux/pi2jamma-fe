@@ -10,9 +10,17 @@ public:
 	Rect(UnitType x, UnitType y, UnitType w, UnitType h);
 
 	UnitType getX() const;
+	void SetX(UnitType x);
+
 	UnitType getY() const;
+	void setY(UnitType y);
+
 	UnitType getWidth() const;
+	void setWidth(UnitType width);
+
 	UnitType getHeight() const;
+	void setHeight(UnitType height) const;
+
 	UnitType getYCenter() const;
 
 	Size getSize() const;

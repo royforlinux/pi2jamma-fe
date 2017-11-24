@@ -54,13 +54,9 @@ class MetaEnumValue final : public MetaEnumValueBase
 class MetaEnumBase : public MetaType
 {
 public:
-	MetaEnumBase(const char* pName, size_t numBytes)
-		: MetaType(pName)
-		, mNumBytes(numBytes)
-	{
-	}
+	MetaEnumBase(CStrArg name, size_t numBytes);
 
-	virtual Result load(LoadTextContext& loadTextContext) override { return Result::makeFailureNotImplemented(); }
+	virtual Result load(void* pObject, const ref<Json>& refJson) override { return Result::makeFailureNotImplemented(); }
 
 private:
 

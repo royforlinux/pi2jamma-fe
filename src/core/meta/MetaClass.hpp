@@ -4,14 +4,25 @@
 #include "core/cast.hpp"
 
 #define META_CLASS(C) \
-	MetaClass<C> gMetaClass##C(#C)
+	static MetaClass<C> gMetaClass##C(#C)
 
-#define META_PROPERTY(C, P) \
-	MetaClassProperty<C,decltype(C::m##P)> gMetaClassProperty##C##P( \
+#if 0
+#define META_CLASS_PROPERTY(C, P) \
+	static MetaClassProperty<C,decltype(C::m##P)> gMetaClassProperty##C##P( \
 		& gMetaClass##C, \
+		Meta::get().findType<decltype(C::m##P)>(), \
 		#P, \
-		[](C* pC, const decltype(C::m##P)& v) {pC->m##P = v; }, \
-		[](C* pC) -> const decltype(C::m##P)& { return pC->m##P; } )
+		[](C* pC, typename Arg<decltype(C::m##P)>::Type v) {pC->m##P = v; }, \
+		[](C* pC) -> typename Arg<decltype(C::m##P)>::Type { return pC->m##P; } )
+#endif
+
+#define META_CLASS_PROPERTYGS(C, Type, P) \
+	static MetaClassProperty<C,Type> gMetaClassProperty##C##P( \
+		& gMetaClass##C, \
+		Meta::get().findType<decltype(C::m##P)>(), \
+		#P, \
+		& C::set##P, \
+		& C::get##P)
 
 class MetaClassBase;
 template<typename T > class MetaClass;
@@ -21,16 +32,20 @@ class MetaClassPropertyBase
 public:
 	MetaClassPropertyBase(
 		MetaClassBase* pMetaClassBase,
-		const CStrArg name );
+		MetaType* pPropertyType,
+		CStrArg name );
 
 
 	CStrArg getName() const {
 		return mName;
 	}
 
+	virtual Result load(void* object, const ref<Json>& refJson) = 0;
+
 private:
 
 	CStr mName;
+	MetaType* mpPropertyType;
 
 public:
 	RbTreeNode<MetaClassPropertyBase*> mTreeNode;
@@ -41,19 +56,26 @@ class MetaClassProperty : public MetaClassPropertyBase
 {
 public:
 
-	using Setter = std::function<void(ClassType*, const PropertyType&)>;
-	using Getter = std::function<const PropertyType&(ClassType*)>;
+	using Setter = void(ClassType::*)(typename Arg<PropertyType>::Type);
+	using Getter = typename Arg<PropertyType>::Type (ClassType::*)(void) const;
 
 	MetaClassProperty(
 			MetaClass<ClassType>* pClass,
+			MetaType* pPropertyType,
 			CStrArg name,
 			Setter setter,
 			Getter getter)
 		: MetaClassPropertyBase(
 			pClass,
+			pPropertyType,
 			name)
 		, mSetter(std::move(setter))
 		, mGetter(std::move(getter)) {
+	}
+
+	virtual Result load(void* object, const ref<Json>& refJson) override
+	{
+		return Result::makeFailureNotImplemented();
 	}
 
 private:
@@ -67,10 +89,7 @@ class MetaClassBase : public MetaType
 {
 public:
 
-	MetaClassBase(CStrArg name)
-		: MetaType(name) {
-
-	}
+	MetaClassBase(CStrArg name);
 
 	MetaClassPropertyBase* findProperty(CStrArg name) {
 		return safeDeRef(mProperties.find(name));
@@ -80,11 +99,11 @@ public:
 		mProperties.insert(pMetaClassPropertyBase->mTreeNode);
 	}
 
-	virtual Result load(LoadTextContext& loadTextContext) override;
+	Result load(void* object, const ref<Json>& refJson);
 
 private:
 
-	static CStrArg getPropertyName(MetaClassPropertyBase*const& pMetaClassProperty) {
+	static CStrArg getPropertyName(const MetaClassPropertyBase* pMetaClassProperty) {
 		return pMetaClassProperty->getName();
 	}
 
@@ -117,3 +136,4 @@ private:
 		return typeid(T);
 	}
 };
+

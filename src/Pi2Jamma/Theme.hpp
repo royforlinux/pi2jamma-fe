@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/device/ui.hpp"
+#include "core/Property.hpp"
 
 class Theme
 {
@@ -8,7 +9,7 @@ class Theme
 
 		static void initialize();
 
-		Rect mTitleRect;
-		Rect mMenuRect;
-		Rect mSnapsRect;
+		PROPERTY(Rect, TitleRect);
+		PROPERTY(Rect, MenuRect);
+		PROPERTY(Rect, SnapsRect);
 };

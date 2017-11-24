@@ -1,16 +1,43 @@
 #include "core/meta/MetaClass.hpp"
+#include "core/meta/Meta.hpp"
+#include "core/debug.hpp"
+
+MetaClassBase::MetaClassBase(CStrArg name)
+	: MetaType(name)
+{
+}
 
 MetaClassPropertyBase::MetaClassPropertyBase(
 	MetaClassBase* pMetaClassBase,
+	MetaType* pPropertyType,
 	CStrArg name)
 	: mName(name)
+	, mpPropertyType(pPropertyType)
 	, mTreeNode(this)
 {
 	pMetaClassBase->addProperty(this);
 }
 
-Result MetaClassBase::load(LoadTextContext& loadTextContext)
+Result MetaClassBase::load(void* object, const ref<Json>& refJson)
 {
-	return Result::makeFailureNotImplemented();
+	ref<JsonClass> refClass;
+	Result r = Json::asClass(refClass,refJson);
+	if(r.peekFailed()) {
+		return r;
+	}
+	for(auto&& prop: mProperties) {
+		ref<Json> refProperty =
+			refClass->getMember(prop->mItem->getName());
+		
+		if(refProperty.isNull()) {
+			continue;
+		}
+
+		return prop->mItem->load(this, refProperty);
+	}
+
+	return Result::makeSuccess();
 }
+
+
 

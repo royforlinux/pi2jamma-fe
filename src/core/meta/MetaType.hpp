@@ -6,16 +6,12 @@
 #include "core/result.hpp"
 #include "core/String.hpp"
 #include "core/container/RbTree.hpp"
-#include "core/serialize/LoadTextContext.hpp"
+#include "core/json/Json.hpp"
 
 class MetaType
 {
 public:
-	MetaType(CStr name)
-		: mName(name)
-		, mByNameTreeNode(this)
-		, mByTypeInfoTreeNode(this) {
-	}
+	MetaType(CStr name);
 
 	virtual ~MetaType() = default;
 
@@ -24,7 +20,7 @@ public:
 	}
 
 	virtual const std::type_info& getTypeInfo() const = 0;	
-	virtual Result load(LoadTextContext& loadTextContext) = 0;
+	virtual Result load(void* pItem, const ref<Json>& refJson) = 0;
 
 protected:
 

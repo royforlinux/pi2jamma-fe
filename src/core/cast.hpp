@@ -11,8 +11,8 @@ T downCast(R r) {
 
 template<typename T >
 T* safeDeRef(T** ppT) {
-	if(ppT) {
-		return nullptr;
+	if(nullptr == ppT) {
+		return  nullptr;
 	}
 
 	return (*ppT);

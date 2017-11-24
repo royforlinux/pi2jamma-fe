@@ -2,7 +2,11 @@
 
 #include "core/meta/Meta.hpp"
 
-META_CLASS(Theme);
-META_PROPERTY(Theme, SnapsRect);
-META_PROPERTY(Theme, MenuRect);
-META_PROPERTY(Theme, TitleRect);
+void Theme::initialize() {
+
+	META_CLASS(Theme);
+	META_CLASS_PROPERTYGS(Theme, Rect, SnapsRect);
+	META_CLASS_PROPERTYGS(Theme, Rect, MenuRect);
+	META_CLASS_PROPERTYGS(Theme, Rect, TitleRect);
+	META_CLASS_PROPERTYGS(Theme, Rect, MenuRect);
+}

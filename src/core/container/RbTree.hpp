@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/Arg.hpp"
+#include "core/container/LifetimePolicy.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -16,23 +16,16 @@ public:
     T mItem;
 };
 
-template<typename T>
-struct LifetimePolicyNone
-{
-    public:
-
-        static void addRef(T t) { }
-        static void release(T t) { }
-};
-
 template<
     typename T, 
     typename KEY_TYPE,
-    typename Arg<KEY_TYPE>::Type(*GET_KEY)(const T& item),
+    typename Arg<KEY_TYPE>::Type(*GET_KEY)(typename Arg<T>::Type item),
     typename LIFETIME_POLICY = LifetimePolicyNone<T>>
 class RbTree final
 {
 public:
+
+    using VectorType = std::vector<RbTreeNode<T>*>;
 
     void insert(RbTreeNode<T>& node)
     {
@@ -53,7 +46,9 @@ public:
 
     T* find( const KEY_TYPE& key) {
 
+
         for( auto&& n : mItems ) {
+
             if(key == GET_KEY(n->mItem)) {
                 return & n->mItem;
             }
@@ -66,11 +61,17 @@ public:
             LIFETIME_POLICY::release(i->mItem);
         }
     }
+
+    typename VectorType::iterator begin() {
+        return mItems.begin();
+    }
+
+    typename VectorType::iterator end() {
+        return mItems.end();
+    }
 private:
 
-    std::vector<RbTreeNode<T>*> mItems;
-
-
+    VectorType mItems;
 };
 
 

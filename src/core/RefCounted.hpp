@@ -65,7 +65,15 @@ class ref
 		ref& operator=(ref&& rhs);
 
 		template<typename NewType>
-		ref<NewType> downCast();
+		ref<NewType> downCast() const;
+
+		bool isNull() const {
+			return (nullptr == mpT);
+		}
+
+		bool isValid() const {
+			return nullptr != mpT;
+		}
 
 	private:
 
@@ -171,6 +179,6 @@ ref<T>& ref<T>::operator=(ref&& rhs)
 
 template<typename T>
 template<typename NewType>
-ref<NewType> ref<T>::downCast() {
+ref<NewType> ref<T>::downCast() const {
 	return ::downCast<NewType*, T*>(mpT);
 }

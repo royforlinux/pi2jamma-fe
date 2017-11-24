@@ -1,7 +1,13 @@
-#include "Pi2JammaApplication.hpp"
+#include "Pi2Jamma/Pi2JammaApplication.hpp"
+
+#include "Pi2Jamma/Theme.hpp"
+#include "core/meta/Meta.hpp"
 
 Result Pi2JammaApplication::initialize()
 {
+	ui::initialize();
+	Theme::initialize();
+
 	mrefBackground =
 		make_ref<Image>(
 			nullptr,
@@ -23,6 +29,13 @@ Result Pi2JammaApplication::initialize()
 			mrefFont,
 			Color(0, 0xFF, 0),
 			"Title");
+
+	Theme theme;
+	ref<JsonClass> refJson = make_ref<JsonClass>();
+	refJson->setMember("bob", make_ref<JsonInt>(4));
+
+	Result r = Meta::get().load<Theme>(theme, refJson);
+	r.catastrophic();
 
 	std::vector<std::string> items({
 		"pacman",

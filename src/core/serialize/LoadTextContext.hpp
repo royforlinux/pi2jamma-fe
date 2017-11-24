@@ -1,11 +1,19 @@
 #pragma once
 
 #include "core/String.hpp"
+#include "json/Json.hpp"
 
 class LoadTextContext
 {
 public:
-	CStrArg getData() { return mData; }
+	LoadTextContext(ref<Json> refJson)
+		: mrefJson(std::move(refJson)) {
+	}
+
+	const ref<Json>& getJson() {
+		return mrefJson;
+	}
+
 private:
-	CStr mData;
+	ref<Json> mrefJson;
 };

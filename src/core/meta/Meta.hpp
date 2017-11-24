@@ -11,29 +11,26 @@ class Meta
 {
 public:
 
-	static Meta& get() { return sSingleton; }
+	static Meta& get() {
+		static Meta singleton;
+		return singleton; }
 
-	void addEnum(MetaEnumBase* pMetaEnumBase)
-	{
-		mTypesByName.insert(pMetaEnumBase->mByNameTreeNode);
-		mTypesByTypeInfo.insert(pMetaEnumBase->mByTypeInfoTreeNode);
-	}
+	Meta();
 
 	MetaType* findType(const std::type_info& typeInfo) {
 		return safeDeRef(mTypesByTypeInfo.find(typeInfo));
 	}
 
-	MetaType* findType(const CStr& name) {
+	MetaType* findType(CStrArg name) {
 		return safeDeRef(mTypesByName.find(name));
 	}
 
-	void addClass(MetaClassBase* pMetaClassBase)
-	{
-		mTypesByName.insert(pMetaClassBase->mByNameTreeNode);
-		mTypesByTypeInfo.insert(pMetaClassBase->mByTypeInfoTreeNode);
+	template<typename T>
+	MetaType* findType() {
+		return findType(typeid(T));
 	}
 
-	MetaClassBase* findClass(const CStr& name) {
+	MetaClassBase* findClass(CStrArg name) {
 		MetaType* pMetaType = findType(name);
 		return downCast<MetaClassBase*>(pMetaType);
 	}
@@ -48,18 +45,32 @@ public:
 		return downCast<MetaEnum<T>*>(findType(typeid(T)));
 	}
 
-	static CStrArg getMetaTypeName(MetaType*const & pMetaType) {
+	template<typename T>
+	Result load(T& item, const ref<Json>& refJson) {
+		MetaType* pType = findType<T>();
+		if(nullptr == pType) {
+			return Result::makeFailureWithStringLiteral("No such type");
+		}
+
+		return pType->load(&item, refJson);
+	}
+
+	static CStrArg getMetaTypeName(const MetaType* pMetaType) {
 		return pMetaType->getName();
 	}
 
-	static const std::type_info& getMetaTypeInfo(MetaType*const& pMetaType) {
+	static const std::type_info& getMetaTypeInfo(const MetaType* pMetaType) {
 		return pMetaType->getTypeInfo();
+	}
+
+	void addType(MetaType* pMetaType)
+	{
+		mTypesByName.insert(pMetaType->mByNameTreeNode);
+		mTypesByTypeInfo.insert(pMetaType->mByTypeInfoTreeNode);
 	}
 
 private:
 
 	RbTree<MetaType*, CStr, Meta::getMetaTypeName> mTypesByName;
 	RbTree<MetaType*, std::type_info, Meta::getMetaTypeInfo> mTypesByTypeInfo;
-
-	static Meta sSingleton;
 };
