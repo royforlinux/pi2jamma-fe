@@ -2,6 +2,7 @@
 
 #include "core/meta/MetaEnum.hpp"
 #include "core/meta/MetaClass.hpp"
+#include "core/meta/MetaPrimitive.hpp"
 
 #include <unordered_map>
 #include <typeinfo>
@@ -11,19 +12,14 @@ class Meta
 {
 public:
 
-	static Meta& get() {
-		static Meta singleton;
-		return singleton; }
+	static void initialize();
+
+	static Meta& get();
 
 	Meta();
 
-	MetaType* findType(const std::type_info& typeInfo) {
-		return safeDeRef(mTypesByTypeInfo.find(typeInfo));
-	}
-
-	MetaType* findType(CStrArg name) {
-		return safeDeRef(mTypesByName.find(name));
-	}
+	MetaType* findType(const std::type_info& typeInfo);
+	MetaType* findType(CStrArg name);
 
 	template<typename T>
 	MetaType* findType() {
@@ -49,28 +45,42 @@ public:
 	Result load(T& item, const ref<Json>& refJson) {
 		MetaType* pType = findType<T>();
 		if(nullptr == pType) {
-			return Result::makeFailureWithStringLiteral("No such type");
+			return Result::makeFailureWithString(std::string("No such type: ") + std::to_string(typeid(T)));
 		}
 
 		return pType->load(&item, refJson);
 	}
 
-	static CStrArg getMetaTypeName(const MetaType* pMetaType) {
-		return pMetaType->getName();
-	}
+	static CStrArg getMetaTypeName(const MetaType* pMetaType);
+	static const std::type_info& getMetaTypeInfo(const MetaType* pMetaType);
 
-	static const std::type_info& getMetaTypeInfo(const MetaType* pMetaType) {
-		return pMetaType->getTypeInfo();
-	}
-
-	void addType(MetaType* pMetaType)
-	{
-		mTypesByName.insert(pMetaType->mByNameTreeNode);
-		mTypesByTypeInfo.insert(pMetaType->mByTypeInfoTreeNode);
-	}
+	void addType(MetaType* pMetaType);
 
 private:
 
 	RbTree<MetaType*, CStr, Meta::getMetaTypeName> mTypesByName;
 	RbTree<MetaType*, std::type_info, Meta::getMetaTypeInfo> mTypesByTypeInfo;
+
+	static Meta* spSingleton;
 };
+
+inline Meta& Meta::get() {
+	ASSERT(nullptr != spSingleton);
+	return *spSingleton;
+}
+
+inline MetaType* Meta::findType(const std::type_info& typeInfo) {
+	return safeDeRef(mTypesByTypeInfo.find(typeInfo));
+}
+
+inline MetaType* Meta::findType(CStrArg name) {
+	return safeDeRef(mTypesByName.find(name));
+}
+
+inline CStrArg Meta::getMetaTypeName(const MetaType* pMetaType) {
+	return pMetaType->getName();
+}
+
+inline const std::type_info& Meta::getMetaTypeInfo(const MetaType* pMetaType) {
+	return pMetaType->getTypeInfo();
+}

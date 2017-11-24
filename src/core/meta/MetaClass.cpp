@@ -7,7 +7,7 @@ MetaClassBase::MetaClassBase(CStrArg name)
 {
 }
 
-MetaClassPropertyBase::MetaClassPropertyBase(
+MetaClassProperty::MetaClassProperty(
 	MetaClassBase* pMetaClassBase,
 	MetaType* pPropertyType,
 	CStrArg name)
@@ -15,6 +15,9 @@ MetaClassPropertyBase::MetaClassPropertyBase(
 	, mpPropertyType(pPropertyType)
 	, mTreeNode(this)
 {
+	ASSERT(nullptr != pMetaClassBase);
+	ASSERT(nullptr != pPropertyType);
+	
 	pMetaClassBase->addProperty(this);
 }
 

@@ -5,6 +5,7 @@
 
 Result Pi2JammaApplication::initialize()
 {
+	Meta::initialize();
 	ui::initialize();
 	Theme::initialize();
 

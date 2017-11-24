@@ -5,10 +5,10 @@
 #include <unordered_map>
 
 #define META_ENUM(E) \
-	MetaEnum<E> gMetaEnum##E(#E)
+	static MetaEnum<E> gMetaEnum##E(#E)
 
 #define META_ENUM_VALUE(E, V) \
-	MetaEnumValue<E> gMetaEnumValue##E##V(&gMetaEnum##E, #V, E::V)
+	static MetaEnumValue<E> gMetaEnumValue##E##V(&gMetaEnum##E, #V, E::V)
 
 class MetaEnumBase;
 template<typename T> class MetaEnum;

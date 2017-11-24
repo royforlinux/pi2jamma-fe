@@ -13,10 +13,11 @@ void initialize() {
 	META_ENUM_VALUE(Key, Space);
 
 	META_CLASS(Rect);
-	META_CLASS_PROPERTYGS(Rect, Left);
-	META_CLASS_PROPERTYGS(Rect, Right);
-	META_CLASS_PROPERTYGS(Rect, Width);
-	META_CLASS_PROEPRTYGS(Rect, Height);
+
+	META_CLASS_PROPERTY(Rect, X);
+	META_CLASS_PROPERTY(Rect, Y);
+	META_CLASS_PROPERTY(Rect, Width);
+	META_CLASS_PROPERTY(Rect, Height);
 
 }
 

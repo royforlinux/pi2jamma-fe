@@ -9,7 +9,7 @@ class Theme
 
 		static void initialize();
 
-		PROPERTY(Rect, TitleRect);
-		PROPERTY(Rect, MenuRect);
-		PROPERTY(Rect, SnapsRect);
+		Rect mTitleRect;
+		Rect mMenuRect;
+		Rect mSnapsRect;
 };

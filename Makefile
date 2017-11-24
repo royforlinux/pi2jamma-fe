@@ -10,7 +10,7 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS)) -I/usr/include/SDL2
 
-CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -Werror -Wall
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -Werror -Wall -g
 LDFLAGS := -lstdc++ -lSDL2 -lSDL2_image -lSDL2_ttf
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
@@ -45,3 +45,8 @@ MKDIR_P ?= mkdir -p
 
 run:
 	./build/$(TARGET_EXEC)
+
+.PHONY: debug
+
+debug:
+	gdb ./build/$(TARGET_EXEC)

@@ -10,7 +10,7 @@ public:
 	Rect(UnitType x, UnitType y, UnitType w, UnitType h);
 
 	UnitType getX() const;
-	void SetX(UnitType x);
+	void setX(UnitType x);
 
 	UnitType getY() const;
 	void setY(UnitType y);
@@ -19,7 +19,7 @@ public:
 	void setWidth(UnitType width);
 
 	UnitType getHeight() const;
-	void setHeight(UnitType height) const;
+	void setHeight(UnitType height);
 
 	UnitType getYCenter() const;
 
@@ -51,9 +51,19 @@ inline UnitType Rect::getX() const
 	return mSdlRect.x;
 }
 
+inline void Rect::setX(UnitType x) 
+{
+	mSdlRect.x = x;
+}
+
 inline UnitType Rect::getY() const
 {
 	return mSdlRect.y;
+}
+
+inline void Rect::setY(UnitType y)
+{
+	mSdlRect.y = y;
 }
 
 inline UnitType Rect::getWidth() const
@@ -61,9 +71,19 @@ inline UnitType Rect::getWidth() const
 	return mSdlRect.w;
 }
 
+inline void Rect::setWidth(UnitType w) 
+{
+	mSdlRect.w = w;
+}
+
 inline UnitType Rect::getHeight() const
 {
 	return mSdlRect.h;
+}
+
+inline void Rect::setHeight(UnitType height)
+{
+	mSdlRect.h = height;
 }
 
 inline UnitType Rect::getYCenter() const
