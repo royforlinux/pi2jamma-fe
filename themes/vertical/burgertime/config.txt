@@ -1,14 +1,14 @@
 {
-	SnapRect : {
-		x : 1
-		y : 1
-		w : 2
-		j : 2
+	"SnapRect" : {
+		"x" : 1,
+		"y" : 1,
+		"w" : 2,
+		"j" : 2
 	},
 
-	Background : "background.png",
+	"Background" : "background.png",
 
-	TitleRect : {
-		x : 2 }
+	"TitleRect" : {
+		"x" : 2 }
 	}
 }

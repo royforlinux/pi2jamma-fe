@@ -28,7 +28,8 @@ public:
 		}
 
 	virtual Result load(void* pItem, const Json& refJson) {
-		return Serialize<T>(*static_cast<T>(pItem), refJson);
+		// return Serialize<T>(*static_cast<T>(pItem), refJson);
+		return Result::makeFailureNotImplemented();
 	}
 
 	virtual const std::type_info& getTypeInfo() const {

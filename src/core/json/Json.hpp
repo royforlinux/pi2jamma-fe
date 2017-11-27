@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/RefCounted.hpp"
-#include "core/String.hpp"
 #include "core/StringUtil.hpp"
+#include "core/Type.hpp"
 #include <map>
 #include <vector>
 
@@ -19,25 +19,25 @@ class JsonBase : public RefCounted
 
         inline Type GetType( void ) const { return mType; }
     
-        virtual const String GetString( ) { return String(); }
+        virtual const std::string GetString( ) { return std::string(); }
     
         // Formatted for debugging
     
-        virtual const String Dump( JsonIntType indent ) = 0;
+        virtual const std::string Dump( JsonIntType indent ) = 0;
     
         // Mimized
     
-        virtual const String Stringify( ) const = 0;
+        virtual const std::string Stringify( ) const = 0;
 
         virtual JsonIntType GetCount( void ) { return 0; }
         virtual Ref GetAt( JsonIntType i ) { return NULL; }
     
     	virtual void push_back( Arg< JsonBase::Ref >::Type refValue ) { }
     
-        virtual Ref GetValueForKey( Arg< String >::Type key );
-        virtual void SetValueForKey( Arg< String >::Type key, Arg< JsonBase::Ref >::Type refJson );
-    	virtual void SetIntegerValueForKey( Arg< String >::Type key, Arg< JsonIntType >::Type val );
-        virtual void SetStringValueForKey( Arg< String >::Type key, Arg< String >::Type val );
+        virtual Ref GetValueForKey( Arg< std::string >::Type key );
+        virtual void SetValueForKey( Arg< std::string >::Type key, Arg< JsonBase::Ref >::Type refJson );
+    	virtual void SetIntegerValueForKey( Arg< std::string >::Type key, Arg< JsonIntType >::Type val );
+        virtual void SetStringValueForKey( Arg< std::string >::Type key, Arg< std::string >::Type val );
     
         virtual Ref GetFirst( ) { return NULL; }
         virtual Ref GetNext( ) { return NULL; }
@@ -63,12 +63,12 @@ class JsonNull : public JsonBase
     
         JsonNull( void ) : JsonBase( Type::Null ) { }
     
-        virtual const String Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent )
         {
             return Sl( "null" );
         }
     
-        virtual const String Stringify( ) const
+        virtual const std::string Stringify( ) const
         {
         	return Sl( "null" );
     	}
@@ -78,18 +78,18 @@ class JsonString : public JsonBase
 {
     public:
     
-        inline JsonString( Arg< String >::Type s ) : JsonBase( Type::String ), mString( s ) { }
+        inline JsonString( Arg< std::string >::Type s ) : JsonBase( Type::String ), mString( s ) { }
     
-        virtual const String GetString( void ) { return mString; }
+        virtual const std::string GetString( void ) { return mString; }
     
-        virtual const String Dump( JsonIntType i )
+        virtual const std::string Dump( JsonIntType i )
         {
             return Fs( "\"%s\"", mString.c_str() );
         }
     
-        virtual const String Stringify( ) const
+        virtual const std::string Stringify( ) const
     	{
-        	const String s =
+        	const std::string s =
             	Sl( "\"" ) +
                 OmStringEscape( mString, OM_STRING_C_ESCAPE_ITEMS ) +
                 Sl( "\"" );
@@ -99,7 +99,7 @@ class JsonString : public JsonBase
     
     private:
     
-        String mString;
+        std::string mString;
 };
 
 class JsonInteger : public JsonBase
@@ -112,12 +112,12 @@ class JsonInteger : public JsonBase
             mValue( value )
         { }
     
-        virtual const String Dump( JsonIntType i )
+        virtual const std::string Dump( JsonIntType i )
         {
             return Fs( "%i", (int) mValue );
         }
     
-    	virtual const String Stringify( ) const
+    	virtual const std::string Stringify( ) const
     	{
         	return Fs( "%i", (int) mValue );
         }
@@ -144,12 +144,12 @@ class JsonReal : public JsonBase
     
         inline JsonReal( JsonFloatType real ) : JsonBase( Type::Real ), mReal( real ) { }
     
-        virtual const String Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent )
         {
             return Stringify();
         }
     
-        virtual const String Stringify(  ) const
+        virtual const std::string Stringify(  ) const
         {
             return Fs( "%g", mReal );
         }
@@ -176,12 +176,12 @@ class JsonBoolean : public JsonBase
     
         inline JsonBoolean( bool value ) : JsonBase( Type::Boolean ), mValue( value ) { }
     
-        virtual const String Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent )
         {
         	return Stringify();
         }
     
-        virtual const String Stringify( ) const
+        virtual const std::string Stringify( ) const
     	{
             return mValue ? Sl( "true" ) : Sl( "false" );
         }
@@ -200,16 +200,16 @@ class JsonObject : public JsonBase
 {
     public:
     
-        typedef std::map< String, JsonBase::Ref > DictType;
+        typedef std::map< std::string, JsonBase::Ref > DictType;
     
         inline JsonObject( void ) : JsonBase( Type::Class ) { }
     
         inline void Put(
-        	Arg< String >::Type key,
+        	Arg< std::string >::Type key,
             Arg< JsonBase::Ref >::Type value )
             { mDictionary[ key ] = value; }
     
-        virtual JsonBase::Ref GetValueForKey( Arg< String >::Type key )
+        virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key )
         {
             JsonBase::Ref refJson = mDictionary[ key ];
             
@@ -222,29 +222,29 @@ class JsonObject : public JsonBase
         }
     
         virtual void SetValueForKey(
-        	Arg< String >::Type key,
+        	Arg< std::string >::Type key,
             Arg< JsonBase::Ref >::Type jsonRef )
         {
             mDictionary.insert(std::make_pair(key,jsonRef));
         }
     
     	virtual void SetIntegerValueForKey(
-        	Arg< String >::Type key,
+        	Arg< std::string >::Type key,
             Arg< JsonIntType >::Type intValue )
     	{
         	SetValueForKey( key, new JsonInteger( intValue ) );
         }
     
         virtual void SetStringValueForKey(
-        	Arg< String >::Type key,
-            Arg< String >::Type value )
+        	Arg< std::string >::Type key,
+            Arg< std::string >::Type value )
     	{
         	SetValueForKey( key, new JsonString( value ) );
         }
     
-        virtual const String Dump( JsonIntType indentAmount )
+        virtual const std::string Dump( JsonIntType indentAmount )
         {
-            String s = Sl( "{\n" );
+            std::string s = Sl( "{\n" );
             
             for(auto&& pair: mDictionary)
             {
@@ -259,9 +259,9 @@ class JsonObject : public JsonBase
             return s;
         }
     
-        virtual const String Stringify( ) const
+        virtual const std::string Stringify( ) const
     	{
-           	String s = Sl( "{" );
+           	std::string s = Sl( "{" );
             
             bool first = true;
             for(auto&& pair : mDictionary)
@@ -293,14 +293,14 @@ class JsonArray : public JsonBase
     
         inline JsonArray( void ) : JsonBase( Type::Array ) { }
 
-        inline void push_back( Arg< JsonBase::Ref >::Type refJson )
+        inline void PushBack( Arg< JsonBase::Ref >::Type refJson )
         {
             mVector.push_back( refJson );
         }
     
-        virtual const String Dump( JsonIntType indentAmount )
+        virtual const std::string Dump( JsonIntType indentAmount )
         {
-            String s = Sl( "\n" ) + indent( indentAmount ) + Fs( "[ (%d)\n", mVector.size() );
+            std::string s = Sl( "\n" ) + indent( indentAmount ) + Fs( "[ (%d)\n", mVector.size() );
             
             for(size_t i = 0; i < mVector.size(); i ++ )
             {
@@ -312,9 +312,9 @@ class JsonArray : public JsonBase
             return s;
         }
     
-        virtual const String Stringify( ) const
+        virtual const std::string Stringify( ) const
     	{
-          	String s = Sl( "[" );
+          	std::string s = Sl( "[" );
             
             for(size_t i = 0; i < mVector.size(); i ++ )
             {
@@ -357,7 +357,7 @@ class Json
             mrefJson = refJson;
         }
     
-        Json( Arg< String >::Type string )
+        Json( Arg< std::string >::Type string )
         {
             mrefJson = new JsonString( string );
         }
@@ -372,7 +372,7 @@ class Json
             mrefJson = new JsonNull();
         }
     
-        inline void push_back( Json json )
+        inline void PushBack( Json json )
         {
         	mrefJson->push_back( json.mrefJson );
     	}
@@ -387,43 +387,43 @@ class Json
             return mrefJson->GetCount();
         }
     
-        inline const String Dump( JsonIntType indent ) const
+        inline const std::string Dump( JsonIntType indent ) const
         {
             return mrefJson->Dump( indent );
         }
     
-    	inline const String Stringify( ) const
+    	inline const std::string Stringify( ) const
     	{
         	return mrefJson->Stringify();
         }
     
-        inline const Json GetValueForKey( Arg< String >::Type json ) const
+        inline const Json GetValueForKey( Arg< std::string >::Type json ) const
         {
             return Json( mrefJson->GetValueForKey( json ) );
         }
     
         inline const void SetValueForKey(
-            Arg< String >::Type key,
+            Arg< std::string >::Type key,
             Arg< Json >::Type json )
         {
             mrefJson->SetValueForKey( key, json.mrefJson );
         }
     
     	inline void SetIntegerValueForKey(
-        	Arg< String >::Type key,
+        	Arg< std::string >::Type key,
             Arg< JsonIntType >::Type intValue )
     	{
         	SetValueForKey( key, Json( new JsonInteger( intValue ) ) );
         }
     
         inline void SetStringValueForKey(
-        	Arg< String >::Type key,
-            Arg< String >::Type value )
+        	Arg< std::string >::Type key,
+            Arg< std::string >::Type value )
     	{
         	SetValueForKey( key, Json( new JsonString( value ) ) );
         }
     
-        inline const String GetString( void ) const
+        inline const std::string GetString( void ) const
         {
             return mrefJson->GetString();
         }
@@ -453,7 +453,7 @@ class Json
             return Json( mrefJson->GetValueForKey( Ts( pChar ) ) );
         }
         
-        inline const Json operator[] ( Arg< String >::Type s ) const
+        inline const Json operator[] ( Arg< std::string >::Type s ) const
         {
             return Json( mrefJson->GetValueForKey( s ) );
         }
@@ -463,7 +463,7 @@ class Json
             return Json( mrefJson->GetAt( i ) );
         }
 
-        inline bool operator==( Arg< String >::Type s ) const
+        inline bool operator==( Arg< std::string >::Type s ) const
         {
             return mrefJson->GetString() == s;
         }

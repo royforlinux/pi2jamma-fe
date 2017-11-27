@@ -1,6 +1,6 @@
 #pragma once
 
-#include "result.hpp"
+#include "core/Result.hpp"
 
 class System
 {

@@ -1,37 +1,44 @@
-#if 0
-#include "om/OmJsonParser.h"
-#include "om/OmFileSystem.h"
-#include "om/OmParser.h"
+#include "core/json/JsonParser.hpp"
+#include "core/json/Parser.hpp"
+#include "file/File.hpp"
 
-
-const OmJson OmJsonLoadFromFile( Arg< OmString >::Type filename )
+Result JsonLoadFromFile( Json& json, const char* pFilename )
 {
-    OmRef< OmFile > sptFile = OmFileSystem::Get()->CreateFile( );
-    
-    if ( ! sptFile->Open( filename, OmFile::Access_Read ) )
-    {
-        return OmJson();
+    File file;
+    Result r = file.open(pFilename, File::OpenMode::Read);
+    if(r.peekFailed()) {
+        return r;
     }
-    
-    OmUtf8StreamParserAssembly utf8StreamParser( sptFile.GetPtr() );
-    
-    OmJsonParser< OmUtf8StreamParserAssembly::ParserType > jsonParser(
-        utf8StreamParser.GetParser() );
-    
-    OmJson json;
-    
-    if ( ! jsonParser.Parse( & json ) )
-    {
-        OM_LOG(
-            "JSON ERROR: %s Line: %d\n",
-            jsonParser.GetError().GetUtf8(),
-            (int) utf8StreamParser.GetParser()->GetLineCount() );
-    }
-    
-    //OM_LOG( "JSON: %s", json.Dump( 0 ).GetUtf8() );
-    
-    
-    return json;
-};
 
-#endif
+    FileSize fileSize = 0;
+    r = file.getSize(fileSize);
+    if(r.peekFailed()) {
+        return r;
+    }
+
+    std::vector<char> s;
+    s.resize(fileSize);
+
+    r = file.readExactly(s.data(), s.size());
+    if (r.peekFailed()) {
+        return r;
+    }
+
+    LogFmt("starting parse..%d\n", (int)fileSize);
+
+    StringParserAssembly stringParser(s.data(), s.size());
+    JsonParser<StringParserAssembly::ParserType> jsonParser(stringParser.GetParser());
+
+    bool result = jsonParser.Parse(&json);
+    if (!result) {
+        return
+            Result::makeFailureWithString(
+                formatString(
+                    "JSON ERROR: %s Line: %d\n",
+                    jsonParser.GetError().c_str(),
+                    (int) stringParser.GetParser()->GetLineCount()));                 
+
+    }
+    
+    return Result::makeSuccess();
+};

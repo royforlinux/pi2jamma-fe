@@ -1,7 +1,7 @@
 #pragma once
 #include "core/Arg.hpp"
 #include "core/Type.hpp"
-#include <math.h>
+#include <cmath>
 
 struct NULLTYPE { };
 typedef int OmNullType;

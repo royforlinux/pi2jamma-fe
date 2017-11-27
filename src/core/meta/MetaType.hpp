@@ -1,10 +1,8 @@
 #pragma once
 
 #include "core/RefCounted.hpp"
+#include "core/Result.hpp"
 
-
-#include "core/result.hpp"
-#include "core/String.hpp"
 #include "core/container/RbTree.hpp"
 #include "core/json/Json.hpp"
 

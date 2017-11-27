@@ -1,16 +1,15 @@
 #pragma once
 
-#if 0
-
 #include "core/json/Json.hpp"
 #include "core/json/Parse.hpp"
-//#include "om/OmCString.h"
+#include "core/Type.hpp"
+#include "core/Result.hpp"
 
 //-----------------------------------------------------------------------------
 // class class JsonParser
 //-----------------------------------------------------------------------------
 
-const Json JsonLoadFromFile( Arg< std::string >::Type filename );
+Result JsonLoadFromFile( Json& json, const char* filename );
 
 template< typename PARSER_T >
 class JsonParser
@@ -132,7 +131,7 @@ const bool JsonParser< PARSER_T >::ParseArray( JsonBase::Ref* pJson )
             return OmFalse;
         }
         
-        refArray->PushBack( refJson );
+        refArray->push_back( refJson );
         
         OmParseEatWhite( & mParser );
         
@@ -309,7 +308,7 @@ const bool JsonParser< PARSER_T >::ParseString( JsonBase::Ref* pJson )
                 case 'n': c = '\n'; break;
                 case 'r': c = '\r'; break;
                 case 't': c = '\t'; break;
-                    pWorkArea->PushBack( c );
+                    pWorkArea->push_back( c );
                     break;
                 case 'u':
                     mParser.Next();
@@ -318,7 +317,7 @@ const bool JsonParser< PARSER_T >::ParseString( JsonBase::Ref* pJson )
                     {
                         return OmFalse;
                     }
-                    pWorkArea->PushBack( c );
+                    pWorkArea->push_back( c );
                     escape = OmFalse;
                     continue;
                     break;
@@ -342,7 +341,7 @@ const bool JsonParser< PARSER_T >::ParseString( JsonBase::Ref* pJson )
             break;
         }
         
-        pWorkArea->PushBack( c );
+        pWorkArea->push_back( c );
         mParser.Next();
     }
     
@@ -453,18 +452,18 @@ const bool JsonParser< PARSER_T >::ParseNumber( JsonBase::Ref* pRefJson )
         } while( OmCharIsNumber( c ) );
     }
     
-    BOOL hasExponent = NO;
+    //bool hasExponent = false;
 
     if ( c == 'e' || c == 'E' )
     {
-        hasExponent = YES;
+        // hasExponent = true;
 
         if ( ! mParser.Adv( & c ) )
         {
             return EofError();
         }
 
-        BOOL expIsNegative = OmFalse;
+        bool expIsNegative = OmFalse;
         
         if ( c == '-' )
         {
@@ -547,5 +546,3 @@ const bool JsonParser< PARSER_T >::ParseNumber( JsonBase::Ref* pRefJson )
     
     return OmTrue;
 }
-
-#endif

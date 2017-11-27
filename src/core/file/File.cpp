@@ -39,17 +39,24 @@ Result File::open(const char* pFilePath, OpenMode openMode) {
 
 }
 
-Result File::readExactly(void* pBuf, size_t bytes)
+Result File::readExactly(void* pBuf, FileSize bytes)
 {
-	auto result = fread(pBuf, bytes, 1, mpFile);
+	auto result = fread(pBuf, 1, bytes, mpFile);
 	if(result != bytes) {
-		return Result::makeFailureWithStringLiteral("Failed to readExactly.");
+		std::stringstream ss;
+		ss
+			<< "Failed to read exactly: "
+			<< bytes
+			<< " got: "
+			<< result;
+
+		return Result::makeFailureWithString(ss.str());
 	}
 
 	return Result::makeSuccess();
 }
 
-Result File::getSize(size_t& size)
+Result File::getSize(FileSize& size)
 {
 	auto originalPositionOrError = ftell(mpFile);
 	
@@ -70,6 +77,8 @@ Result File::getSize(size_t& size)
 	if(0 !=fseek(mpFile, 0, originalPositionOrError)) {
 		return Result::makeFailureWithStringLiteral("fseek() failed.");
 	}
+
+	size = endPositionOrError;
 
 	return Result::makeSuccess();
 }

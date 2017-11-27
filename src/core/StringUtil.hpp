@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/Arg.hpp"
-#include "core/String.hpp"
+#include "core/CString.hpp"
 
 #include "debug.hpp"
 #include <memory.h>
@@ -18,13 +18,13 @@ inline std::string string_format(const char* fmt, ...)
 	return std::string();
 }
 
-inline String indent( size_t spaces )
+inline std::string indent( size_t spaces )
 {
-    String s;
+    std::string s;
     
     for( size_t i = 0; i < spaces; i ++ )
     {
-        s += Sl("    ");
+        s += SL("    ");
     }
     
     return s;
@@ -67,6 +67,6 @@ struct OmStringEscapeItems
 
 extern OmStringEscapeItems OM_STRING_C_ESCAPE_ITEMS;
 
-const String OmStringEscape(
-    Arg< String >::Type s,
+const std::string OmStringEscape(
+    Arg< std::string >::Type s,
     Arg< OmStringEscapeItems >::Type escapeItems = OM_STRING_C_ESCAPE_ITEMS );

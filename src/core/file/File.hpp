@@ -1,7 +1,9 @@
 #pragma once
 
-#include "core/result.hpp"
+#include "core/Result.hpp"
 #include <stdio.h>
+
+using FileSize = uint64_t;
 
 class File
 {
@@ -15,8 +17,8 @@ public:
 	~File();
 
 	Result open(const char* pFilePath, OpenMode openMOde);
-	Result readExactly(void* pBuf, size_t bytes);
-	Result getSize(size_t& size);
+	Result readExactly(void* pBuf, FileSize bytes);
+	Result getSize(FileSize& size);
 
 	void close();
 

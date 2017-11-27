@@ -7,7 +7,7 @@
 #include "ui/device/sdl2/Surface.hpp"
 #include "ui/device/sdl2/Font.hpp"
 
-#include "result.hpp"
+#include "core/Result.hpp"
 
 class Application
 {

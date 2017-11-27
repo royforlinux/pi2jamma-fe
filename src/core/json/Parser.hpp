@@ -1,7 +1,8 @@
 #pragma once
 
-#if 0
-#include "core/json/DataStream.hpp"
+#include "core/json/Decoder.hpp"
+//#include "core/json/DataStream.hpp"
+//#include "core/json/Utf8Decoder.hpp"
 
 template< typename STREAM_TYPE >
 class OmParser
@@ -45,9 +46,10 @@ class OmParser
         STREAM_TYPE mStream;
         CharType mCurrentChar;
         bool mEof;
-    
-        size_t mColumnCount;
+        
         size_t mLineCount;
+        size_t mColumnCount;
+
         const std::string* mpFilename;
     
         std::vector< CharType >* mpWorkArea;
@@ -58,7 +60,9 @@ OmParser< STREAM_TYPE>::OmParser( )
     :
     mEof( true ),
     mLineCount( 0 ),
-    mColumnCount( 0 )
+    mColumnCount( 0 ),
+    mpFilename(nullptr),
+    mpWorkArea(nullptr)
 {
 }
 
@@ -69,12 +73,12 @@ OmParser< STREAM_TYPE>::OmParser(
     const std::string* pFilename )
     :
     mStream( stream ),
-    mpWorkArea( pWorkArea ),
-    mpFilename( pFilename ),
+    mCurrentChar(0),
     mEof( OmDecoderResult_Ok != mStream.NextChar( & mCurrentChar ) ),
+    mLineCount( 0 ),
     mColumnCount( 0 ),
-    mLineCount( 0 )
-
+    mpFilename( pFilename ),   
+    mpWorkArea( pWorkArea )    
 {
 }
 
@@ -148,14 +152,14 @@ template< typename STREAM_TYPE>
 inline typename OmParser< STREAM_TYPE >::WorkAreaType*
 OmParser< STREAM_TYPE>::ClearWorkArea( void )
 {
-    mpWorkArea->Clear();
+    mpWorkArea->clear();
     return mpWorkArea;
 }
 
 template< typename STREAM_TYPE>
 inline const std::string OmParser< STREAM_TYPE>::StringFromWorkArea( void )
 {
-    return std::string( mpWorkArea->GetRawPtr(), mpWorkArea->GetCount() );
+    return std::string( mpWorkArea->data(), mpWorkArea->size() );
 }
 
 template< typename STREAM_TYPE>
@@ -166,7 +170,7 @@ const std::string OmParser< STREAM_TYPE>::GetErrorHint( void )
     
     CharType c;
     
-    OmLoopI( 80 )
+    for(size_t i = 0; i < 80; i ++)
     {
         if ( ! Peek( &c ) )
         {
@@ -179,18 +183,18 @@ const std::string OmParser< STREAM_TYPE>::GetErrorHint( void )
         
     }
     
-    return OmSl( "Before:" ) + std::string( err.GetRawPtr(), err.GetCount() );
+    return OmSl( "Before:" ) + std::string( err.data(), err.GetCount() );
 }
 
 template< typename STREAM_TYPE>
 const std::string OmParser< STREAM_TYPE>::GetFilename( void ) const
 {
-    if ( OmIsValid( mpFilename ) )
+    if ( nullptr != mpFilename )
     {
         return *mpFilename;
     }
     
-    return std::string::Empty;
+    return std::string();
 }
 
 template< typename STREAM_TYPE>
@@ -219,6 +223,7 @@ void OmParser< STREAM_TYPE>::AdvanceLineColumnCount( void )
     }
 }
 
+#if 0
 #include "core/json/Utf8Decoder.hpp"
 
 class OmUtf8DataParserAssembly
@@ -230,7 +235,7 @@ class OmUtf8DataParserAssembly
         OmUtf8DataParserAssembly(
             const OmUtf8Char* pChar,
             size_t length,
-            Arg< std::string >::Type filename = std::string::Empty )
+            Arg< std::string >::Type filename = std::string() )
             :
             mFilename( filename ),
             mDataStream( pChar, length ),
@@ -250,6 +255,8 @@ class OmUtf8DataParserAssembly
         ParserType mParser;
 };
 
+
+
 template< typename CHAR_TYPE >
 class OmDataParserAssembly
 {
@@ -260,7 +267,7 @@ class OmDataParserAssembly
         OmDataParserAssembly(
             const CHAR_TYPE* pChars,
             size_t numChars,
-            Arg< std::string >::Type filename = std::string::Empty )
+            Arg< std::string >::Type filename = std::string() )
             :
             mFilename( filename ),
             mDataStream( pChars, numChars ),
@@ -280,18 +287,20 @@ class OmDataParserAssembly
     
 };
 
-class std::stringDecoder
+#endif
+
+class StringDecoder
 {
     public:
     
-        typedef OmUnicode16Char CharType;
+        typedef char CharType;
 
-        std::stringDecoder(
-            Arg< std::string >::Type s )
-            :
-            mString( s ),
-            mPosition( 0 ),
-            mLength( s.GetLength() )
+        StringDecoder(
+            const char* pStart,
+            size_t length)
+            : mpString(pStart)
+            , mLength(length)
+            , mPosition( 0 )
         {
         }
     
@@ -302,31 +311,31 @@ class std::stringDecoder
                 return OmDecoderResult_Eof;
             }
             
-            *pChar = mString[ mPosition ];
+            *pChar = mpString[ mPosition ];
             
             mPosition++;
             
             return OmDecoderResult_Ok;
         }
 
-        size_t mPosition;
+        const char* mpString;
         size_t mLength;
-    
-        std::string mString;
+        size_t mPosition;
 };
 
-class std::stringParserAssembly
+class StringParserAssembly
 {
     public:
     
-        typedef OmParser< std::stringDecoder > ParserType;
+        typedef OmParser< StringDecoder > ParserType;
     
-        std::stringParserAssembly(
-            Arg< std::string >::Type s,
-            Arg< std::string >::Type filename = std::string::Empty )
+        StringParserAssembly(
+            const char* pStart,
+            size_t length,
+            Arg< std::string >::Type filename = std::string() )
             :
             mFilename( filename ),
-            mStringDecoder( s ),
+            mStringDecoder(pStart, length),
             mParser( mStringDecoder, & mWorkArea, & filename )
         {
         }
@@ -337,10 +346,11 @@ class std::stringParserAssembly
     
         std::string mFilename;
         ParserType::WorkAreaType mWorkArea;
-        std::stringDecoder mStringDecoder;
+        StringDecoder mStringDecoder;
         ParserType mParser;
 };
 
+#if 0
 class OmUtf8StreamParserAssembly
 {
     public:
@@ -349,14 +359,14 @@ class OmUtf8StreamParserAssembly
     
         OmUtf8StreamParserAssembly(
             OmStream* pStream,
-            Arg< std::string >::Type filename = std::string::Empty )
+            Arg< std::string >::Type filename = std::string() )
         {
             OmStreamRead( pStream, & mData );
             
             msptDataParser =
                 OmSptFrom(
                     new OmUtf8DataParserAssembly(
-                        mData.GetRawPtr(),
+                        mData.data(),
                         mData.GetCount(),
                         filename ) );
         }

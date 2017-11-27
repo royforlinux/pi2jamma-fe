@@ -1,26 +1,26 @@
 
 #include "core/json/Json.hpp"
 
-JsonBase::Ref JsonBase::GetValueForKey( Arg< String >::Type key )
+JsonBase::Ref JsonBase::GetValueForKey( Arg< std::string >::Type key )
 {
     return make_ref<JsonNull>();
 }
 
 void JsonBase::SetValueForKey(
-	Arg< String >::Type key,
+	Arg< std::string >::Type key,
     Arg< JsonBase::Ref >::Type refJson )
 {
 };
 
 void JsonBase::SetIntegerValueForKey(
-	Arg< String >::Type key,
+	Arg< std::string >::Type key,
     Arg< JsonIntType >::Type val )
 {
 }
 
 void JsonBase::SetStringValueForKey(
-	Arg< String >::Type key,
-    Arg< String >::Type val )
+	Arg< std::string >::Type key,
+    Arg< std::string >::Type val )
 {
 }
 

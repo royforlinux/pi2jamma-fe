@@ -1,7 +1,23 @@
 #pragma once
 
 #include <inttypes.h>
+#include <string>
 
+std::string formatString(const char* fmt, ...);
+
+#define OmRef ref
+#define OmFs(x, ...) formatString((x),__VA_ARGS__)
+#define OmSl(x) x
+#define OmVector std::vector
+#define Sl(x) x
+#define Fs(x,...) formatString((x),__VA_ARGS__)
+#define Ts(x) x
+#define OmTs(x) x
+
+using OmString = std::string;
+
+using Utf8Char = char;
+using OmUtf8Char = char;
 using OmInt = int;
 using OmUInt = unsigned int;
 using OmBool = bool;
@@ -18,3 +34,5 @@ using OmUnicode16Char = uint16_t;
 
 const bool OmFalse = false;
 const bool OmTrue = true;
+
+#define OM_ASSERT ASSERT

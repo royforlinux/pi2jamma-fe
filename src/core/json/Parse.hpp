@@ -1,8 +1,7 @@
 #pragma once
 
-#if 0
-
 #include "core/json/Parser.hpp"
+#include "core/Char.hpp"
 
 template< typename CharType, typename StringType >
 OmBool OmParseCharMatchesOneOf( const CharType c, const StringType* pChars )
@@ -189,7 +188,7 @@ OmBool OmParseMatchDelmitedList(
         
         if ( ! p.Peek( & c ) )
         {
-            pStrings->PushBack( pWorkArea->StringFromWorkArea() );
+            pStrings->push_back( pWorkArea->StringFromWorkArea() );
 
             *pParser = p;
                     
@@ -208,14 +207,14 @@ OmBool OmParseMatchDelmitedList(
         }
         else if ( c == seperator )
         {
-            pStrings->PushBack( pWorkArea->StringFromWorkArea() );
+            pStrings->push_back( pWorkArea->StringFromWorkArea() );
             pWorkArea->Clear();
             p.Next();
             continue;
         }
         else if ( ! rule( c ) )
         {
-            pStrings->PushBack( pWorkArea->StringFromWorkArea() );
+            pStrings->push_back( pWorkArea->StringFromWorkArea() );
 
             *pParser = p;
                     
@@ -374,7 +373,7 @@ inline OmBool OmParseMatchCVar( PARSER_T* pParser, OmString* pString )
 template< typename PARSER_TYPE >
 inline OmBool OmParseMatch( PARSER_TYPE* pParser, Arg< OmString >::Type token )
 {
-    OmUInt tokenLength = token.GetLength();
+    OmUInt tokenLength = token.size();
     
     PARSER_TYPE parser( *pParser );
     
@@ -594,5 +593,3 @@ inline OmBool OmParseMatchQuotedString( PARSER_T* pParser, OmString* pString )
     
     return OmFalse;
 }
-
-#endif

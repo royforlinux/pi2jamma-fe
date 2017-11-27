@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Arg.hpp"
 
 template<typename T>
 struct LifetimePolicyNone

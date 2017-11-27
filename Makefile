@@ -11,7 +11,7 @@ INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS)) -I/usr/include/SDL2
 
 CPPFLAGS ?= $(INC_FLAGS) -MMD -MP -Werror -Wall -g
-LDFLAGS := -lstdc++ -lSDL2 -lSDL2_image -lSDL2_ttf
+LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lm -lstdc++ 
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)

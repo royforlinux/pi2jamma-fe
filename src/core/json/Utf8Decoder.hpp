@@ -1,6 +1,5 @@
 #pragma once
 
-#if 0
 
 template< typename STREAM_TYPE >
 class OmUtf8Decoder
@@ -75,7 +74,7 @@ inline OmDecoderResult OmUtf8Decoder< STREAM_TYPE >::NextChar( CharType* pChar )
         }
         else
         {
-            OM_ASSERT( n == UTF8_END );
+            ASSERT( n == UTF8_END );
             return OmDecoderResult_Eof;
         }
     }
@@ -177,5 +176,3 @@ const int OmUtf8Decoder< STREAM_TYPE >::decodeMultibyte( int c )
     }
     return UTF8_ERROR;
 }
-
-#endif

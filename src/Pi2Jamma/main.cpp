@@ -4,5 +4,11 @@ int main(int argv, const char* argc[])
 {
 	Pi2JammaApplication application;
 
-	return application.run().succeeded() ? 0 : -1;
+	Result result = application.run();
+	if(result.failed()) {
+		Log(result.getMessage());
+		return -1;
+	}
+
+	return 0;
 }
