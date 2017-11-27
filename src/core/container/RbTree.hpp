@@ -60,6 +60,22 @@ public:
         return nullptr;
     }
 
+    const T* find( const KEY_TYPE& key) const {
+
+
+    for( auto&& n : mItems ) {
+        /* LogFmt(
+            "Item %s, %s\n",
+            std::to_string(key).c_str(),
+            std::to_string(GET_KEY(n->mItem)).c_str()); */
+
+        if(key == GET_KEY(n->mItem)) {
+            return & n->mItem;
+        }
+    }
+    return nullptr;
+    }
+
     ~RbTree() {
         for(auto& i : mItems) {
             LIFETIME_POLICY::release(i->mItem);
@@ -73,6 +89,14 @@ public:
     typename VectorType::iterator end() {
         return mItems.end();
     }
+
+    typename VectorType::const_iterator begin() const{
+        return mItems.begin();
+    }
+
+    typename VectorType::const_iterator end() const {
+        return mItems.end();
+    }    
 private:
 
     VectorType mItems;

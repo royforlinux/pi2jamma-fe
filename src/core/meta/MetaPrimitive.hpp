@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/serialize/Serializer.hpp"
 
 #define META_PRIMITIVE(Type) \
 	static MetaPrimitive<Type> gMetaPrimitive##Type(#Type)
@@ -27,12 +28,15 @@ public:
 
 		}
 
-	virtual Result load(void* pItem, const Json& refJson) {
-		// return Serialize<T>(*static_cast<T>(pItem), refJson);
-		return Result::makeFailureNotImplemented();
+	virtual Result load(void* pItem, const Json& json) const override {
+		return Serializer<T>::load(*static_cast<T*>(pItem), json);
 	}
 
-	virtual const std::type_info& getTypeInfo() const {
+	virtual Result save(const void* pItem, Json& json) const override {
+		return Serializer<T>::save(*static_cast<const T*>(pItem), json);
+	}
+
+	virtual const std::type_info& getTypeInfo() const override {
 		return typeid(T);
 	}
 };

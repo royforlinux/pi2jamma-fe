@@ -56,7 +56,8 @@ class MetaEnumBase : public MetaType
 public:
 	MetaEnumBase(CStrArg name, size_t numBytes);
 
-	virtual Result load(void* pObject, const Json& json) override { return Result::makeFailureNotImplemented(); }
+	virtual Result load(void* pVoidEnum, const Json& json) const override { return Result::makeFailureWithStringLiteral("Enum load implemented."); }
+	virtual Result save(const void* pVoidEnum, Json& json) const override { return Result::makeFailureWithStringLiteral("Enum save not implemented."); }
 
 private:
 

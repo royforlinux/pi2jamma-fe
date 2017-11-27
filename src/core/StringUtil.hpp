@@ -12,12 +12,6 @@
 #define TS(x) x
 #define FS(fmt, ...) string_format(fmt, __VA_ARGS__)
 
-inline std::string string_format(const char* fmt, ...)
-{
-	ASSERT(false);
-	return std::string();
-}
-
 inline std::string indent( size_t spaces )
 {
     std::string s;
@@ -29,14 +23,6 @@ inline std::string indent( size_t spaces )
     
     return s;
 }
-
-template<>
-struct Arg<CStr>
-{
-	using Type = CStr;
-};
-
-using CStrArg = Arg<CStr>::Type;
 
 namespace std
 {

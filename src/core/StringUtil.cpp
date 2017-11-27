@@ -14,18 +14,48 @@ const std::string OmStringEscape(
     Arg< std::string >::Type s,
     Arg< OmStringEscapeItems >::Type escapeItems )
 {
-    std::string res = s;
-    
-    ASSERT(false);
-    #if 0
-    OmLoopI( escapeItems.mNumItems )
+    std::string res;
+
+    auto len = s.size();
+
+    for(size_t i = 0 ;i < len; i ++)
     {
-        res = res.ReplaceAllOccurencesOfSubstringWithString(
-            OmTs( escapeItems.mpItems[ i ].mpSequenceToEscape ),
-            OmTs( escapeItems.mpItems[ i ].mpEscapeSequence ) );
+        size_t left = len - i;
+
+        bool found = false;
+
+        for(size_t j = 0; j < escapeItems.mNumItems; j ++ )
+        {
+            const char* pPattern = escapeItems.mpItems[j].mpSequenceToEscape;
+            size_t patternLength = strlen(pPattern);
+
+            if( patternLength <= left)
+            {
+                bool patternFound = true;
+                for(size_t p = 0; p < patternLength; p ++ )
+                {
+                    if(pPattern[p] != s[i+p])
+                    {
+                        patternFound = false;
+                        break;
+                    }
+                }
+
+                if(patternFound) {
+                    const char* pReplacementPattern = escapeItems.mpItems[j].mpEscapeSequence;
+
+                    res.insert(i, pReplacementPattern);                    
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if(! found) {
+            res.push_back(s[i]);
+        }
     }
-    #endif
-    
+
     return res;
 }
 

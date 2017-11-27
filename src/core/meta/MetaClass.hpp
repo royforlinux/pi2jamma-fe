@@ -1,7 +1,9 @@
 #pragma once
 
 #include "core/meta/MetaType.hpp"
+
 #include "core/cast.hpp"
+#include "core/serialize/Serializer.hpp"
 
 #define META_CLASS(C) \
 	static MetaClass<C> gMetaClass##C(#C)
@@ -41,7 +43,12 @@ public:
 		return mName;
 	}
 
-	virtual Result load(void* object, const Json& json) = 0;
+	MetaType* getType() const {
+		return mpPropertyType;
+	}
+
+	virtual Result load(void* pVoidObject, const Json& json) const= 0;
+	virtual Result save(const void* pVoidObject, Json& json) const = 0;
 
 private:
 
@@ -53,7 +60,7 @@ public:
 };
 
 template<typename ClassType, typename PropertyType>
-class MetaClassPropertyBase : MetaClassProperty
+class MetaClassPropertyBase : public MetaClassProperty
 {
 public:
 	MetaClassPropertyBase(
@@ -88,10 +95,21 @@ public:
 
 		}
 
-	virtual Result load(void* object, const Json& refJson) override
+	virtual Result load(void* pVoidObject, const Json& json) const override
 	{
-		return Result::makeFailureNotImplemented();
+		ClassType* pObject = static_cast<ClassType*>(pVoidObject);
+
+		PropertyType& prop = pObject->*mMember;
+
+		return Serializer<PropertyType>::load(prop, json);
 	}
+
+	virtual Result save(const void* pVoidObject, Json& json) const override {
+		const ClassType* pObject = static_cast<const ClassType*>(pVoidObject);
+		const PropertyType& prop = pObject->*mMember;
+
+		return Serializer<PropertyType>::save(prop, json);
+	}	
 
 private:
 
@@ -121,9 +139,24 @@ public:
 		, mGetter(std::move(getter)) {
 	}
 
-	virtual Result load(void* object, const Json& json) override
+	virtual Result load(void* pVoidObject, const Json& json) const override
 	{
-		return Result::makeFailureNotImplemented();
+		DecayType value;
+
+		Result result = Serializer<DecayType>::load(value, json);
+		if(result.peekFailed()) {
+			return result;
+		}
+
+		ClassType* pObject = static_cast<ClassType*>(pVoidObject);
+		(pObject->*mSetter)(std::move(value));
+
+		return Result::makeSuccess();
+	}
+
+	virtual Result save(const void* pVoidObject, Json& json) const override {
+		const ClassType* pObject = static_cast<const ClassType*>(pVoidObject);		
+		return Serializer<DecayType>::save((pObject->*mGetter)(), json);
 	}
 
 private:
@@ -147,7 +180,10 @@ public:
 		mProperties.insert(pMetaClassProperty->mTreeNode);
 	}
 
-	Result load(void* object, const Json& refJson);
+	virtual Result load(void* pVoidObject, const Json& refJson) const override;
+
+	virtual Result save(const void* pVoidObject, Json& json) const override;
+
 
 private:
 
@@ -171,5 +207,6 @@ private:
 	virtual const std::type_info& getTypeInfo() const override {
 		return typeid(T);
 	}
+
 };
 

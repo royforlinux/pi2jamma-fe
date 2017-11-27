@@ -21,29 +21,55 @@ MetaClassProperty::MetaClassProperty(
 	pMetaClassBase->addProperty(this);
 }
 
-Result MetaClassBase::load(void* object, const Json& refJson)
+Result MetaClassBase::load(void* object, const Json& json) const
 {
-	return Result::makeFailureNotImplemented();
-	#if 0
-	ref<JsonClass> refClass;
-	Result r = Json::asClass(refClass,refJson);
-	if(r.peekFailed()) {
-		return r;
+	if(!json.IsClass() ) {
+		return Result::makeFailureWithStringLiteral("Not a class");
 	}
-	for(auto&& prop: mProperties) {
-		ref<Json> refProperty =
-			refClass->getMember(prop->mItem->getName());
-		
-		if(refProperty.isNull()) {
+
+	for(auto&& property : mProperties) {
+		auto pProperty = property->mItem;
+		// TODO: evil std::string constructor here.
+		const char* pPropertyName = pProperty->getName().c_str();
+
+
+		Json propertyJson = json[pPropertyName];
+
+		if(propertyJson.IsNull()) {
+			LogFmt("Load property: (Not Found)%s\n", pPropertyName);	
 			continue;
 		}
 
-		return prop->mItem->load(this, refProperty);
+		LogFmt("Load property:%s\n", pPropertyName);		
+
+		Result r = pProperty->load(object, propertyJson);
+		if (r.peekFailed()) {
+			return r;
+		}
+
 	}
 
 	return Result::makeSuccess();
-	#endif
 }
 
+Result MetaClassBase::save(const void* pVoidObject, Json& json) const
+{
+	json = Json(make_ref<JsonObject>());
+
+	for(auto&& property : mProperties) {
+		auto pProperty = property->mItem;
+		Json propertyJson;
+		Result r = pProperty->save(pVoidObject, propertyJson);
+
+		if( r.peekFailed()) {
+			return r;
+		}
+		LogFmt("SaveProperty: %s\n", pProperty->getName().c_str());			
+
+		json.SetValueForKey(std::string(pProperty->getName().c_str()), propertyJson);
+	}
+
+	return Result::makeSuccess();
+}
 
 

@@ -29,7 +29,7 @@ class JsonBase : public RefCounted
     
         virtual const std::string Stringify( ) const = 0;
 
-        virtual JsonIntType GetCount( void ) { return 0; }
+        virtual size_t GetCount( void ) { return 0; }
         virtual Ref GetAt( JsonIntType i ) { return NULL; }
     
     	virtual void push_back( Arg< JsonBase::Ref >::Type refValue ) { }
@@ -208,7 +208,7 @@ class JsonObject : public JsonBase
         	Arg< std::string >::Type key,
             Arg< JsonBase::Ref >::Type value )
             { mDictionary[ key ] = value; }
-    
+
         virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key )
         {
             JsonBase::Ref refJson = mDictionary[ key ];
@@ -266,8 +266,10 @@ class JsonObject : public JsonBase
             bool first = true;
             for(auto&& pair : mDictionary)
             {
-            	if (first)
-            	{
+                if(first) {
+                    first = false;
+                }
+                else {
                     first = false;
                 	s += Sl( "," );
             	}
@@ -331,7 +333,7 @@ class JsonArray : public JsonBase
             return s;
         }
     
-        virtual JsonIntType GetCount( void )
+        virtual size_t GetCount( void )
         {
             return mVector.size();
         }
@@ -371,7 +373,17 @@ class Json
         {
             mrefJson = new JsonNull();
         }
-    
+
+        inline JsonBase::Type GetType() const
+        {
+            return mrefJson->GetType();
+        }
+        
+        inline bool IsClass() const
+        {
+            return GetType() == JsonBase::Type::Class;
+        }
+
         inline void PushBack( Json json )
         {
         	mrefJson->push_back( json.mrefJson );
@@ -382,7 +394,7 @@ class Json
             return Json( mrefJson->GetAt( i ) );
         }
         
-        inline JsonIntType GetCount( void ) const
+        inline size_t GetCount( void ) const
         {
             return mrefJson->GetCount();
         }
@@ -397,9 +409,9 @@ class Json
         	return mrefJson->Stringify();
         }
     
-        inline const Json GetValueForKey( Arg< std::string >::Type json ) const
+        inline const Json GetValueForKey( Arg< std::string >::Type propertyName ) const
         {
-            return Json( mrefJson->GetValueForKey( json ) );
+            return Json( mrefJson->GetValueForKey( propertyName ) );
         }
     
         inline const void SetValueForKey(
@@ -423,6 +435,11 @@ class Json
         	SetValueForKey( key, Json( new JsonString( value ) ) );
         }
     
+        template<typename T> T GetFloat() const
+        {
+            return static_cast<T>(GetFloat64());
+        }
+
         inline const std::string GetString( void ) const
         {
             return mrefJson->GetString();
@@ -433,11 +450,17 @@ class Json
             return mrefJson->GetFloat64();
         }
     
-        inline const JsonIntType GetUInt( void ) const
+        inline JsonIntType GetUInt( void ) const
         {
             return mrefJson->GetUInt();
         }
     
+        template<typename T>
+        inline T GetInteger(void) const
+        {
+            return static_cast<T>(GetUInt());
+        }
+
         inline const bool GetBool( void ) const
         {
             return mrefJson->GetBool();

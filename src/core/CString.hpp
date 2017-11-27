@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Arg.hpp"
 #include <memory.h>
 
 extern const char* OM_EMPTY_C_STRING;
@@ -23,6 +24,15 @@ private:
 
     const char* mpStr;
 };
+
+
+template<>
+struct Arg<CStr>
+{
+    using Type = CStr;
+};
+
+using CStrArg = Arg<CStr>::Type;
 
 inline bool EndsWith( const char* pS, const char* pE )
 {

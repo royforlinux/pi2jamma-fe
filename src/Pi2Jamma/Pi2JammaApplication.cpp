@@ -3,7 +3,7 @@
 #include "Pi2Jamma/Theme.hpp"
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
-// #include "core/serialize/Serialize.hpp"
+#include "core/serialize/Serializer.hpp"
 
 Result Pi2JammaApplication::initialize()
 {
@@ -33,13 +33,33 @@ Result Pi2JammaApplication::initialize()
 			Color(0, 0xFF, 0),
 			"Title");
 
-	Theme theme;
 	Json json(4);
 
 	result = JsonLoadFromFile(json, "/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/config.txt");
 	if(result.peekFailed()) {
 		return result;
 	}
+
+	std::string s = json.Stringify();
+	LogFmt("load:%s\n", s.c_str());
+
+	Theme theme;
+	result = load(theme, json);
+	if(result.peekFailed()) {
+		return result;
+	}
+
+
+	result = save(theme,json);
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	s = json.Stringify();
+
+	LogFmt("\n\nsave:%s\n", s.c_str());
+
+	LogFmt( "\n\nSnapsRect:%d\n", (int) theme.mSnapsRect.getX());
 
 	std::vector<std::string> items({
 		"pacman",
