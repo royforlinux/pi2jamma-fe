@@ -39,7 +39,7 @@ class JsonParser
         const bool MakeError( Arg< std::string >::Type errorMsg );
 
         std::string mError;
-        PARSER_T mParser;
+        PARSER_T& mParser;
         std::vector< Utf8Char > mWorkArea;
 };
 
@@ -68,9 +68,17 @@ inline const bool JsonParser< PARSER_T >::Parse( Json* pJson )
     if ( ParseValue( & refJson ) )
     {
         *pJson = Json( refJson );
+
+        OmParseEatWhite(&mParser);
+
+        if ( !mParser.Eof() ) {
+            mError = "Extra cruft after item.";
+            return OmFalse;
+        }
+
         return OmTrue;
     }
-    
+
     return OmFalse;
 }
 
@@ -212,7 +220,7 @@ const bool JsonParser< PARSER_T >::ParseObject( JsonBase::Ref* pJson )
         }
         
         
-        refObject->Put( refKey->GetString(), refValue );
+        refObject->SetValueForKey( refKey->GetString(), refValue );
         
         OmParseEatWhite( & mParser );
         

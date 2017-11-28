@@ -19,7 +19,7 @@ class JsonBase : public RefCounted
 
         inline Type GetType( void ) const { return mType; }
     
-        virtual const std::string GetString( ) { return std::string(); }
+        virtual const std::string& GetString( ) { return gEmptyString; }
     
         // Formatted for debugging
     
@@ -80,7 +80,7 @@ class JsonString : public JsonBase
     
         inline JsonString( Arg< std::string >::Type s ) : JsonBase( Type::String ), mString( s ) { }
     
-        virtual const std::string GetString( void ) { return mString; }
+        virtual const std::string& GetString( void ) { return mString; }
     
         virtual const std::string Dump( JsonIntType i )
         {
@@ -203,11 +203,6 @@ class JsonObject : public JsonBase
         typedef std::map< std::string, JsonBase::Ref > DictType;
     
         inline JsonObject( void ) : JsonBase( Type::Class ) { }
-    
-        inline void Put(
-        	Arg< std::string >::Type key,
-            Arg< JsonBase::Ref >::Type value )
-            { mDictionary[ key ] = value; }
 
         virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key )
         {
@@ -225,6 +220,7 @@ class JsonObject : public JsonBase
         	Arg< std::string >::Type key,
             Arg< JsonBase::Ref >::Type jsonRef )
         {
+            LogFmt("ValueForKey:'%s'\n", key.c_str());
             mDictionary.insert(std::make_pair(key,jsonRef));
         }
     
@@ -379,9 +375,14 @@ class Json
             return mrefJson->GetType();
         }
         
-        inline bool IsClass() const
+        inline bool IsObject() const
         {
             return GetType() == JsonBase::Type::Class;
+        }
+
+        inline bool IsString() const
+        {
+            return GetType() == JsonBase::Type::String;
         }
 
         inline void PushBack( Json json )
@@ -440,7 +441,7 @@ class Json
             return static_cast<T>(GetFloat64());
         }
 
-        inline const std::string GetString( void ) const
+        inline const std::string& GetString( void ) const
         {
             return mrefJson->GetString();
         }

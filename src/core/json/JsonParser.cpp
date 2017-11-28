@@ -26,17 +26,21 @@ Result JsonLoadFromFile( Json& json, const char* pFilename )
 
     LogFmt("starting parse..%d\n", (int)fileSize);
 
-    StringParserAssembly stringParser(s.data(), s.size());
-    JsonParser<StringParserAssembly::ParserType> jsonParser(stringParser.GetParser());
+    StringParserAssembly stringParserAssembly(s.data(), s.size());
+    auto pParser = stringParserAssembly.GetParser();
+
+    JsonParser<StringParserAssembly::ParserType> jsonParser(pParser);
 
     bool result = jsonParser.Parse(&json);
     if (!result) {
+        LogFmt( "Test!: %d\n", (int) pParser->GetLineCount() );
         return
             Result::makeFailureWithString(
                 formatString(
-                    "JSON ERROR: %s Line: %d\n",
+                    "JSON ERROR: %s Line: %d Column: %d\n",
                     jsonParser.GetError().c_str(),
-                    (int) stringParser.GetParser()->GetLineCount()));                 
+                    (int) pParser->GetLineCount(),
+                    (int) pParser->GetColumnCount()));              
 
     }
     

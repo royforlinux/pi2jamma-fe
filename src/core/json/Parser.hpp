@@ -165,8 +165,8 @@ inline const std::string OmParser< STREAM_TYPE>::StringFromWorkArea( void )
 template< typename STREAM_TYPE>
 const std::string OmParser< STREAM_TYPE>::GetErrorHint( void )
 {
-    std::vector< CharType > err(
-        std::vector< CharType >::InitWith_Capacity, 80 );
+    std::vector< CharType > err;
+    err.reserve(80);
     
     CharType c;
     

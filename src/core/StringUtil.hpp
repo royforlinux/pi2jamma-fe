@@ -8,6 +8,8 @@
 #include <typeinfo>
 #include <string>
 
+std::string gEmptyString;
+
 #define SL(x) x
 #define TS(x) x
 #define FS(fmt, ...) string_format(fmt, __VA_ARGS__)

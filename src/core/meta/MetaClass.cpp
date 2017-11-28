@@ -23,7 +23,7 @@ MetaClassProperty::MetaClassProperty(
 
 Result MetaClassBase::load(void* object, const Json& json) const
 {
-	if(!json.IsClass() ) {
+	if(!json.IsObject() ) {
 		return Result::makeFailureWithStringLiteral("Not a class");
 	}
 
@@ -36,7 +36,9 @@ Result MetaClassBase::load(void* object, const Json& json) const
 		Json propertyJson = json[pPropertyName];
 
 		if(propertyJson.IsNull()) {
-			LogFmt("Load property: (Not Found)%s\n", pPropertyName);	
+
+			LogFmt("Load property (Not Found):'%s'\n", pPropertyName);		
+
 			continue;
 		}
 
@@ -64,7 +66,6 @@ Result MetaClassBase::save(const void* pVoidObject, Json& json) const
 		if( r.peekFailed()) {
 			return r;
 		}
-		LogFmt("SaveProperty: %s\n", pProperty->getName().c_str());			
 
 		json.SetValueForKey(std::string(pProperty->getName().c_str()), propertyJson);
 	}

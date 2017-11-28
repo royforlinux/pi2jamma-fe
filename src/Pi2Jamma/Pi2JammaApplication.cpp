@@ -81,7 +81,7 @@ Result Pi2JammaApplication::initialize()
 			24,
 			std::move(items));
 
-	mrefList->setRect(Rect(100, 100, 100, 150));
+	mrefList->setRect(theme.mMenuRect);
 
 	return Result::makeSuccess();
 }

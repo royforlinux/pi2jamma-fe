@@ -1,5 +1,7 @@
 #include "core/StringUtil.hpp"
 
+std::string gEmptyString("");
+
 OmStringEscapeItem OM_STRING_C_ESCAPE_ITEM_VALUES[] = {
     { "\\", "\\\\" },
     { "\n", "\\n" },
