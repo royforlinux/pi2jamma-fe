@@ -1,8 +1,15 @@
 #pragma once
 
+#include "core/debug.hpp"
+
+#include <stddef.h>
+#include <string>
+#include <memory.h>
+
 class StringSpan
 {
 public:
+	StringSpan(const char* pCStr);
 	StringSpan(const char* pBegin, const char* pEnd);
 	StringSpan(const char* pBegin, size_t length);
 	StringSpan(const std::string& str);
@@ -21,8 +28,14 @@ private:
 	const char* mpEnd;
 };
 
-inline StringSpan::StringSpan(const char* pStart, const char* pEnd)
-	: mpBegin(pStart)
+inline StringSpan::StringSpan(const char* pCString)
+	: mpBegin(pCString)
+	, mpEnd(pCString + strlen(pCString))
+{
+}
+
+inline StringSpan::StringSpan(const char* pBegin, const char* pEnd)
+	: mpBegin(pBegin)
 	, mpEnd(pEnd)
 {}
 

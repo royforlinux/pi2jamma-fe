@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/json/Json.hpp"
+#include "core/json/JsonParser.hpp"
 #include "core/meta/MetaSystem.hpp"
 
 template<typename T >
@@ -31,6 +31,19 @@ template<typename T>
 Result load(T& t, const Json& json) {
 	return Serializer<T>::load(t,json);
 }
+
+template<typename T>
+Result load(T& t, const char* pFileName)
+{
+	Json json;
+
+	Result result = JsonLoadFromFile(json, pFileName);
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	return load(t, json);
+};
 
 template<typename T>
 Result save(const T& t, Json& json) {

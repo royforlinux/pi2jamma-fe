@@ -1,6 +1,7 @@
 #include "Pi2Jamma/Pi2JammaApplication.hpp"
 
 #include "Pi2Jamma/Theme.hpp"
+#include "core/file/FilePath.hpp"
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
 #include "core/serialize/Serializer.hpp"
@@ -11,42 +12,28 @@ Result Pi2JammaApplication::initialize()
 	ui::initialize();
 	Theme::initialize();
 
-	Json json(4);
+	const char* pThemesDir = "/home/x/arcade/pi2jamma-fe/data/themes";
+	const char* pThemeDir = "vertical/burgertime";
 
-	Result result = JsonLoadFromFile(json, "/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/config.txt");
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	std::string s = json.Stringify();
-	LogFmt("load:%s\n", s.c_str());
+	std::string s = joinPath({pThemesDir, pThemeDir, "config.txt" });
 
 	Theme theme;
-	result = load(theme, json);
+	Result result = load(theme, s.c_str());
+
 	if(result.peekFailed()) {
 		return result;
 	}
-
-
-	result = save(theme,json);
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	s = json.Stringify();
-
-	LogFmt("\n\nsave:%s\n", s.c_str());
 
 	mrefBackground =
 		make_ref<Image>(
 			nullptr,
-			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/background.png");
+			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/background.png");
 
 	result =
 		loadFont(
 			mrefFont,
 			theme.mMenuTextSize,
-			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/vgafix.fon");
+			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/vgafix.fon");
 
 	if(result.peekFailed()) {
 		return result;

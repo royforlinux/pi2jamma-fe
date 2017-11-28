@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ui/device/ui.hpp"
 #include "ui/elements/Label.hpp"
 #include "ui/elements/Image.hpp"
 #include "ui/elements/List.hpp"

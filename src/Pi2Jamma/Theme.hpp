@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/device/ui.hpp"
+#include "ui/ui.hpp"
 #include "ui/HorizontalAlignment.hpp"
 
 class Theme

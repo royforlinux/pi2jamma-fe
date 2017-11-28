@@ -1,4 +1,4 @@
-#include "ui/device/ui.hpp"
+#include "ui/ui.hpp"
 
 #include "core/Char.hpp"
 #include "core/debug.hpp"

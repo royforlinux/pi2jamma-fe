@@ -1,10 +1,8 @@
 #pragma once
 
-#include "ui/device/sdl2/Application.hpp"
+#include "ui/device/UiDevice.hpp"
 
 #include "core/meta/Meta.hpp"
-
-using RenderContext = Application;
 
 namespace ui
 {
