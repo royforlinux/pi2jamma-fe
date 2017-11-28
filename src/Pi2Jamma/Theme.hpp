@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ui/device/ui.hpp"
-#include "core/Property.hpp"
+#include "ui/HorizontalAlignment.hpp"
 
 class Theme
 {
@@ -10,6 +10,15 @@ class Theme
 		static void initialize();
 
 		Rect mTitleRect;
-		Rect mMenuRect;
+		Color mTitleTextColor;
+		HorizontalAlignment mTitleAlignment;
+		
 		Rect mSnapsRect;
+
+		Rect mMenuRect;
+		Color mMenuTextColor;
+		Color mMenuTextHighlightColor;
+		
+		size_t mMenuTextSize;
+		HorizontalAlignment mMenuTextAlignment;
 };

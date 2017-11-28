@@ -2,7 +2,7 @@
 
 #include "ui/device/sdl2/Application.hpp"
 
-#include "core/serialize/Serializer.hpp"
+#include "core/meta/Meta.hpp"
 
 using RenderContext = Application;
 
@@ -12,8 +12,8 @@ namespace ui
 }
 
 template<>
-class Serializer<Color>
+struct Serializer<Color>
 {
-	Result load( Color& color, const Json& json);
-	Result save( const Color& color, Json& json);	
+	static Result load( Color& color, const Json& json);
+	static Result save( const Color& color, Json& json);	
 };

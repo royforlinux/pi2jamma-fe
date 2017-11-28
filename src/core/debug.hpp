@@ -12,15 +12,18 @@
 
 #define STOP() { PRINT("STOP()!\n"); __asm__("int3"); }
 
-#define ASSERTMSG(x, message) \
+#define ASSERTFMT(x, message, ...) \
 	{ \
 		if(!(x)) { \
 			PRINTFMT("Assertion Failed!: %s\n", #x); \
-			PRINT(message); \
+			PRINTFMT(message, __VA_ARGS__); \
 			PRINT("\n"); \
 			STOP(); \
 		} \
 	}
+
+#define ASSERTMSG(x, message) \
+	ASSERTFMT((x), "%s", message)	
 
 #define ASSERT(x) \
 	ASSERTMSG(x, "")
@@ -33,5 +36,7 @@ inline void Log(const char* msg)
 
 #define LogFmt(fmt, ...) \
 { \
-	printf(fmt, __VA_ARGS__); \
+	printf(fmt, __VA_ARGS__ ); \
 }
+
+

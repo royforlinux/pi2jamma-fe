@@ -11,31 +11,9 @@ Result Pi2JammaApplication::initialize()
 	ui::initialize();
 	Theme::initialize();
 
-	mrefBackground =
-		make_ref<Image>(
-			nullptr,
-			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/background.png");
-
-	Result result =
-		loadFont(
-			mrefFont,
-			20,
-			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/vgafix.fon");
-
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	mrefTitle =
-		make_ref<Label>(
-			nullptr,
-			mrefFont,
-			Color(0, 0xFF, 0),
-			"Title");
-
 	Json json(4);
 
-	result = JsonLoadFromFile(json, "/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/config.txt");
+	Result result = JsonLoadFromFile(json, "/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/config.txt");
 	if(result.peekFailed()) {
 		return result;
 	}
@@ -59,7 +37,29 @@ Result Pi2JammaApplication::initialize()
 
 	LogFmt("\n\nsave:%s\n", s.c_str());
 
-	LogFmt( "\n\nSnapsRect:%d\n", (int) theme.mSnapsRect.getX());
+	mrefBackground =
+		make_ref<Image>(
+			nullptr,
+			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/background.png");
+
+	result =
+		loadFont(
+			mrefFont,
+			theme.mMenuTextSize,
+			"/home/x/arcade/pi2jamma-fe/themes/vertical/burgertime/vgafix.fon");
+
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	mrefTitle =
+		make_ref<Label>(
+			nullptr,
+			mrefFont,
+			theme.mTitleTextColor,
+			"Title");
+
+	mrefTitle->setRect(theme.mTitleRect);
 
 	std::vector<std::string> items({
 		"pacman",
@@ -76,9 +76,9 @@ Result Pi2JammaApplication::initialize()
 		make_ref<List>(
 			nullptr,
 			mrefFont,
-			Color(0x80, 0x80, 0x80),
-			Color(0xFF, 0x00, 0x00),
-			24,
+			theme.mMenuTextColor,
+			theme.mMenuTextHighlightColor,
+			theme.mMenuTextSize,
 			std::move(items));
 
 	mrefList->setRect(theme.mMenuRect);

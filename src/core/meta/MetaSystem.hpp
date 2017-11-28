@@ -75,14 +75,6 @@ inline Meta& Meta::get() {
 	return *spSingleton;
 }
 
-inline MetaType* Meta::findType(const std::type_info& typeInfo) {
-	return safeDeRef(mTypesByTypeInfo.find(typeInfo));
-}
-
-inline MetaType* Meta::findType(CStrArg name) {
-	return safeDeRef(mTypesByName.find(name));
-}
-
 inline CStrArg Meta::getMetaTypeName(const MetaType* pMetaType) {
 	return pMetaType->getName();
 }

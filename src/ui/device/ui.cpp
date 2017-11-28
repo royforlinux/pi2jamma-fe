@@ -1,6 +1,13 @@
 #include "ui/device/ui.hpp"
 
+#include "core/Char.hpp"
+#include "core/debug.hpp"
+#include "core/Util.hpp"
+#include "core/StringSpan.hpp"
 #include "core/meta/Meta.hpp"
+
+#include "ui/HorizontalAlignment.hpp"
+#include "ui/VerticalAlignment.hpp"
 
 namespace ui
 {
@@ -13,52 +20,99 @@ void initialize() {
 	META_ENUM_VALUE(Key, Space);
 
 	META_CLASS(Rect);
-
 	META_CLASS_PROPERTY(Rect, X);
 	META_CLASS_PROPERTY(Rect, Y);
 	META_CLASS_PROPERTY(Rect, Width);
 	META_CLASS_PROPERTY(Rect, Height);
+
+	META_CLASS(Color);
+	META_CLASS_PROPERTY(Color, Red);
+	META_CLASS_PROPERTY(Color, Green);
+	META_CLASS_PROPERTY(Color, Blue);
+	META_CLASS_PROPERTY(Color, Alpha);
+
+	META_ENUM(HorizontalAlignment);
+	META_ENUM_VALUE(HorizontalAlignment, Left);
+	META_ENUM_VALUE(HorizontalAlignment, Center);
+	META_ENUM_VALUE(HorizontalAlignment, Right);
+
+	META_ENUM(VerticalAlignment);
+	META_ENUM_VALUE(VerticalAlignment, Top);
+	META_ENUM_VALUE(VerticalAlignment, Center);
+	META_ENUM_VALUE(VerticalAlignment, Bottom);	
 }
 
 } // namespace ui
 
-template<>
-Result Serializer<Color>::load( Color& color, const Json& json)
+template<typename T >
+Result parseHex(T& t, StringSpan s) {
+	t = static_cast<T>(0);
+	for( auto&& c : s ) {
+		T hexValue = 0;
+		bool ok = OmCharToHexValue(c, &hexValue);
+		if(!ok) {
+			return Result::makeFailureWithString(formatString("%c is not a valid hex value.", c));
+		}
+
+		t = t << 4;
+		t += hexValue;
+		LogFmt("HexValue: 0x%x 0x%x\n", (int)t, (int)hexValue);
+ 	}
+
+ 	return Result::makeSuccess();
+}
+
+Result parseColor(Color& color, StringSpan stringSpan)
+{
+	Log("parseColor\n");
+
+	if(stringSpan.size() < 0) {
+		return Result::makeFailureWithStringLiteral("Empty String.");
+	}
+
+	if('#' != stringSpan[0]) {
+		return Result::makeFailureWithStringLiteral("Expected color string to start with '#");
+	}
+
+	if(! oneOf<size_t>(stringSpan.size(), {7, 9})) {
+		return Result::makeFailureWithStringLiteral("Weird number of characters in hext color string.");
+	}
+
+	auto iter = stringSpan.begin();
+	iter++;
+	auto end = stringSpan.end();
+
+	std::array<uint8_t, 4 > mComponents;
+	mComponents[3] = 0xFF;
+	size_t i = 0;
+
+	while(iter < end) {
+		Result r = parseHex(mComponents[i], StringSpan(iter, iter + 2));
+		if(r.peekFailed()) {
+			return r;
+		}
+		iter += 2;
+		i++;
+	}
+
+	color = Color(mComponents);
+
+	return Result::makeSuccess();
+}
+
+Result Serializer<Color>::load(Color& color, const Json& json)
 {
 	if( json.IsObject()) {
 		return Meta::get().findType<Color>()->load(&color, json);
 	}
 
-	if ( !json.IsString())
-	{
-		return Result::makeFailureWithStringLiteral( "Color value json not valid.");
-
+	if(json.IsString()) {
+		return parseColor(color, json.GetString());
 	}
 
-	std::string& str = json.GetString();
-	if( str[0] != '#') {
-		return Result::makeFailureWithStringLiteral( "Color string doesn't start witn a '#'");
-	}
-
-	int chars = 0;
-	uint32_t iColor = static_cast<uint32_t>(std::stoi(& str[1], & chars, 16));
-
-	if(chars == 6)
-	{
-		uint8_t r = (iColor & 0x00FF0000) >> 16;
-		uint8_t g = (iColor & 0x0000FF00) >> 8;
-		uint8_t b = (iColor & 0x000000FF);
-
-		color = Color(r, g, b);
-
-		return Result::makeSuccess();
-	}
-
-	return Result::makeFailureWithStringLiteral("Bad color string value" );
-
+	return Result::makeFailureWithStringLiteral("Bad color object.");
 }
 
-template<>
 Result Serializer<Color>::save( const Color& color, Json& json)
 {
 	return Meta::get().findType<Color>()->save(&color, json);

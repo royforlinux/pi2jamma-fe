@@ -62,18 +62,13 @@ public:
 
     const T* find( const KEY_TYPE& key) const {
 
+        for( auto&& n : mItems ) {
 
-    for( auto&& n : mItems ) {
-        /* LogFmt(
-            "Item %s, %s\n",
-            std::to_string(key).c_str(),
-            std::to_string(GET_KEY(n->mItem)).c_str()); */
-
-        if(key == GET_KEY(n->mItem)) {
-            return & n->mItem;
+            if(key == GET_KEY(n->mItem)) {
+                return & n->mItem;
+            }
         }
-    }
-    return nullptr;
+        return nullptr;
     }
 
     ~RbTree() {

@@ -8,7 +8,7 @@
 #include <typeinfo>
 #include <string>
 
-std::string gEmptyString;
+extern const std::string gEmptyString;
 
 #define SL(x) x
 #define TS(x) x

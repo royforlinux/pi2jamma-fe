@@ -14,6 +14,13 @@ struct Arg<unsigned char>
 	using Reference = unsigned char&;
 };
 
+template<>
+struct Arg<unsigned long>
+{
+	using Type = unsigned long;
+	using Reference = unsigned long&;
+};
+
 template<typename T >
 struct Arg<T*>
 {

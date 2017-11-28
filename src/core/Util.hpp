@@ -325,6 +325,18 @@ inline OmFloat64 OmRadToDeg( OmFloat64 rad )
     return rad * ( 180 / M_PI );
 }
 
+template<typename T>
+inline bool oneOf(const T& item, const std::initializer_list<T>& items)
+{
+    for(auto&& i: items) {
+        if (item == i) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 
 
 template< typename T >

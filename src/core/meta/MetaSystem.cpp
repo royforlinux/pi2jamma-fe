@@ -35,4 +35,21 @@ void Meta::addType(MetaType* pMetaType)
 	mTypesByTypeInfo.insert(pMetaType->mByTypeInfoTreeNode);
 }
 
+MetaType* Meta::findType(const std::type_info& typeInfo) {
+	MetaType* pMetaType = safeDeRef(mTypesByTypeInfo.find(typeInfo));
+	ASSERTFMT(
+		(nullptr != pMetaType),
+		"%s is not registered with the meta system.",
+		typeInfo.name());
+	return pMetaType;
+}
+
+MetaType* Meta::findType(CStrArg name) {
+	MetaType* pMetaType = safeDeRef(mTypesByName.find(name));
+	ASSERTFMT(
+		(nullptr != pMetaType),
+		"%s is not registered with the meta system.",
+		name.c_str());
+	return pMetaType;	
+}
 

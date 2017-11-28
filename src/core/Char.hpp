@@ -123,7 +123,7 @@ inline uint8_t OmCharToUInt32( OmUnicode16Char c )
 
 template< typename CHAR_TYPE, typename VALUE_TYPE >
 inline bool OmCharToHexValue(
-    typename Arg< CHAR_TYPE >::Type c ,
+    CHAR_TYPE c ,
     VALUE_TYPE* pValue )
 {
     if ( ( c >= '0' ) && ( c <= '9' ) )

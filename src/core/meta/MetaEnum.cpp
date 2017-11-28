@@ -7,3 +7,5 @@ MetaEnumBase::MetaEnumBase(CStrArg name, size_t numBytes)
 	, mNumBytes(numBytes)
 {
 }
+
+
