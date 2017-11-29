@@ -18,20 +18,23 @@ class MetaEnumValueBase
 public:
 	MetaEnumValueBase(
 		MetaEnumBase* pMetaEnumBase,
-		CStrArg name)
-		: mName(name)
-		, mNameTreeNode(this)
-		, mValueTreeNode(this)
-	{}
+		CStrArg name,
+		uint64_t value);
+
+	virtual ~MetaEnumValueBase();
 
 	Arg<CStr>::Type getName() const {
 		return mName;
 	}
 
-	virtual uint64_t getValue() const = 0;
+	virtual uint64_t getValue() const {
+		return mValue;
+	}
 
 private:
 	CStr mName;
+	MetaEnumBase* mpMetaEnumBase;
+	uint64_t mValue;
 
 public:
 	RbTreeNode<MetaEnumValueBase*> mNameTreeNode;
@@ -41,24 +44,19 @@ public:
 template<typename T>
 class MetaEnumValue final : public MetaEnumValueBase
 {
-	public:
-		MetaEnumValue(
-			MetaEnum<T>* pEnum,
-			CStrArg name,
-			T value);
+public:
 
-	virtual uint64_t getValue() const override {
-		return static_cast<uint64_t>(mValue);
-	}		
+	using super = MetaEnumValueBase;
+
+	MetaEnumValue(
+		MetaEnum<T>* pEnum,
+		CStrArg name,
+		T value);
+	
 
 	T getTypedValue() const {
-		return mValue;
+		return static_cast<T>(super::getValue());
 	}	
-
-	private:
-
-		T mValue;
-
 };
 
 class MetaEnumBase : public MetaType
@@ -69,6 +67,11 @@ public:
 	void addValue(MetaEnumValueBase* pValue) {
 		mValuesByName.insert(pValue->mNameTreeNode);
 		mValuesByValue.insert(pValue->mValueTreeNode);
+	}
+
+	void removeValue(MetaEnumValueBase* pValue) {
+		mValuesByName.remove(pValue->mNameTreeNode);
+		mValuesByValue.remove(pValue->mValueTreeNode);
 	}
 
 	const MetaEnumValueBase* findValue(uint64_t value) const {
@@ -175,9 +178,9 @@ MetaEnumValue<T>::MetaEnumValue(
 	MetaEnum<T>* pEnum,
 	CStrArg name,
 	T value)
-	: MetaEnumValueBase(pEnum, name)
-	, mValue(value)
+	: MetaEnumValueBase(
+		pEnum,
+		name,
+		static_cast<uint64_t>(value))
 {
-	ASSERT(nullptr != pEnum);
-	pEnum->addValue(this);
 }

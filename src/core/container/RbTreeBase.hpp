@@ -19,14 +19,14 @@ public:
 
     #endif
 
-    RbTreeNodeBase* mpLeft;
-    RbTreeNodeBase* mpRight;
-    RbTreeNodeBase* mpParent;
+    mutable RbTreeNodeBase* mpLeft;
+    mutable RbTreeNodeBase* mpRight;
+    mutable RbTreeNodeBase* mpParent;
 
-    size_t mRed;    
+    mutable size_t mRed;    
 
     #ifdef DEBUG_CONTAINER
-        void* mpTree;
+        mutable void* mpTree;
     #endif
 
 };
@@ -66,7 +66,6 @@ private:
 	void rightRotate(RbTreeNodeBase* pY);
 	const RbTreeNodeBase* successor(const RbTreeNodeBase* pX) const;
 	RbTreeNodeBase* successor(RbTreeNodeBase* pX);
-	
 	const RbTreeNodeBase* predecessor(const RbTreeNodeBase* pX) const;
 
     RbTreeNodeBase mRoot;

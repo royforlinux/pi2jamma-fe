@@ -37,6 +37,7 @@ public:
 		MetaClassBase* pMetaClassBase,
 		MetaType* pPropertyType,
 		CStrArg name );
+	virtual ~MetaClassProperty();
 
 
 	CStrArg getName() const {
@@ -54,6 +55,7 @@ private:
 
 	CStr mName;
 	MetaType* mpPropertyType;
+	MetaClassBase* mpMetaClassBase;
 
 public:
 	RbTreeNode<MetaClassProperty*> mTreeNode;
@@ -178,6 +180,10 @@ public:
 
 	void addProperty(MetaClassProperty* pMetaClassProperty) {
 		mProperties.insert(pMetaClassProperty->mTreeNode);
+	}
+
+	void removeProperty(MetaClassProperty* pMetaClassProperty) {
+		mProperties.remove(pMetaClassProperty->mTreeNode);
 	}
 
 	virtual Result load(void* pVoidObject, const Json& refJson) const override;

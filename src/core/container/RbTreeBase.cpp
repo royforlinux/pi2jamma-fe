@@ -226,7 +226,7 @@ void RbTreeBase::remove(RbTreeNodeBase* pZ)
         
     #endif
         
-    const RbTreeNodeBase* pY = ( (pZ->mpLeft == pSentinal ) || ( pZ->mpRight == pSentinal ) ) ? pZ : successor( pZ );
+    RbTreeNodeBase* pY = ( (pZ->mpLeft == pSentinal ) || ( pZ->mpRight == pSentinal ) ) ? pZ : successor( pZ );
     
     RbTreeNodeBase* pX = ( pY->mpLeft == pSentinal ) ? pY->mpRight : pY->mpLeft;
     
@@ -272,7 +272,7 @@ void RbTreeBase::remove(RbTreeNodeBase* pZ)
     {
         if ( ! ( pY->mRed ) )
         {
-            RemoveFixUp( pX );
+            removeFixUp( pX );
         }
     }
 }
@@ -425,6 +425,12 @@ void RbTreeBase::rightRotate(RbTreeNodeBase* pY)
     
     pX->mpRight = pY;
     pY->mpParent = pX;
+}
+
+RbTreeNodeBase* RbTreeBase::successor(RbTreeNodeBase* pX) {
+    return
+        const_cast<RbTreeNodeBase*>(
+            const_cast<const RbTreeBase*>(this)->successor(pX));
 }
 
 const RbTreeNodeBase* RbTreeBase::successor( const RbTreeNodeBase* pX ) const

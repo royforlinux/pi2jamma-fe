@@ -13,6 +13,7 @@ MetaClassProperty::MetaClassProperty(
 	CStrArg name)
 	: mName(name)
 	, mpPropertyType(pPropertyType)
+	, mpMetaClassBase(pMetaClassBase)
 	, mTreeNode(this)
 {
 	ASSERT(nullptr != pMetaClassBase);
@@ -20,6 +21,12 @@ MetaClassProperty::MetaClassProperty(
 	
 	pMetaClassBase->addProperty(this);
 }
+
+MetaClassProperty::~MetaClassProperty()
+{
+	mpMetaClassBase->removeProperty(this);
+}
+
 
 Result MetaClassBase::load(void* object, const Json& json) const
 {
