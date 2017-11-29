@@ -1,0 +1,9 @@
+{
+	"UpKey" : "UpArrow",
+	"DownKey" : "DownArrow",
+	"LeftKey" : "LeftArrow",
+	"RightKey" : "RightArrow",
+	"SelectKey" : "Space",
+	"BackKey" : "Escape",
+	"SaveConfigOnExit" : true
+}

@@ -29,8 +29,6 @@ struct Comparer<std::type_info>
 		const std::type_info& t1,
 		const std::type_info& t2)
 	{
-		LogFmt("compare: '%s' '%s'\n", t1.name(), t2.name());
-
 		if (t1 == t2 ) {
 			return 0;
 		}

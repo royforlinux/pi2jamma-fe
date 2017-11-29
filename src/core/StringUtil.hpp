@@ -26,6 +26,8 @@ inline std::string indent( size_t spaces )
     return s;
 }
 
+std::string formatString(const char* fmt, ...);
+
 namespace std
 {
 	inline std::string to_string(CStrArg s) {

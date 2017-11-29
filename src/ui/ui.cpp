@@ -16,6 +16,8 @@ void initialize() {
 	META_ENUM(Key);
 	META_ENUM_VALUE(Key, DownArrow);
 	META_ENUM_VALUE(Key, UpArrow);
+	META_ENUM_VALUE(Key, LeftArrow);
+	META_ENUM_VALUE(Key, RightArrow);	
 	META_ENUM_VALUE(Key, Escape);
 	META_ENUM_VALUE(Key, Space);
 
@@ -56,7 +58,6 @@ Result parseHex(T& t, StringSpan s) {
 
 		t = t << 4;
 		t += hexValue;
-		LogFmt("HexValue: 0x%x 0x%x\n", (int)t, (int)hexValue);
  	}
 
  	return Result::makeSuccess();
@@ -64,8 +65,6 @@ Result parseHex(T& t, StringSpan s) {
 
 Result parseColor(Color& color, StringSpan stringSpan)
 {
-	Log("parseColor\n");
-
 	if(stringSpan.size() < 0) {
 		return Result::makeFailureWithStringLiteral("Empty String.");
 	}

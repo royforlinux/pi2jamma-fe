@@ -43,12 +43,12 @@ Result MetaClassBase::load(void* object, const Json& json) const
 
 		if(propertyJson.IsNull()) {
 
-			LogFmt("Load property (Not Found):'%s'\n", pPropertyName);		
+			// LogFmt("Load property (Not Found):'%s'\n", pPropertyName);		
 
 			continue;
 		}
 
-		LogFmt("Load property:%s\n", pPropertyName);		
+		// LogFmt("Load property:%s\n", pPropertyName);		
 
 		Result r = pProperty->load(object, propertyJson);
 		if (r.peekFailed()) {

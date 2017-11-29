@@ -33,11 +33,11 @@ Result load(T& t, const Json& json) {
 }
 
 template<typename T>
-Result load(T& t, const char* pFileName)
+Result load(T& t, CStr fileName)
 {
 	Json json;
 
-	Result result = JsonLoadFromFile(json, pFileName);
+	Result result = JsonLoadFromFile(json, fileName.c_str());
 	if(result.peekFailed()) {
 		return result;
 	}
@@ -84,7 +84,7 @@ template<> struct Serializer<unsigned long> : public SerializerInt<unsigned long
 template<typename T>
 struct SerializerFloat
 {
-	Result load(T& object, const Json& json) {
+	static Result load(T& object, const Json& json) {
 		if(json.GetType() != JsonBase::Type::Real) {
 			return Result::makeFailureWithStringLiteral("Not a float.");
 		}
@@ -95,6 +95,29 @@ struct SerializerFloat
 	}
 
 	static Result save(const T& object, Json& json) {
+		json = Json(object);
+		return Result::makeSuccess();
+
+	}	
+};
+
+template<> struct Serializer<float> : public SerializerFloat<float> {};
+template<> struct Serializer<double> : public SerializerFloat<double>{};
+
+template<>
+struct Serializer<bool>
+{
+	static Result load(bool& object, const Json& json) {
+		if(!json.IsBool()) {
+			return Result::makeFailureWithStringLiteral("Not a bool");
+		}
+
+		object = json.GetBool();
+
+		return Result::makeSuccess();
+	}
+
+	static Result save(bool object, Json& json) {
 		json = Json(object);
 		return Result::makeSuccess();
 

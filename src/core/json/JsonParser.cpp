@@ -33,7 +33,6 @@ Result JsonLoadFromFile( Json& json, const char* pFilename )
 
     bool result = jsonParser.Parse(&json);
     if (!result) {
-        LogFmt( "Test!: %d\n", (int) pParser->GetLineCount() );
         return
             Result::makeFailureWithString(
                 formatString(

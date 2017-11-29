@@ -21,7 +21,7 @@ Application::~Application()
 	spSingleton = nullptr;
 }
 
-Result Application::run()
+Result Application::run(int argc, const char* argv[])
 {
 	int sdlInitResult = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
@@ -63,7 +63,7 @@ Result Application::run()
 		return Result::makeFailureWithString(SDL_GetError());
 	}
 
-	Result result = initialize();
+	Result result = initialize(argc, argv);
 	if (result.peekFailed()) {
 		return result;
 	}

@@ -25,6 +25,8 @@ Meta::Meta()
 
 	META_PRIMITIVE(float);
 	META_PRIMITIVE(double);
+
+	META_PRIMITIVE(bool);
 }
 
 void Meta::addType(MetaType* pMetaType)

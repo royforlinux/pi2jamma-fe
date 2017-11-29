@@ -5,12 +5,52 @@
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
 #include "core/serialize/Serializer.hpp"
+#include "core/CommandLine.hpp"
 
-Result Pi2JammaApplication::initialize()
+class CommandLineHandlerConfigFile : public CommandLineHandler
+{
+public:
+	CommandLineHandlerConfigFile()
+		: CommandLineHandler( "--config-file", "-c")
+		, mConfigFile("./data/config.txt")
+	{}
+
+	virtual CStr getHelp() const override {
+		return "Loction of the config file.";
+	}
+
+	virtual Result parse(const char**& ppToken, const char** ppEnd) override{
+		if(ppToken >= ppEnd) {
+			return Result::makeFailureWithStringLiteral("Expected config file name.");
+		}
+
+		mConfigFile = *ppToken;
+		ppToken++;
+
+		return Result::makeSuccess();
+	}
+
+	CStr mConfigFile;
+
+} gCommandLineHandlerConfigFile;
+
+
+Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 {
 	Meta::initialize();
 	ui::initialize();
+	Configuration::initialize();
 	Theme::initialize();
+
+	Result result = CommandLine::get().parse(argc, argv);
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	result = load(mConfiguration, gCommandLineHandlerConfigFile.mConfigFile);
+	if(result.peekFailed()) {
+		return result;
+	}
 
 	const char* pThemesDir = "/home/x/arcade/pi2jamma-fe/data/themes";
 	const char* pThemeDir = "vertical/burgertime";
@@ -18,7 +58,7 @@ Result Pi2JammaApplication::initialize()
 	std::string s = joinPath({pThemesDir, pThemeDir, "config.txt" });
 
 	Theme theme;
-	Result result = load(theme, s.c_str());
+	result = load(theme, s.c_str());
 
 	if(result.peekFailed()) {
 		return result;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/debug.hpp"
+#include "core/CString.hpp"
 
 #include <stddef.h>
 #include <string>
@@ -9,6 +10,7 @@
 class StringSpan
 {
 public:
+	StringSpan(CStr cStr);
 	StringSpan(const char* pCStr);
 	StringSpan(const char* pBegin, const char* pEnd);
 	StringSpan(const char* pBegin, size_t length);
@@ -22,11 +24,19 @@ public:
 	const char* begin() const;
 	const char* end() const;
 
+	std::string to_string() const;
+
 private:
 
 	const char* mpBegin;
 	const char* mpEnd;
 };
+
+inline StringSpan::StringSpan(CStr cStr)
+	: mpBegin(cStr.c_str())
+	, mpEnd(mpBegin + cStr.size())
+{
+}
 
 inline StringSpan::StringSpan(const char* pCString)
 	: mpBegin(pCString)
@@ -78,6 +88,11 @@ inline const char* StringSpan::begin() const
 inline const char* StringSpan::end() const
 {
 	return mpEnd;
+}
+
+inline std::string StringSpan::to_string() const
+{
+	return std::string(mpBegin, mpEnd);
 }
 
 

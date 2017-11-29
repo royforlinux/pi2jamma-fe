@@ -1,25 +1,13 @@
 #pragma once
 
 #include "core/StringSpan.hpp"
+#include <vector>
+#include <string>
 
-template<typename ContainerType = std::string>
-ContainerType joinPath(const std::initializer_list<StringSpan>& parts)
-{
-	ContainerType s;
-	bool first = true;
-	for(auto&& part: parts)
-	{
-		if(!first) {
-			s += "/";
-		}
-		else
-		{
-			first = false;
-		}
+#define PATH_SEP_STR "/"
+const char PATH_SEP_CHAR = '/';
 
-		s.insert(s.end(), part.begin(), part.end());
-	}
+std::string joinPath(const std::initializer_list<StringSpan>& parts);
+std::vector<std::string> splitPath(StringSpan stringSpan);
+std::string getPathEntryName(StringSpan stringSpan);
 
-	return s;
-
-}

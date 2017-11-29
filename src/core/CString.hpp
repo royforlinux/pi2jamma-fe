@@ -12,12 +12,15 @@ class CStr
 {
 public:
 
-    CStr(const char* pStr)
+    CStr(const char* pStr = "")
         : mpStr(pStr) {
     }
 
-    /* bool operator==(const CStr& rhs) const {
+    size_t size() const {
+        return strlen(mpStr);
+    }
 
+    bool operator==(const CStr& rhs) const {
         return strcmp(mpStr, rhs.mpStr) == 0;
     }
 
@@ -27,7 +30,7 @@ public:
 
     bool operator>(const CStr& rhs) const {
         return strcmp(c_str(), rhs.c_str()) > 0;
-    } */
+    }
 
     const char* c_str() const { return mpStr; }
 
@@ -48,11 +51,7 @@ template<>
 struct Comparer<CStr>
 {
     static int Compare(CStr s1, CStr s2) {
-        int res = (int) strcmp(s1.c_str(),s2.c_str());
-
-        LogFmt("compare: '%s' '%s' %d\n", s1.c_str(), s2.c_str(), res);
-
-        return res;
+        return strcmp(s1.c_str(),s2.c_str());
     }
 
 };

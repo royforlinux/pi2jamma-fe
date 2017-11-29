@@ -3,8 +3,6 @@
 #include <inttypes.h>
 #include <string>
 
-std::string formatString(const char* fmt, ...);
-
 #define OmRef ref
 #define OmFs(x, ...) formatString((x),__VA_ARGS__)
 #define OmSl(x) x

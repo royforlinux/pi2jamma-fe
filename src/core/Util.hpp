@@ -346,27 +346,3 @@ inline const T OmDiv( typename Arg< T >::Type t1, typename Arg< T >::Type t2 )
 }
 
 #define OmDeleteSetNull( pX ) { delete *(pX); *(pX) = 0; }
-
-#define OM_PROPERTY_GET( TYPE, NAME ) \
-    public: \
-        inline Arg< TYPE >::Type Get##NAME( void ) const { return m##NAME; } \
-        inline TYPE& Get##NAME( void ) { return m##NAME; } \
-    private: \
-        TYPE m##NAME;
-
-#define OM_PROPERTY( TYPE, NAME ) \
-    public: \
-        inline Arg< TYPE >::Type Get##NAME( void ) const { return m##NAME; } \
-        inline TYPE& Get##NAME( void ) { return m##NAME; } \
-        inline void Set##NAME( Arg< TYPE >::Type v ) { m##NAME = v; } \
-    private: \
-        TYPE m##NAME;
-        
-#define OM_PROPERTY_T( TYPE, NAME ) \
-    public: \
-        inline typename Arg< TYPE >::Type Get##NAME( void ) const { return m##NAME; } \
-        inline TYPE& Get##NAME( void ) { return m##NAME; } \
-        inline void Set##NAME( typename Arg< TYPE >::Type v ) { m##NAME = v; } \
-    private: \
-        TYPE m##NAME;        
-

@@ -40,7 +40,6 @@ public:
     using NodeType = RbTreeNode<ItemType>;
 
     void insert(NodeType& node) {
-        //LogFmt("insert: %s\n", std::to_string(GetKey(node.getItem())).c_str());
         mTree.insert(
             &node,
             [](const RbTreeNodeBase* pN1, const RbTreeNodeBase* pN2) {

@@ -18,10 +18,10 @@ class Application
 
 		static Application* get();
 
-		Result run();
+		Result run(int argc, const char* argv[]);
 		void quit();
 
-		virtual Result initialize() = 0;
+		virtual Result initialize(int argc, const char* argv[]) = 0;
 		virtual void render() = 0;
 		virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) = 0;
 

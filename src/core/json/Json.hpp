@@ -220,7 +220,6 @@ class JsonObject : public JsonBase
         	Arg< std::string >::Type key,
             Arg< JsonBase::Ref >::Type jsonRef )
         {
-            LogFmt("ValueForKey:'%s'\n", key.c_str());
             mDictionary.insert(std::make_pair(key,jsonRef));
         }
     
@@ -383,6 +382,11 @@ class Json
         inline bool IsString() const
         {
             return GetType() == JsonBase::Type::String;
+        }
+
+        inline bool IsBool() const
+        {
+            return GetType() == JsonBase::Type::Boolean;
         }
 
         inline void PushBack( Json json )
