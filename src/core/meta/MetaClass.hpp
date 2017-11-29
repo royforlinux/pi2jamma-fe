@@ -170,10 +170,10 @@ class MetaClassBase : public MetaType
 {
 public:
 
-	MetaClassBase(CStrArg name);
+	MetaClassBase(CStrArg name, const std::type_info& typeInfo);
 
 	MetaClassProperty* findProperty(CStrArg name) {
-		return safeDeRef(mProperties.find(name));
+		return safeDeRef(mProperties.findItem(name));
 	}
 
 	void addProperty(MetaClassProperty* pMetaClassProperty) {
@@ -199,14 +199,7 @@ class MetaClass final : public MetaClassBase
 {
 public:
 	MetaClass(CStrArg name)
-		: MetaClassBase(name)
+		: MetaClassBase(name, typeid(T))
 	{}
-
-private:
-
-	virtual const std::type_info& getTypeInfo() const override {
-		return typeid(T);
-	}
-
 };
 

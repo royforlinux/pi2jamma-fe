@@ -61,6 +61,7 @@ public:
 	static const std::type_info& getMetaTypeInfo(const MetaType* pMetaType);
 
 	void addType(MetaType* pMetaType);
+	void removeType(MetaType* pMetaType);
 
 private:
 

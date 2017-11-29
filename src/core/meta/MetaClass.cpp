@@ -2,8 +2,8 @@
 #include "core/meta/Meta.hpp"
 #include "core/debug.hpp"
 
-MetaClassBase::MetaClassBase(CStrArg name)
-	: MetaType(name)
+MetaClassBase::MetaClassBase(CStrArg name, const std::type_info& typeInfo)
+	: MetaType(name, typeInfo)
 {
 }
 
@@ -26,9 +26,8 @@ Result MetaClassBase::load(void* object, const Json& json) const
 	if(!json.IsObject() ) {
 		return Result::makeFailureWithStringLiteral("Not a class");
 	}
+	for(auto&& pProperty : mProperties) {
 
-	for(auto&& property : mProperties) {
-		auto pProperty = property->mItem;
 		// TODO: evil std::string constructor here.
 		const char* pPropertyName = pProperty->getName().c_str();
 
@@ -58,8 +57,8 @@ Result MetaClassBase::save(const void* pVoidObject, Json& json) const
 {
 	json = Json(make_ref<JsonObject>());
 
-	for(auto&& property : mProperties) {
-		auto pProperty = property->mItem;
+	for(auto&& pProperty : mProperties) {
+;
 		Json propertyJson;
 		Result r = pProperty->save(pVoidObject, propertyJson);
 

@@ -64,7 +64,7 @@ class MetaEnumValue final : public MetaEnumValueBase
 class MetaEnumBase : public MetaType
 {
 public:
-	MetaEnumBase(CStrArg name, size_t numBytes);
+	MetaEnumBase(CStrArg name, size_t numBytes, const std::type_info& typeInfo);
 
 	void addValue(MetaEnumValueBase* pValue) {
 		mValuesByName.insert(pValue->mNameTreeNode);
@@ -72,7 +72,7 @@ public:
 	}
 
 	const MetaEnumValueBase* findValue(uint64_t value) const {
-		return safeDeRef(mValuesByValue.find(value));
+		return safeDeRef(mValuesByValue.findItem(value));
 	}
 
 	Result findValue(const MetaEnumValueBase*& vb, CStr name) const {
@@ -101,7 +101,7 @@ public:
 		return Result::makeSuccess();
 	}
 	const MetaEnumValueBase* findValue(CStr name) const {
-		return safeDeRef(mValuesByName.find(name));
+		return safeDeRef(mValuesByName.findItem(name));
 	}
 
 private:
@@ -125,7 +125,7 @@ class MetaEnum final : public MetaEnumBase
 {
 public:
 	MetaEnum(const char* pName)
-		: MetaEnumBase(pName, sizeof(T))
+		: MetaEnumBase(pName, sizeof(T), typeid(T))
 	{}
 
 	virtual Result load(void* pVoidEnum, const Json& json) const override
@@ -168,12 +168,6 @@ public:
 
 		return Result::makeSuccess();
 	}
-
-
-private:
-
-	virtual const std::type_info& getTypeInfo() const override {
-		return typeid(T); }	
 };
 
 template<typename T>

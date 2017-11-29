@@ -31,12 +31,25 @@ void Meta::addType(MetaType* pMetaType)
 {
 	ASSERT(nullptr != pMetaType);
 
+	LogFmt(
+		"registering meta-type: name: '%s' typeinfo: '%s\n",
+		pMetaType->getName().c_str(),
+		pMetaType->getTypeInfo().name());
+
 	mTypesByName.insert(pMetaType->mByNameTreeNode);
 	mTypesByTypeInfo.insert(pMetaType->mByTypeInfoTreeNode);
 }
 
+void Meta::removeType(MetaType* pMetaType)
+{
+	ASSERT(nullptr != pMetaType);
+
+	mTypesByName.remove(pMetaType->mByNameTreeNode);
+	mTypesByTypeInfo.remove(pMetaType->mByTypeInfoTreeNode);
+}
+
 MetaType* Meta::findType(const std::type_info& typeInfo) {
-	MetaType* pMetaType = safeDeRef(mTypesByTypeInfo.find(typeInfo));
+	MetaType* pMetaType = safeDeRef(mTypesByTypeInfo.findItem(typeInfo));
 	ASSERTFMT(
 		(nullptr != pMetaType),
 		"%s is not registered with the meta system.",
@@ -45,7 +58,7 @@ MetaType* Meta::findType(const std::type_info& typeInfo) {
 }
 
 MetaType* Meta::findType(CStrArg name) {
-	MetaType* pMetaType = safeDeRef(mTypesByName.find(name));
+	MetaType* pMetaType = safeDeRef(mTypesByName.findItem(name));
 	ASSERTFMT(
 		(nullptr != pMetaType),
 		"%s is not registered with the meta system.",

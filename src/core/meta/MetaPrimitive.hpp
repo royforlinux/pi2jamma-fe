@@ -14,8 +14,8 @@
 class MetaPrimitiveBase :public MetaType
 {
 public:
-	MetaPrimitiveBase(CStrArg name) :
-		MetaType(name)
+	MetaPrimitiveBase(CStrArg name, const std::type_info& typeInfo) :
+		MetaType(name, typeInfo)
 	{}
 };
 
@@ -24,7 +24,7 @@ class MetaPrimitive final : public MetaPrimitiveBase
 {
 public:
 	MetaPrimitive(CStrArg name)
-		: MetaPrimitiveBase(name) {
+		: MetaPrimitiveBase(name,typeid(T)) {
 
 		}
 
@@ -36,7 +36,4 @@ public:
 		return Serializer<T>::save(*static_cast<const T*>(pItem), json);
 	}
 
-	virtual const std::type_info& getTypeInfo() const override {
-		return typeid(T);
-	}
 };
