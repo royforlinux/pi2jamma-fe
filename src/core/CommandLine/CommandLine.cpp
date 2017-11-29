@@ -76,13 +76,3 @@ void CommandLine::removeHandler(const CommandLineHandler& handler)
 	mHandlersByShortName.remove(handler);
 	mHandlersByLongName.remove(handler);
 }
-
-CStr CommandLine::getShortName(const CommandLineHandler& h)
-{
-	return h.getShortName();
-}
-
-CStr CommandLine::getLongName(const CommandLineHandler& h)
-{
-	return h.getLongName();
-}

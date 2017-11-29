@@ -13,15 +13,16 @@ public:
 	void printHelp() const;
 
 private:
-	static CStr getShortName(const CommandLineHandler& h);
-	static CStr getLongName(const CommandLineHandler& h);
 
 	CStr mApplicationPath;
 
 	RbTree<
 		CommandLineHandler,
 		CStr,
-		getShortName,
+		KeyFinderGetter<
+			CommandLineHandler,
+			CStr,
+			& CommandLineHandler::getShortName>,
 		NodeFinder<
 			CommandLineHandler,
 			& CommandLineHandler::mShortNameNode>> mHandlersByShortName;
@@ -29,7 +30,10 @@ private:
 	RbTree<
 		CommandLineHandler,
 		CStr,
-		getLongName,
+		KeyFinderGetter<
+			CommandLineHandler,
+			CStr,
+			& CommandLineHandler::getLongName>,
 		NodeFinder<
 			CommandLineHandler,
 			& CommandLineHandler::mLongNameNode>> mHandlersByLongName;

@@ -200,9 +200,8 @@ private:
 	RbTree<
 		MetaClassProperty,
 		CStr,
-		getPropertyName,
-		NodeFinder<MetaClassProperty,
-		&MetaClassProperty::mTreeNode>> mProperties;
+		KeyFinderGetter<MetaClassProperty, CStr, & MetaClassProperty::getName>,
+		NodeFinder<MetaClassProperty, &MetaClassProperty::mTreeNode>> mProperties;
 };
 
 template<typename T>

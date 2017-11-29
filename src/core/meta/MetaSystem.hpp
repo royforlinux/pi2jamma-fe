@@ -57,16 +57,22 @@ public:
 		return downCast<MetaEnum<T>*>(findType(typeid(T)));
 	}
 
-	static CStrArg getMetaTypeName(const MetaType& metaType);
-	static const std::type_info& getMetaTypeInfo(const MetaType& metaType);
-
 	void addType(const MetaType& metaType);
 	void removeType(const MetaType& metaType);
 
 private:
 
-	RbTree<MetaType, CStr, Meta::getMetaTypeName, NodeFinder<MetaType, & MetaType::mByNameTreeNode>> mTypesByName;
-	RbTree<MetaType, std::type_info, Meta::getMetaTypeInfo, NodeFinder<MetaType, & MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
+	RbTree<
+		MetaType,
+		CStr,
+		KeyFinderGetter<MetaType, CStr, & MetaType::getName>,
+		NodeFinder<MetaType, & MetaType::mByNameTreeNode>> mTypesByName;
+
+	RbTree<
+		MetaType,
+		std::type_info,
+		KeyFinderGetter<MetaType, std::type_info, & MetaType::getTypeInfo>,
+		NodeFinder<MetaType, & MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
 
 	static Meta* spSingleton;
 };
@@ -74,12 +80,4 @@ private:
 inline Meta& Meta::get() {
 	ASSERT(nullptr != spSingleton);
 	return *spSingleton;
-}
-
-inline CStrArg Meta::getMetaTypeName(const MetaType& metaType) {
-	return metaType.getName();
-}
-
-inline const std::type_info& Meta::getMetaTypeInfo(const MetaType& metaType) {
-	return metaType.getTypeInfo();
 }

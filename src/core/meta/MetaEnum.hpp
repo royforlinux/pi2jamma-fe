@@ -109,26 +109,18 @@ public:
 
 private:
 
-	static CStr getValueName(const MetaEnumValueBase& value) {
-		return value.getName();
-	}
-
-	static uint64_t getValueValue(const MetaEnumValueBase& value) {
-		return value.getValue();
-	}
-
 	size_t mNumBytes;
 
 	RbTree<
 		MetaEnumValueBase,
 		CStr,
-		getValueName,
+		KeyFinderGetter<MetaEnumValueBase, CStr, & MetaEnumValueBase::getName>,
 		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mNameTreeNode>> mValuesByName;
 
 	RbTree<
 		MetaEnumValueBase,
 		uint64_t,
-		getValueValue,
+		KeyFinderGetter<MetaEnumValueBase, uint64_t, & MetaEnumValueBase::getValue>,
 		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
 };
 

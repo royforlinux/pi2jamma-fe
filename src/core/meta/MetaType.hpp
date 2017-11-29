@@ -13,7 +13,7 @@ public:
 	MetaType(CStr name, const std::type_info& typeInfo);
 	virtual ~MetaType();
 
-	const CStr& getName(void) const {
+	CStr getName(void) const {
 		return mName;
 	}
 

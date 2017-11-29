@@ -7,8 +7,6 @@
 template<typename ItemType, RbTreeNode ItemType::*Member >
 struct NodeFinder
 {
-
-
     static size_t offset() {
 
         RbTreeNode& member = ((ItemType*)(nullptr))->*Member;
@@ -32,10 +30,18 @@ struct NodeFinder
     }
 };
 
+template<typename ItemType, typename KeyType, typename Arg<KeyType>::Type (ItemType::*Getter)() const>
+struct KeyFinderGetter
+{
+    static typename Arg<KeyType>::Type get(const ItemType& item) {
+        return (item.*Getter)();
+    }
+};
+
 template<
     typename ItemType,
     typename KeyType,
-    typename Arg<KeyType>::Type(*GetKey)(typename Arg<ItemType>::Type),
+    typename KeyFinder,
     typename NodeFinderType,
     typename LifetimePolicy = LifetimePolicyNone<ItemType> >
 class RbTree final
@@ -52,8 +58,8 @@ public:
             [](const RbTreeNode* n1, const RbTreeNode* n2) {
                 return
                     Comparer<KeyType>::Compare(
-                        GetKey(NodeFinderType::fromNode(*n1)),
-                        GetKey(NodeFinderType::fromNode(*n2)));
+                        KeyFinder::get((NodeFinderType::fromNode(*n1))),
+                        KeyFinder::get((NodeFinderType::fromNode(*n2))));
 
             } );
 
@@ -71,7 +77,7 @@ public:
             [&key](const RbTreeNode* rhs) {
                 return
                     Comparer<KeyType>::Compare(
-                        GetKey(NodeFinderType::fromNode(*rhs)),
+                        KeyFinder::get((NodeFinderType::fromNode(*rhs))),
                         key);
             });
 
