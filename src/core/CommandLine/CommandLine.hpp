@@ -23,7 +23,7 @@ private:
 			CommandLineHandler,
 			CStr,
 			& CommandLineHandler::getShortName>,
-		NodeFinder<
+		NodeFinderField<
 			CommandLineHandler,
 			& CommandLineHandler::mShortNameNode>> mHandlersByShortName;
 
@@ -34,7 +34,7 @@ private:
 			CommandLineHandler,
 			CStr,
 			& CommandLineHandler::getLongName>,
-		NodeFinder<
+		NodeFinderField<
 			CommandLineHandler,
 			& CommandLineHandler::mLongNameNode>> mHandlersByLongName;
 };

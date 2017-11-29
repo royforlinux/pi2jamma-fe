@@ -1,9 +1,9 @@
 #pragma once
 
+#include "core/container/RbTree.hpp"
 #include "core/RefCounted.hpp"
 #include "core/StringUtil.hpp"
 #include "core/Type.hpp"
-#include <map>
 #include <vector>
 
 using JsonIntType = uint64_t;
@@ -34,10 +34,10 @@ class JsonBase : public RefCounted
     
     	virtual void push_back( Arg< JsonBase::Ref >::Type refValue ) { }
     
-        virtual Ref GetValueForKey( Arg< std::string >::Type key );
-        virtual void SetValueForKey( Arg< std::string >::Type key, Arg< JsonBase::Ref >::Type refJson );
-    	virtual void SetIntegerValueForKey( Arg< std::string >::Type key, Arg< JsonIntType >::Type val );
-        virtual void SetStringValueForKey( Arg< std::string >::Type key, Arg< std::string >::Type val );
+        virtual Ref GetValueForKey( CStr key );
+        virtual void SetValueForKey( std::string key, Arg< JsonBase::Ref >::Type refJson );
+    	virtual void SetIntegerValueForKey( std::string key, Arg< JsonIntType >::Type val );
+        virtual void SetStringValueForKey( std::string key, Arg< std::string >::Type val );
     
         virtual Ref GetFirst( ) { return NULL; }
         virtual Ref GetNext( ) { return NULL; }
@@ -61,6 +61,10 @@ class JsonNull : public JsonBase
 {
     public:
     
+        static const ref<JsonNull>& singleton() {
+            return sSingleton;
+        }
+
         JsonNull( void ) : JsonBase( Type::Null ) { }
     
         virtual const std::string Dump( JsonIntType indent ) override
@@ -72,6 +76,10 @@ class JsonNull : public JsonBase
         {
         	return Sl( "null" );
     	}
+
+    private:
+
+        static ref<JsonNull> sSingleton;
 };
 
 class JsonString : public JsonBase
@@ -199,53 +207,100 @@ class JsonBoolean : public JsonBase
 class JsonObject : public JsonBase
 {
     public:
+
+        class Field
+        {
+            public:
+
+                Field(std::string key, ref<JsonBase> refValue)
+                    : mName(std::move(key))
+                    , mrefValue(std::move(refValue))
+                {
+                }
+
+                CStr getName() const {
+                    return mName.c_str();
+                }
+
+                void setName(std::string name) {
+                    mName = std::move(name);
+                }
+
+                ref<JsonBase> getValue() const {
+                    return mrefValue;
+                }
+
+                void setValue(ref<JsonBase> value) {
+                    mrefValue = std::move(value);
+                }
+
+            private:
+
+                std::string mName;
+                ref<JsonBase> mrefValue;
+
+            public:
+
+                RbTreeNode mTreeNode;
+        };
     
-        typedef std::map< std::string, JsonBase::Ref > DictType;
+        using DictType = RbTree<
+            Field,
+            CStr,
+            KeyFinderGetter<Field, CStr, &Field::getName>,
+            NodeFinderField<Field, & Field::mTreeNode>,
+            LifetimePolicyDelete<Field>>;
     
         inline JsonObject( void ) : JsonBase( Type::Class ) { }
 
-        virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key ) override
+        virtual JsonBase::Ref GetValueForKey(CStr key ) override
         {
-            JsonBase::Ref refJson = mDictionary[ key ];
-            
-            if ( ! refJson.isValid() )
-            {
-                return new JsonNull();
+            Field* pField = mDictionary.find(key);
+            if(nullptr == pField) {
+                return JsonNull::singleton();                
             }
-            
-            return refJson;
+
+            return pField->getValue();
         }
     
         virtual void SetValueForKey(
-        	Arg< std::string >::Type key,
-            Arg< JsonBase::Ref >::Type jsonRef ) override
+        	std::string key,
+            Arg< JsonBase::Ref >::Type refJson ) override
         {
-            mDictionary.insert(std::make_pair(key,jsonRef));
+            Field* pField = mDictionary.find(key.c_str());
+            if(pField) {
+                pField->setValue(refJson);
+                return;
+            }
+            
+            pField = new Field(std::move(key), refJson);
+
+            mDictionary.insert(*pField);
         }
     
     	virtual void SetIntegerValueForKey(
-        	Arg< std::string >::Type key,
+        	std::string key,
             Arg< JsonIntType >::Type intValue ) override
     	{
-        	SetValueForKey( key, new JsonInteger( intValue ) );
+        	SetValueForKey( std::move(key), new JsonInteger( intValue ) );
         }
     
         virtual void SetStringValueForKey(
-        	Arg< std::string >::Type key,
+        	std::string key,
             Arg< std::string >::Type value ) override
     	{
-        	SetValueForKey( key, new JsonString( value ) );
+        	SetValueForKey( std::move(key), new JsonString( value ) );
         }
     
         virtual const std::string Dump( JsonIntType indentAmount ) override
         {
             std::string s = Sl( "{\n" );
             
-            for(auto&& pair: mDictionary)
+            for(auto&& field: mDictionary)
             {
-                s += indent( indentAmount + 1 ) + pair.first;
+                s += indent( indentAmount + 1 ) + field.getName().c_str();
                 s += Sl( " : " );
-                s += pair.second->Dump( indentAmount + 2 );
+                s += field.getValue()->Dump( indentAmount + 2 );
                 s += Sl( "\n" );
             }
             
@@ -259,7 +314,7 @@ class JsonObject : public JsonBase
            	std::string s = Sl( "{" );
             
             bool first = true;
-            for(auto&& pair : mDictionary)
+            for(auto&& field : mDictionary)
             {
                 if(first) {
                     first = false;
@@ -269,9 +324,9 @@ class JsonObject : public JsonBase
                 	s += Sl( "," );
             	}
                 
-                s += Sl( "\"" ) + pair.first + Sl( "\"" );
-                s += Sl( ":" );
-                s += pair.second->Stringify();
+                s = s + Sl( "\"" ) + field.getName().c_str() + Sl( "\"" );
+                s = s + Sl( ":" );
+                s = s + field.getValue()->Stringify();
             }
             
             s += Sl( "}" );
@@ -366,7 +421,7 @@ class Json
     
         Json( )
         {
-            mrefJson = new JsonNull();
+            mrefJson = JsonNull::singleton();
         }
 
         inline JsonBase::Type GetType() const
@@ -414,9 +469,9 @@ class Json
         	return mrefJson->Stringify();
         }
     
-        inline const Json GetValueForKey( Arg< std::string >::Type propertyName ) const
+        inline const Json GetValueForKey(CStr fieldName ) const
         {
-            return Json( mrefJson->GetValueForKey( propertyName ) );
+            return Json( mrefJson->GetValueForKey(fieldName));
         }
     
         inline const void SetValueForKey(
@@ -476,16 +531,11 @@ class Json
         	return JsonBase::Type::Null == mrefJson->GetType();
     	}
     
-        inline const Json operator[] ( const char* pChar ) const
+        inline const Json operator[] ( CStr s ) const
         {
-            return Json( mrefJson->GetValueForKey( Ts( pChar ) ) );
+            return Json( mrefJson->GetValueForKey( s ));
         }
-        
-        inline const Json operator[] ( Arg< std::string >::Type s ) const
-        {
-            return Json( mrefJson->GetValueForKey( s ) );
-        }
-    
+   
         inline const Json operator[] ( JsonIntType i ) const
         {
             return Json( mrefJson->GetAt( i ) );

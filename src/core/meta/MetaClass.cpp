@@ -39,7 +39,7 @@ Result MetaClassBase::load(void* object, const Json& json) const
 		//
 		// TODO: Evil std::string constructor here!
 		//
-		Json propertyJson = json[std::string(propertyName.c_str())];
+		Json propertyJson = json[propertyName];
 
 		if(propertyJson.IsNull()) {
 

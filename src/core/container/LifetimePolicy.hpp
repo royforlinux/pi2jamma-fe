@@ -12,9 +12,9 @@ struct LifetimePolicyNone
 };
 
 template<typename T>
-struct DeleteLifetimePolicy
+struct LifetimePolicyDelete
 {
 public:
-    static void addRef(T& t) {}
-    static void release(T& t) { delete t; }
+    static void addRef(const T& t) {}
+    static void release(const T & t) { delete &t; }
 };

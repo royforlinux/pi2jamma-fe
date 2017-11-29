@@ -115,13 +115,13 @@ private:
 		MetaEnumValueBase,
 		CStr,
 		KeyFinderGetter<MetaEnumValueBase, CStr, & MetaEnumValueBase::getName>,
-		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mNameTreeNode>> mValuesByName;
+		NodeFinderField<MetaEnumValueBase, &MetaEnumValueBase::mNameTreeNode>> mValuesByName;
 
 	RbTree<
 		MetaEnumValueBase,
 		uint64_t,
 		KeyFinderGetter<MetaEnumValueBase, uint64_t, & MetaEnumValueBase::getValue>,
-		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
+		NodeFinderField<MetaEnumValueBase, &MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
 };
 
 template<typename T>

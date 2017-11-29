@@ -40,7 +40,6 @@ public:
 
 	RbTreeBase();
 	~RbTreeBase();
-	
 
 	using InsertFunction = const std::function<int(const RbTreeNode*, const RbTreeNode*)>;
 	using CompareFunction = const std::function<int(const RbTreeNode*)>;

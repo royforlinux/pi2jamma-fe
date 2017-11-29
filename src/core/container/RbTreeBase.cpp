@@ -32,7 +32,8 @@ void RbTreeBase::clear()
             pI = getNext(pI);
         }
     #endif
-
+ 
+    reset();
 }
 
 void RbTreeBase::insert(

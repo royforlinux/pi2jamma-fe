@@ -1,25 +1,27 @@
 
 #include "core/json/Json.hpp"
 
-JsonBase::Ref JsonBase::GetValueForKey( Arg< std::string >::Type key )
+ref<JsonNull> JsonNull::sSingleton = make_ref<JsonNull>();
+
+JsonBase::Ref JsonBase::GetValueForKey(CStr str)
 {
-    return make_ref<JsonNull>();
+    return JsonNull::singleton();
 }
 
 void JsonBase::SetValueForKey(
-	Arg< std::string >::Type key,
+	std::string key,
     Arg< JsonBase::Ref >::Type refJson )
 {
 };
 
 void JsonBase::SetIntegerValueForKey(
-	Arg< std::string >::Type key,
+	std::string key,
     Arg< JsonIntType >::Type val )
 {
 }
 
 void JsonBase::SetStringValueForKey(
-	Arg< std::string >::Type key,
+	std::string key,
     Arg< std::string >::Type val )
 {
 }

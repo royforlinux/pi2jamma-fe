@@ -66,13 +66,13 @@ private:
 		MetaType,
 		CStr,
 		KeyFinderGetter<MetaType, CStr, & MetaType::getName>,
-		NodeFinder<MetaType, & MetaType::mByNameTreeNode>> mTypesByName;
+		NodeFinderField<MetaType, & MetaType::mByNameTreeNode>> mTypesByName;
 
 	RbTree<
 		MetaType,
 		std::type_info,
 		KeyFinderGetter<MetaType, std::type_info, & MetaType::getTypeInfo>,
-		NodeFinder<MetaType, & MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
+		NodeFinderField<MetaType, & MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
 
 	static Meta* spSingleton;
 };

@@ -201,7 +201,7 @@ private:
 		MetaClassProperty,
 		CStr,
 		KeyFinderGetter<MetaClassProperty, CStr, & MetaClassProperty::getName>,
-		NodeFinder<MetaClassProperty, &MetaClassProperty::mTreeNode>> mProperties;
+		NodeFinderField<MetaClassProperty, &MetaClassProperty::mTreeNode>> mProperties;
 };
 
 template<typename T>

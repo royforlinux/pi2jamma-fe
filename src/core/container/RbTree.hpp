@@ -5,7 +5,7 @@
 #include "core/Compare.hpp"
 
 template<typename ItemType, RbTreeNode ItemType::*Member >
-struct NodeFinder
+struct NodeFinderField
 {
     static size_t offset() {
 
@@ -41,7 +41,7 @@ struct KeyFinderGetter
 template<
     typename ItemType,
     typename KeyType,
-    typename KeyFinder,
+    typename KeyFinderType,
     typename NodeFinderType,
     typename LifetimePolicy = LifetimePolicyNone<ItemType> >
 class RbTree final
@@ -58,8 +58,8 @@ public:
             [](const RbTreeNode* n1, const RbTreeNode* n2) {
                 return
                     Comparer<KeyType>::Compare(
-                        KeyFinder::get((NodeFinderType::fromNode(*n1))),
-                        KeyFinder::get((NodeFinderType::fromNode(*n2))));
+                        KeyFinderType::get((NodeFinderType::fromNode(*n1))),
+                        KeyFinderType::get((NodeFinderType::fromNode(*n2))));
 
             } );
 
@@ -77,7 +77,7 @@ public:
             [&key](const RbTreeNode* rhs) {
                 return
                     Comparer<KeyType>::Compare(
-                        KeyFinder::get((NodeFinderType::fromNode(*rhs))),
+                        KeyFinderType::get((NodeFinderType::fromNode(*rhs))),
                         key);
             });
 
@@ -88,58 +88,28 @@ public:
         return & NodeFinderType::fromNode(*pNodeBase);
     }
 
-    #if 0
-    const RbTreeNode* getFirst() const {
-        return static_cast<const RbTreeNode*>(mTree.getFirst());
-    }   
-
-    RbTreeNode* getFirst() {
-        return static_cast<RbTreeNode*>(mTree.getFirst());
-    }
-
-    const RbTreeNode* getNext(const RbTreeNode* pPrev) const {
-        return
-            static_cast<const RbTreeNode*>(
-                mTree.getNext(
-                    pPrev));
-    }
-
-    RbTreeNode* getNext(RbTreeNode* pPrev) {
-        return
-            static_cast<RbTreeNode*>(
-                mTree.getNext(pPrev));
-    }
-
-    ItemType* findItem(typename Arg<KeyType>::Type key)
-    {
-        RbTreeNode* pNode = find(key);
-        if(nullptr == pNode) {
-            return nullptr;
-        }
-
-        return & pNode->getItem();
-    }
-
-    const ItemType* findItem(typename Arg<KeyType>::Type key) const
-    {
-        const RbTreeNode* pNode = find(key);
-        if(nullptr == pNode) {
-            return nullptr;
-        }
-
-        return & pNode->getItem();
-    }
-
-    #endif
-
     void remove(const ItemType& item) {
         mTree.remove(& NodeFinderType::toNode(item));
+        LifetimePolicy::release(item);
     }
 
     void clear() {
-        for(auto&& i: *this) {
-            LifetimePolicy::release(i);
-        }
+
+        #ifdef DEBUG_CONTAINER
+            RbTreeNode* pI = mTree.getFirst();
+            while(nullptr != pI) {
+                RbTreeNode* pNext = mTree.getNext(pI);
+                mTree.remove(pI);
+                LifetimePolicy::release(NodeFinderType::fromNode(*pI));
+                pI = pNext;
+            }
+        #else
+
+            for(auto&& i: *this) {
+                LifetimePolicy::release(i);
+            }
+
+        #endif
 
         mTree.clear();
     }
