@@ -19,6 +19,9 @@ public:
 
     #endif
 
+    RbTreeNodeBase(const RbTreeNodeBase& rhs) = delete;
+    RbTreeNodeBase& operator=(const RbTreeNodeBase& rhs) = delete;
+
     mutable RbTreeNodeBase* mpLeft;
     mutable RbTreeNodeBase* mpRight;
     mutable RbTreeNodeBase* mpParent;
@@ -49,11 +52,25 @@ public:
 	RbTreeNodeBase* find(const CompareFunction& compare);
 	const RbTreeNodeBase* find(const CompareFunction& compare) const;
 
+    const RbTreeNodeBase* findClosest(const CompareFunction& compare) const;
+    RbTreeNodeBase* findClosest(const CompareFunction& compare);
+
 	RbTreeNodeBase* getFirst();
 	const RbTreeNodeBase* getFirst() const;
 
 	RbTreeNodeBase* getNext(RbTreeNodeBase* pPrev);
 	const RbTreeNodeBase* getNext(const RbTreeNodeBase* pPrev) const;
+
+	const RbTreeNodeBase* getLast() const;
+	RbTreeNodeBase* getLast();
+
+	const RbTreeNodeBase* getPrev(const RbTreeNodeBase* pNext) const;
+	RbTreeNodeBase* getPrev(RbTreeNodeBase* pNext);
+
+	size_t count() const;
+
+	RbTreeNodeBase* findAt(size_t index);
+	const RbTreeNodeBase* findAt(size_t index) const;
 
 private:
 

@@ -1,7 +1,5 @@
 #include "core/container/RbTreeBase.hpp"
 
-
-
 RbTreeBase::RbTreeBase()
 {
     reset();
@@ -18,8 +16,12 @@ void RbTreeBase::reset()
     mSentinal.mpRight = & mSentinal;
     mSentinal.mpParent = & mSentinal;
     mSentinal.mRed = 0;
-    mRoot = mSentinal;   
+    mRoot.mpLeft = & mSentinal;
+    mRoot.mpRight = & mSentinal;
+    mRoot.mpParent = & mSentinal;
+    mRoot.mRed = 0; 
 }
+
 void RbTreeBase::clear()
 {
     #ifdef DEBUG_CONTAINER
@@ -543,3 +545,155 @@ RbTreeNodeBase* RbTreeBase::getNext(RbTreeNodeBase* pPrev)
 			const_cast<const RbTreeBase*>(this)->getNext(pPrev));
 }
 
+const RbTreeNodeBase* RbTreeBase::findAt( size_t index ) const
+{
+    const RbTreeNodeBase* pS = getFirst();
+    
+    size_t count = 0;
+    
+    while(nullptr != pS)
+    {
+        if( count == index )
+        {
+            return pS;
+        }
+        
+        pS = getNext( pS );
+        
+        count++;
+    }
+    
+    ASSERT(false);
+    
+    return nullptr;
+}
+
+RbTreeNodeBase* RbTreeBase::findAt(size_t index)
+{
+    return
+        const_cast<RbTreeNodeBase*>(
+            const_cast<const RbTreeBase*>(this)->findAt(index));
+}
+
+const RbTreeNodeBase* RbTreeBase::getLast(void) const
+{
+    const RbTreeNodeBase* pX = mRoot.mpLeft;
+    const RbTreeNodeBase* pParent = nullptr;
+    const RbTreeNodeBase* pSentinal = & mSentinal;
+    
+    while( pX != pSentinal )
+    {
+        pParent = pX;
+        pX = pX->mpRight;
+    }
+
+    return pParent;
+}
+
+RbTreeNodeBase* RbTreeBase::getLast()
+{
+    return
+        const_cast<RbTreeNodeBase*>(
+            const_cast<const RbTreeBase*>(this)->getLast());
+}
+
+const RbTreeNodeBase* RbTreeBase::getPrev(const RbTreeNodeBase* pNext) const
+{
+    ASSERT(nullptr != pNext);
+    
+    const RbTreeNodeBase* pPrev = predecessor( pNext );
+    
+    if ( pPrev == ( & mSentinal ) )
+    {
+        return nullptr;
+    }
+    
+    return pPrev;
+}
+
+RbTreeNodeBase* RbTreeBase::getPrev(RbTreeNodeBase* pNext)
+{
+    return
+        const_cast<RbTreeNodeBase*>(
+            const_cast<const RbTreeBase*>(this)->getPrev(pNext));
+}
+
+size_t RbTreeBase::count() const
+{
+    const RbTreeNodeBase* pS = getFirst();
+    
+    size_t count = 0;
+    
+    while( nullptr != pS )
+    {
+        count++;
+        pS = getNext( pS );
+    }
+    
+    return count;
+}
+
+const RbTreeNodeBase* RbTreeBase::findClosest(
+    const CompareFunction& compare) const
+{
+    const RbTreeNodeBase* pX = mRoot.mpLeft;
+    const RbTreeNodeBase* pSentinal= & mSentinal;
+  
+    int compVal;
+    
+    if ( pX == pSentinal )
+    {
+        return( 0 );
+    }
+    
+    compVal = compare(pX);
+    
+    while( 0 != compVal )
+    {
+        const RbTreeNodeBase* pPrev = pX;
+
+        if ( compVal >= 1 )
+        {
+            pX = pX->mpLeft;
+        }
+        else
+        {
+            pX = pX->mpRight;
+        }
+        
+        if ( pX == pSentinal )
+        {
+            return pPrev;
+        }
+        
+        compVal = compare(pX);
+    }
+
+    while( true )
+    {
+        const RbTreeNodeBase* pPrev = predecessor( pX );
+    
+        if ( pPrev == pSentinal )
+        {
+            break;
+        }
+        
+        compVal = compare(pPrev);
+
+        if ( compVal != 0 )
+        {
+            break;
+        }
+        
+        pX = pPrev;
+    }
+    
+    return pX;
+}
+
+RbTreeNodeBase* RbTreeBase::findClosest(const CompareFunction& compare)
+{
+    return
+        const_cast<RbTreeNodeBase*>(
+            const_cast<const RbTreeBase*>(this)->findClosest(compare));
+}
