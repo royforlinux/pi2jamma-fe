@@ -35,6 +35,6 @@ private:
 
 public:
 
-	RbTreeNode<MetaType*> mByNameTreeNode;
-	RbTreeNode<MetaType*> mByTypeInfoTreeNode;		
+	RbTreeNode mByNameTreeNode;
+	RbTreeNode mByTypeInfoTreeNode;		
 };

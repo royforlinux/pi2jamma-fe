@@ -7,14 +7,14 @@ struct LifetimePolicyNone
 {
     public:
 
-        static void addRef(typename Arg<T>::Reference t) { }
-        static void release(typename Arg<T>::Reference t) { }
+        static void addRef(const T& t) { }
+        static void release(const T& t) { }
 };
 
 template<typename T>
 struct DeleteLifetimePolicy
 {
 public:
-    static void addRef(typename Arg<T>::Reference t) {}
-    static void release(typename Arg<T>::Reference t) { delete t; }
+    static void addRef(T& t) {}
+    static void release(T& t) { delete t; }
 };

@@ -9,16 +9,14 @@ MetaEnumValueBase::MetaEnumValueBase(
 	: mName(name)
 	, mpMetaEnumBase(pMetaEnumBase)
 	, mValue(value)
-	, mNameTreeNode(this)
-	, mValueTreeNode(this)
 {
 	ASSERT(nullptr != pMetaEnumBase);
-	pMetaEnumBase->addValue(this);
+	pMetaEnumBase->addValue(*this);
 }
 
 MetaEnumValueBase::~MetaEnumValueBase()
 {
-	mpMetaEnumBase->removeValue(this);
+	mpMetaEnumBase->removeValue(*this);
 }
 
 MetaEnumBase::MetaEnumBase(CStrArg name, size_t numBytes, const std::type_info& typeInfo)

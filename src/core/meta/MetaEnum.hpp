@@ -37,8 +37,8 @@ private:
 	uint64_t mValue;
 
 public:
-	RbTreeNode<MetaEnumValueBase*> mNameTreeNode;
-	RbTreeNode<MetaEnumValueBase*> mValueTreeNode;
+	RbTreeNode mNameTreeNode;
+	RbTreeNode mValueTreeNode;
 };
 
 template<typename T>
@@ -64,18 +64,18 @@ class MetaEnumBase : public MetaType
 public:
 	MetaEnumBase(CStrArg name, size_t numBytes, const std::type_info& typeInfo);
 
-	void addValue(MetaEnumValueBase* pValue) {
-		mValuesByName.insert(pValue->mNameTreeNode);
-		mValuesByValue.insert(pValue->mValueTreeNode);
+	void addValue(const MetaEnumValueBase& value) {
+		mValuesByName.insert(value);
+		mValuesByValue.insert(value);
 	}
 
-	void removeValue(MetaEnumValueBase* pValue) {
-		mValuesByName.remove(pValue->mNameTreeNode);
-		mValuesByValue.remove(pValue->mValueTreeNode);
+	void removeValue(const MetaEnumValueBase& value) {
+		mValuesByName.remove(value);
+		mValuesByValue.remove(value);
 	}
 
 	const MetaEnumValueBase* findValue(uint64_t value) const {
-		return safeDeRef(mValuesByValue.findItem(value));
+		return mValuesByValue.find(value);
 	}
 
 	Result findValue(const MetaEnumValueBase*& vb, CStr name) const {
@@ -104,23 +104,32 @@ public:
 		return Result::makeSuccess();
 	}
 	const MetaEnumValueBase* findValue(CStr name) const {
-		return safeDeRef(mValuesByName.findItem(name));
+		return mValuesByName.find(name);
 	}
 
 private:
 
-	static CStr getValueName(const MetaEnumValueBase* pValue) {
-		return pValue->getName();
+	static CStr getValueName(const MetaEnumValueBase& value) {
+		return value.getName();
 	}
 
-	static uint64_t getValueValue(const MetaEnumValueBase* pValue) {
-		return pValue->getValue();
+	static uint64_t getValueValue(const MetaEnumValueBase& value) {
+		return value.getValue();
 	}
 
 	size_t mNumBytes;
 
-	RbTree<MetaEnumValueBase*, CStr, getValueName> mValuesByName;
-	RbTree<MetaEnumValueBase*, uint64_t, getValueValue > mValuesByValue;
+	RbTree<
+		MetaEnumValueBase,
+		CStr,
+		getValueName,
+		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mNameTreeNode>> mValuesByName;
+
+	RbTree<
+		MetaEnumValueBase,
+		uint64_t,
+		getValueValue,
+		NodeFinder<MetaEnumValueBase, &MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
 };
 
 template<typename T>

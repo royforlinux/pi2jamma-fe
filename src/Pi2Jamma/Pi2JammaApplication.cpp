@@ -5,7 +5,7 @@
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
 #include "core/serialize/Serializer.hpp"
-#include "core/CommandLine.hpp"
+#include "core/CommandLine/CommandLine.hpp"
 
 class CommandLineHandlerConfigFile : public CommandLineHandler
 {

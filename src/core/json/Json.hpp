@@ -63,12 +63,12 @@ class JsonNull : public JsonBase
     
         JsonNull( void ) : JsonBase( Type::Null ) { }
     
-        virtual const std::string Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent ) override
         {
             return Sl( "null" );
         }
     
-        virtual const std::string Stringify( ) const
+        virtual const std::string Stringify( ) const override
         {
         	return Sl( "null" );
     	}
@@ -80,14 +80,14 @@ class JsonString : public JsonBase
     
         inline JsonString( Arg< std::string >::Type s ) : JsonBase( Type::String ), mString( s ) { }
     
-        virtual const std::string& GetString( void ) { return mString; }
+        virtual const std::string& GetString( void ) override { return mString; }
     
-        virtual const std::string Dump( JsonIntType i )
+        virtual const std::string Dump( JsonIntType i ) override
         {
             return Fs( "\"%s\"", mString.c_str() );
         }
     
-        virtual const std::string Stringify( ) const
+        virtual const std::string Stringify( ) const override
     	{
         	const std::string s =
             	Sl( "\"" ) +
@@ -112,22 +112,22 @@ class JsonInteger : public JsonBase
             mValue( value )
         { }
     
-        virtual const std::string Dump( JsonIntType i )
+        virtual const std::string Dump( JsonIntType i ) override
         {
             return Fs( "%i", (int) mValue );
         }
     
-    	virtual const std::string Stringify( ) const
+    	virtual const std::string Stringify( ) const override
     	{
         	return Fs( "%i", (int) mValue );
         }
     
-        virtual const JsonFloatType GetFloat64( void )
+        virtual const JsonFloatType GetFloat64( void ) override
         {
             return static_cast< JsonFloatType >( mValue );
         }
     
-        virtual const JsonIntType GetUInt( void )
+        virtual const JsonIntType GetUInt( void ) override
         {
             return static_cast< JsonIntType >( mValue );
         }
@@ -144,22 +144,22 @@ class JsonReal : public JsonBase
     
         inline JsonReal( JsonFloatType real ) : JsonBase( Type::Real ), mReal( real ) { }
     
-        virtual const std::string Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent ) override
         {
             return Stringify();
         }
     
-        virtual const std::string Stringify(  ) const
+        virtual const std::string Stringify(  ) const override
         {
             return Fs( "%g", mReal );
         }
     
-        virtual const JsonFloatType GetFloat64( void )
+        virtual const JsonFloatType GetFloat64( void ) override
         {
             return mReal;
         }
     
-        virtual const JsonIntType GetUInt( void )
+        virtual const JsonIntType GetUInt( void ) override
         {
             return static_cast< JsonIntType >( mReal );
         }    
@@ -176,17 +176,17 @@ class JsonBoolean : public JsonBase
     
         inline JsonBoolean( bool value ) : JsonBase( Type::Boolean ), mValue( value ) { }
     
-        virtual const std::string Dump( JsonIntType indent )
+        virtual const std::string Dump( JsonIntType indent ) override
         {
         	return Stringify();
         }
     
-        virtual const std::string Stringify( ) const
+        virtual const std::string Stringify( ) const override
     	{
             return mValue ? Sl( "true" ) : Sl( "false" );
         }
     
-        virtual const bool GetBool( void )
+        virtual const bool GetBool( void ) override
         {
             return mValue;
         }
@@ -204,7 +204,7 @@ class JsonObject : public JsonBase
     
         inline JsonObject( void ) : JsonBase( Type::Class ) { }
 
-        virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key )
+        virtual JsonBase::Ref GetValueForKey( Arg< std::string >::Type key ) override
         {
             JsonBase::Ref refJson = mDictionary[ key ];
             
@@ -218,26 +218,26 @@ class JsonObject : public JsonBase
     
         virtual void SetValueForKey(
         	Arg< std::string >::Type key,
-            Arg< JsonBase::Ref >::Type jsonRef )
+            Arg< JsonBase::Ref >::Type jsonRef ) override
         {
             mDictionary.insert(std::make_pair(key,jsonRef));
         }
     
     	virtual void SetIntegerValueForKey(
         	Arg< std::string >::Type key,
-            Arg< JsonIntType >::Type intValue )
+            Arg< JsonIntType >::Type intValue ) override
     	{
         	SetValueForKey( key, new JsonInteger( intValue ) );
         }
     
         virtual void SetStringValueForKey(
         	Arg< std::string >::Type key,
-            Arg< std::string >::Type value )
+            Arg< std::string >::Type value ) override
     	{
         	SetValueForKey( key, new JsonString( value ) );
         }
     
-        virtual const std::string Dump( JsonIntType indentAmount )
+        virtual const std::string Dump( JsonIntType indentAmount ) override
         {
             std::string s = Sl( "{\n" );
             
@@ -254,7 +254,7 @@ class JsonObject : public JsonBase
             return s;
         }
     
-        virtual const std::string Stringify( ) const
+        virtual const std::string Stringify( ) const override
     	{
            	std::string s = Sl( "{" );
             
@@ -295,7 +295,7 @@ class JsonArray : public JsonBase
             mVector.push_back( refJson );
         }
     
-        virtual const std::string Dump( JsonIntType indentAmount )
+        virtual const std::string Dump( JsonIntType indentAmount ) override
         {
             std::string s = Sl( "\n" ) + indent( indentAmount ) + Fs( "[ (%d)\n", mVector.size() );
             
@@ -309,7 +309,7 @@ class JsonArray : public JsonBase
             return s;
         }
     
-        virtual const std::string Stringify( ) const
+        virtual const std::string Stringify( ) const override
     	{
           	std::string s = Sl( "[" );
             
@@ -328,12 +328,12 @@ class JsonArray : public JsonBase
             return s;
         }
     
-        virtual size_t GetCount( void )
+        virtual size_t GetCount( void ) override
         {
             return mVector.size();
         }
     
-        virtual JsonBase::Ref GetAt( JsonIntType i )
+        virtual JsonBase::Ref GetAt( JsonIntType i ) override
         {
             return mVector[i];
         }

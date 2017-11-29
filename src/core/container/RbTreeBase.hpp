@@ -4,27 +4,27 @@
 #include "core/container/Container.hpp"
 #include "core/debug.hpp"
 
-class RbTreeNodeBase
+class RbTreeNode
 {
 public:
     #ifdef DEBUG_CONTAINER
 
-        RbTreeNodeBase() {
+        RbTreeNode() {
             mpTree = nullptr;
         }
 
-        ~RbTreeNodeBase() {
+        ~RbTreeNode() {
             ASSERT(nullptr == mpTree);
         }
 
     #endif
 
-    RbTreeNodeBase(const RbTreeNodeBase& rhs) = delete;
-    RbTreeNodeBase& operator=(const RbTreeNodeBase& rhs) = delete;
+    RbTreeNode(const RbTreeNode& rhs) = delete;
+    RbTreeNode& operator=(const RbTreeNode& rhs) = delete;
 
-    mutable RbTreeNodeBase* mpLeft;
-    mutable RbTreeNodeBase* mpRight;
-    mutable RbTreeNodeBase* mpParent;
+    mutable RbTreeNode* mpLeft;
+    mutable RbTreeNode* mpRight;
+    mutable RbTreeNode* mpParent;
 
     mutable size_t mRed;    
 
@@ -42,49 +42,49 @@ public:
 	~RbTreeBase();
 	
 
-	using InsertFunction = const std::function<int(const RbTreeNodeBase*, const RbTreeNodeBase*)>;
-	using CompareFunction = const std::function<int(const RbTreeNodeBase*)>;
+	using InsertFunction = const std::function<int(const RbTreeNode*, const RbTreeNode*)>;
+	using CompareFunction = const std::function<int(const RbTreeNode*)>;
 
 	void clear();
-	void insert(RbTreeNodeBase* pTreeNode, const InsertFunction& insrtFunction);
-	void remove(RbTreeNodeBase* pTreeNode);
+	void insert(RbTreeNode* pTreeNode, const InsertFunction& insrtFunction);
+	void remove(RbTreeNode* pTreeNode);
 
-	RbTreeNodeBase* find(const CompareFunction& compare);
-	const RbTreeNodeBase* find(const CompareFunction& compare) const;
+	RbTreeNode* find(const CompareFunction& compare);
+	const RbTreeNode* find(const CompareFunction& compare) const;
 
-    const RbTreeNodeBase* findClosest(const CompareFunction& compare) const;
-    RbTreeNodeBase* findClosest(const CompareFunction& compare);
+    const RbTreeNode* findClosest(const CompareFunction& compare) const;
+    RbTreeNode* findClosest(const CompareFunction& compare);
 
-	RbTreeNodeBase* getFirst();
-	const RbTreeNodeBase* getFirst() const;
+	RbTreeNode* getFirst();
+	const RbTreeNode* getFirst() const;
 
-	RbTreeNodeBase* getNext(RbTreeNodeBase* pPrev);
-	const RbTreeNodeBase* getNext(const RbTreeNodeBase* pPrev) const;
+	RbTreeNode* getNext(RbTreeNode* pPrev);
+	const RbTreeNode* getNext(const RbTreeNode* pPrev) const;
 
-	const RbTreeNodeBase* getLast() const;
-	RbTreeNodeBase* getLast();
+	const RbTreeNode* getLast() const;
+	RbTreeNode* getLast();
 
-	const RbTreeNodeBase* getPrev(const RbTreeNodeBase* pNext) const;
-	RbTreeNodeBase* getPrev(RbTreeNodeBase* pNext);
+	const RbTreeNode* getPrev(const RbTreeNode* pNext) const;
+	RbTreeNode* getPrev(RbTreeNode* pNext);
 
 	size_t count() const;
 
-	RbTreeNodeBase* findAt(size_t index);
-	const RbTreeNodeBase* findAt(size_t index) const;
+	RbTreeNode* findAt(size_t index);
+	const RbTreeNode* findAt(size_t index) const;
 
 private:
 
 	void reset();
 
-	void insertHelp(RbTreeNodeBase* pZ, const InsertFunction& insertFunction);
-	void removeFixUp(RbTreeNodeBase* pX);
+	void insertHelp(RbTreeNode* pZ, const InsertFunction& insertFunction);
+	void removeFixUp(RbTreeNode* pX);
 
-	void leftRotate(RbTreeNodeBase* pX);
-	void rightRotate(RbTreeNodeBase* pY);
-	const RbTreeNodeBase* successor(const RbTreeNodeBase* pX) const;
-	RbTreeNodeBase* successor(RbTreeNodeBase* pX);
-	const RbTreeNodeBase* predecessor(const RbTreeNodeBase* pX) const;
+	void leftRotate(RbTreeNode* pX);
+	void rightRotate(RbTreeNode* pY);
+	const RbTreeNode* successor(const RbTreeNode* pX) const;
+	RbTreeNode* successor(RbTreeNode* pX);
+	const RbTreeNode* predecessor(const RbTreeNode* pX) const;
 
-    RbTreeNodeBase mRoot;
-    RbTreeNodeBase mSentinal;	
+    RbTreeNode mRoot;
+    RbTreeNode mSentinal;	
 };	

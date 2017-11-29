@@ -58,7 +58,7 @@ private:
 	MetaClassBase* mpMetaClassBase;
 
 public:
-	RbTreeNode<MetaClassProperty*> mTreeNode;
+	RbTreeNode mTreeNode;
 };
 
 template<typename ClassType, typename PropertyType>
@@ -175,15 +175,15 @@ public:
 	MetaClassBase(CStrArg name, const std::type_info& typeInfo);
 
 	MetaClassProperty* findProperty(CStrArg name) {
-		return safeDeRef(mProperties.findItem(name));
+		return mProperties.find(name);
 	}
 
 	void addProperty(MetaClassProperty* pMetaClassProperty) {
-		mProperties.insert(pMetaClassProperty->mTreeNode);
+		mProperties.insert(*pMetaClassProperty);
 	}
 
 	void removeProperty(MetaClassProperty* pMetaClassProperty) {
-		mProperties.remove(pMetaClassProperty->mTreeNode);
+		mProperties.remove(*pMetaClassProperty);
 	}
 
 	virtual Result load(void* pVoidObject, const Json& refJson) const override;
@@ -193,11 +193,16 @@ public:
 
 private:
 
-	static CStrArg getPropertyName(const MetaClassProperty* pMetaClassProperty) {
-		return pMetaClassProperty->getName();
+	static CStrArg getPropertyName(const MetaClassProperty& prop) {
+		return prop.getName();
 	}
 
-	RbTree<MetaClassProperty*, CStr, getPropertyName> mProperties;
+	RbTree<
+		MetaClassProperty,
+		CStr,
+		getPropertyName,
+		NodeFinder<MetaClassProperty,
+		&MetaClassProperty::mTreeNode>> mProperties;
 };
 
 template<typename T>

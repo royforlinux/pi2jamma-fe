@@ -4,30 +4,39 @@
 #include "core/container/LifetimePolicy.hpp"
 #include "core/Compare.hpp"
 
-template<typename T>
-class RbTreeNode final : public RbTreeNodeBase
+template<typename ItemType, RbTreeNode ItemType::*Member >
+struct NodeFinder
 {
-public:
-    RbTreeNode(T item)
-        : mItem(item) {
+
+
+    static size_t offset() {
+
+        RbTreeNode& member = ((ItemType*)(nullptr))->*Member;
+
+        const size_t o =
+            reinterpret_cast<char*>(&member)
+                - reinterpret_cast<char*>((ItemType*)(nullptr));   
+
+        return o;   
     }
 
-    T& getItem() {
-        return mItem;
+    static ItemType& fromNode(const RbTreeNode& node) {
+        return
+            *reinterpret_cast<ItemType*>(
+                const_cast<char*>(
+                    reinterpret_cast<const char*>(&node) - offset()));
     }
 
-    const T& getItem() const {
-        return mItem;
+    static RbTreeNode& toNode(const ItemType& itemType) {
+        return *((RbTreeNode*)(& (itemType.*Member)));
     }
-
-
-    T mItem;
 };
 
 template<
     typename ItemType,
     typename KeyType,
     typename Arg<KeyType>::Type(*GetKey)(typename Arg<ItemType>::Type),
+    typename NodeFinderType,
     typename LifetimePolicy = LifetimePolicyNone<ItemType> >
 class RbTree final
 {
@@ -37,64 +46,67 @@ public:
         clear();
     }
 
-    using NodeType = RbTreeNode<ItemType>;
-
-    void insert(NodeType& node) {
+    void insert(const ItemType& item) {
         mTree.insert(
-            &node,
-            [](const RbTreeNodeBase* pN1, const RbTreeNodeBase* pN2) {
+            & NodeFinderType::toNode(item),
+            [](const RbTreeNode* n1, const RbTreeNode* n2) {
                 return
                     Comparer<KeyType>::Compare(
-                        GetKey(static_cast<const NodeType*>(pN1)->getItem()),
-                        GetKey(static_cast<const NodeType*>(pN2)->getItem()));
+                        GetKey(NodeFinderType::fromNode(*n1)),
+                        GetKey(NodeFinderType::fromNode(*n2)));
 
             } );
 
-        LifetimePolicy::addRef(node.getItem());
+        LifetimePolicy::addRef(item);
     }
 
-    NodeType* find(typename Arg<KeyType>::Type key) {
+    ItemType* find(typename Arg<KeyType>::Type key) {
         return
-            const_cast<RbTreeNode<ItemType>*>(
+            const_cast<ItemType*>(
                 const_cast<const RbTree*>(this)->find(key));
     }
 
-    const NodeType* find(typename Arg<KeyType>::Type key) const {
-        const RbTreeNodeBase* pNodeBase = mTree.find(
-            [&key](const RbTreeNodeBase* pRhs) {
+    const ItemType* find(typename Arg<KeyType>::Type key) const {
+        const RbTreeNode* pNodeBase = mTree.find(
+            [&key](const RbTreeNode* rhs) {
                 return
                     Comparer<KeyType>::Compare(
-                        GetKey(static_cast<const NodeType*>(pRhs)->getItem()),
+                        GetKey(NodeFinderType::fromNode(*rhs)),
                         key);
             });
 
-        return static_cast<const RbTreeNode<ItemType>*>(pNodeBase);
+        if(nullptr == pNodeBase) {
+            return nullptr;
+        }
+
+        return & NodeFinderType::fromNode(*pNodeBase);
     }
 
-    const NodeType* getFirst() const {
-        return static_cast<const NodeType*>(mTree.getFirst());
+    #if 0
+    const RbTreeNode* getFirst() const {
+        return static_cast<const RbTreeNode*>(mTree.getFirst());
     }   
 
-    NodeType* getFirst() {
-        return static_cast<NodeType*>(mTree.getFirst());
+    RbTreeNode* getFirst() {
+        return static_cast<RbTreeNode*>(mTree.getFirst());
     }
 
-    const NodeType* getNext(const NodeType* pPrev) const {
+    const RbTreeNode* getNext(const RbTreeNode* pPrev) const {
         return
-            static_cast<const NodeType*>(
+            static_cast<const RbTreeNode*>(
                 mTree.getNext(
                     pPrev));
     }
 
-    NodeType* getNext(NodeType* pPrev) {
+    RbTreeNode* getNext(RbTreeNode* pPrev) {
         return
-            static_cast<NodeType*>(
+            static_cast<RbTreeNode*>(
                 mTree.getNext(pPrev));
     }
 
     ItemType* findItem(typename Arg<KeyType>::Type key)
     {
-        RbTreeNode<ItemType>* pNode = find(key);
+        RbTreeNode* pNode = find(key);
         if(nullptr == pNode) {
             return nullptr;
         }
@@ -104,7 +116,7 @@ public:
 
     const ItemType* findItem(typename Arg<KeyType>::Type key) const
     {
-        const RbTreeNode<ItemType>* pNode = find(key);
+        const RbTreeNode* pNode = find(key);
         if(nullptr == pNode) {
             return nullptr;
         }
@@ -112,9 +124,12 @@ public:
         return & pNode->getItem();
     }
 
-    void remove(NodeType& node) {
-        mTree.remove(&node);
+    #endif
+
+    void remove(const ItemType& item) {
+        mTree.remove(& NodeFinderType::toNode(item));
     }
+
     void clear() {
         for(auto&& i: *this) {
             LifetimePolicy::release(i);
@@ -127,7 +142,7 @@ public:
         public:
             iterator(
                 RbTree* pTree,
-                RbTreeNode<ItemType>* pNode)
+                RbTreeNode* pNode)
                 : mpTree(pTree)
                 , mpNode(pNode) {
             }
@@ -138,25 +153,26 @@ public:
 
             iterator& operator++() {
                 ASSERT(nullptr != mpNode);
-                mpNode = mpTree->getNext(mpNode);
+                mpNode = mpTree->mTree.getNext(mpNode);
                 return *this;
             }
 
             ItemType& operator*() {
-                return mpNode->getItem();
+                ASSERT(nullptr != mpNode);
+                return NodeFinderType::fromNode(*mpNode);
             }
 
         private:
 
             RbTree* mpTree;
-            RbTreeNode<ItemType>* mpNode;            
+            RbTreeNode* mpNode;            
     };
 
     class const_iterator {
         public:
             const_iterator(
                 const RbTree* pTree,
-                const RbTreeNode<ItemType>* pNode)
+                const RbTreeNode* pNode)
                 : mpTree(pTree)
                 , mpNode(pNode) {
             }
@@ -167,23 +183,24 @@ public:
 
             const_iterator& operator++() {
                 ASSERT(nullptr != mpNode);
-                mpNode = mpTree->getNext(mpNode);
+                mpNode = mpTree->mTree.getNext(mpNode);
                 return *this;
             }
 
-            const ItemType& operator*() {
-                return mpNode->getItem();
+            ItemType& operator*() {
+                ASSERT(nullptr != mpNode);
+                return NodeFinderType::fromNode(*mpNode);
             }
 
         private:
             
             const RbTree* mpTree;
-            const RbTreeNode<ItemType>* mpNode;
+            const RbTreeNode* mpNode;
 
     };
 
     iterator begin() {
-        return iterator(this, getFirst());
+        return iterator(this, mTree.getFirst());
     }
 
     iterator end() {
@@ -191,7 +208,7 @@ public:
     }
 
     const_iterator begin() const {
-        return const_iterator(this, getFirst());
+        return const_iterator(this, mTree.getFirst());
     }
 
     const_iterator end() const {
