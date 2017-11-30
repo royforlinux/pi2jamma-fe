@@ -9,6 +9,7 @@ public:
 
 	List(
 		Element* pParent,
+		const Rect& rect,
 		ref<Font> refFont,
 		const Color& unselectedColor,
 		const Color& selectedColor,

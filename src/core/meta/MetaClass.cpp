@@ -101,6 +101,11 @@ Result MetaClassBase::save(const void* pVoidObject, ObjectWriteStream& writeStre
 		}
 	}
 
+	r = writeStream.endObject();
+	if(r.peekFailed()) {
+		return r;
+	}
+	
 	return Result::makeSuccess();
 }
 

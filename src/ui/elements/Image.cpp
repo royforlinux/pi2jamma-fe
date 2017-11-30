@@ -2,8 +2,9 @@
 
 Image::Image(
 	Element* pParent,
+	const Rect& rect,
 	const char* pFilePath)
-	: Element(pParent)
+	: Element(pParent, rect)
 {
 	Result r = Application::get()->loadSurface(mrefSurface, pFilePath);
 	r.ignore();

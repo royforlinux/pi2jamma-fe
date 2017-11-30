@@ -8,6 +8,7 @@ class Image final : public Element
 
 		Image(
 			Element* pParent,
+			const Rect& rect,
 			const char* filePath);
 
 	protected:

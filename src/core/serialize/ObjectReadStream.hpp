@@ -6,7 +6,7 @@ public:
 
 	virtual ~ObjectReadStream() = default;
 
-	virtual Result readNativeInteger(uint64_t& integer) = 0;
+	virtual Result readNativeInteger(int64_t& integer) = 0;
 	virtual Result readNativeFloat(double& flt) = 0;
 	virtual Result readString(std::string& str) = 0;
 	virtual Result readBoolean(bool& boolean) = 0;
@@ -26,7 +26,7 @@ public:
 
 	template<typename T>
 	Result readInteger(T& t) {
-		uint64_t i= 0;
+		int64_t i= 0;
 		Result r = readNativeInteger(i);
 		if(r.peekFailed()) {
 			return r;

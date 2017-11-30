@@ -12,11 +12,12 @@ OmStringEscapeItems OM_STRING_C_ESCAPE_ITEMS = {
         OM_STRING_C_ESCAPE_ITEM_VALUES,
         sizeof ( OM_STRING_C_ESCAPE_ITEM_VALUES ) / sizeof( OmStringEscapeItem ) };
 
-const std::string OmStringEscape(
-    Arg< std::string >::Type s,
+void OmStringEscape(
+    std::string& stringOut,
+    StringSpan s,
     Arg< OmStringEscapeItems >::Type escapeItems )
 {
-    std::string res;
+    stringOut.clear();
 
     auto len = s.size();
 
@@ -46,7 +47,7 @@ const std::string OmStringEscape(
                 if(patternFound) {
                     const char* pReplacementPattern = escapeItems.mpItems[j].mpEscapeSequence;
 
-                    res.insert(i, pReplacementPattern);                    
+                    stringOut.insert(i, pReplacementPattern);                    
                     found = true;
                     break;
                 }
@@ -54,11 +55,9 @@ const std::string OmStringEscape(
         }
 
         if(! found) {
-            res.push_back(s[i]);
+            stringOut.push_back(s[i]);
         }
     }
-
-    return res;
 }
 
 #include <stdarg.h>  // For va_start, etc.

@@ -2,6 +2,7 @@
 
 #include "ui/ui.hpp"
 #include "ui/HorizontalAlignment.hpp"
+#include "core/Property.hpp"
 
 class Theme
 {
@@ -9,16 +10,17 @@ class Theme
 
 		static void initialize();
 
-		Rect mTitleRect;
-		Color mTitleTextColor;
-		HorizontalAlignment mTitleAlignment;
+		PROPERTY(Rect, TitleRect);
+		PROPERTY(Color, TitleTextColor);
+		PROPERTY(HorizontalAlignment, TitleAlignment);
 		
-		Rect mSnapsRect;
+		PROPERTY(Rect, SnapsRect);
 
-		Rect mMenuRect;
-		Color mMenuTextColor;
-		Color mMenuTextHighlightColor;
+		PROPERTY(Rect, MenuRect);
+		PROPERTY(Color, MenuTextColor);
+		PROPERTY(Color, MenuTextHighlightColor);
 		
-		size_t mMenuTextSize;
-		HorizontalAlignment mMenuTextAlignment;
+		PROPERTY(size_t, MenuTextSize);
+		PROPERTY(HorizontalAlignment, MenuTextAlignment);
+
 };

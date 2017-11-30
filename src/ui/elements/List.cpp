@@ -3,13 +3,14 @@
 
 List::List(
 	Element* pParent,
+	const Rect& rect,
 	ref<Font> refFont,
 	const Color& unselectedColor,
 	const Color& selectedColor,
 	UnitType lineHeight,
 	std::vector<std::string> items,
 	HorizontalAlignment horizontalAlignment)
-	: Element(pParent)
+	: Element(pParent, rect)
 	, mrefFont(std::move(refFont))
 	, mUnselectedColor(unselectedColor)
 	, mSelectedColor(selectedColor)

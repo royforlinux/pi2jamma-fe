@@ -6,8 +6,6 @@
 		"Height" : 100
 	},
 
-	"Background" : "background.png",
-
 	"TitleRect" : {
 		"X" : 67,
 		"Y" : 17,

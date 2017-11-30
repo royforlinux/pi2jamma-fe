@@ -23,9 +23,15 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	result = loadJson(
 		mConfiguration,
 		CommandLineHandlerConfigFile::sSingleton.mConfigFile);
+
+
+
 	if(result.peekFailed()) {
 		return result;
 	}
+	
+	std::string d = dump(mConfiguration);
+	LogFmt("%s\n", d.c_str());
 
 	const char* pThemesDir = "/home/x/arcade/pi2jamma-fe/data/themes";
 	const char* pThemeDir = "vertical/burgertime";
@@ -39,15 +45,19 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
+	d = dump(theme);
+	LogFmt("%s\n", d.c_str());
+
 	mrefBackground =
 		make_ref<Image>(
 			nullptr,
+			Rect(0, 0, 240, 320),
 			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/background.png");
 
 	result =
 		loadFont(
 			mrefFont,
-			theme.mMenuTextSize,
+			theme.getMenuTextSize(),
 			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/vgafix.fon");
 
 	if(result.peekFailed()) {
@@ -57,11 +67,10 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	mrefTitle =
 		make_ref<Label>(
 			nullptr,
+			theme.getTitleRect(),
 			mrefFont,
-			theme.mTitleTextColor,
+			theme.getTitleTextColor(),
 			"Title");
-
-	mrefTitle->setRect(theme.mTitleRect);
 
 	std::vector<std::string> items({
 		"pacman",
@@ -77,13 +86,12 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	mrefList =
 		make_ref<List>(
 			nullptr,
+			theme.getMenuRect(),
 			mrefFont,
-			theme.mMenuTextColor,
-			theme.mMenuTextHighlightColor,
-			theme.mMenuTextSize,
+			theme.getMenuTextColor(),
+			theme.getMenuTextHighlightColor(),
+			theme.getMenuTextSize(),
 			std::move(items));
-
-	mrefList->setRect(theme.mMenuRect);
 
 	return Result::makeSuccess();
 }

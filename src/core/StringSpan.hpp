@@ -21,6 +21,7 @@ public:
 
 	const char& operator[](size_t i) const;
 
+
 	const char* begin() const;
 	const char* end() const;
 

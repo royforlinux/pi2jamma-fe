@@ -3,10 +3,11 @@
 
 Label::Label(
 	Element* pParent,
+	const Rect& rect,
 	const ref<Font>& refFont,
 	const Color& color,
 	const char* text)
-	: Element(pParent)
+	: Element(pParent, rect)
 {
 	Result r = Application::get()->renderText(mrefSurface, refFont, color, text);
 	r.ignore();

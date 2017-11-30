@@ -8,6 +8,7 @@ public:
 
 	Label(
 		Element* pParent,
+		const Rect& rect,
 		const ref<Font>& refFont,
 		const Color& color,
 		const char* text);		

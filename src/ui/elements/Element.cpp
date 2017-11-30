@@ -1,7 +1,8 @@
 #include "ui/elements/Element.hpp"
 
-Element::Element(Element* pParent)
+Element::Element(Element* pParent, const Rect& rect)
 	: mpParent(pParent)
+	, mRect(rect)
 	, mListNode(this)
 {
 	if(mpParent) {

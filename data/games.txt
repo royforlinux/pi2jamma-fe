@@ -1,0 +1,5 @@
+[
+	{ "name" : "Dig Dug", "rom" : "digdug.zip" },
+	{ "name" : "Pacman", "rom" : "pacman.zip"
+	{ "name" : "Galaxian", "rom" : "galazian.zip" }
+]

@@ -1,17 +1,20 @@
 #pragma once
 
+#include "core/StringSpan.hpp"
+
 class ObjectWriteStream
 {
 public:
 	virtual ~ObjectWriteStream() = default;
 
 	virtual Result writeNativeFloat(double flt) = 0;
-	virtual Result writeNativeInt(uint64_t i) = 0;
+	virtual Result writeNativeInt(int64_t i) = 0;
 	virtual Result writeBoolean(bool b) = 0;
-	virtual Result writeCVariableName(CStr c) = 0;
+	virtual Result writeCVariableName(StringSpan s) = 0;
+	virtual Result writeString(StringSpan s) = 0;
 
 	virtual Result beginObject() = 0;
-	virtual Result beginField(CStr name) = 0;
+	virtual Result beginField(StringSpan s) = 0;
 	virtual Result endField() = 0;
 	virtual Result endObject() = 0;
 	virtual Result beginArray() = 0;

@@ -8,6 +8,8 @@
 #include <typeinfo>
 #include <string>
 
+#include "core/StringSpan.hpp"
+
 extern const std::string gEmptyString;
 
 #define SL(x) x
@@ -57,6 +59,7 @@ struct OmStringEscapeItems
 
 extern OmStringEscapeItems OM_STRING_C_ESCAPE_ITEMS;
 
-const std::string OmStringEscape(
-    Arg< std::string >::Type s,
+void OmStringEscape(
+    std::string& stringOut,
+    StringSpan s,
     Arg< OmStringEscapeItems >::Type escapeItems = OM_STRING_C_ESCAPE_ITEMS );

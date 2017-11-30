@@ -11,7 +11,7 @@ class Element : public RefCounted
 {
 	public:
 
-		Element(Element* pParent);
+		Element(Element* pParent, const Rect& rect);
 
 		virtual ~Element();
 
@@ -29,9 +29,9 @@ class Element : public RefCounted
 		virtual void resize(const Size& oldSize, const Size& newSize) = 0;
 
 	private:
-
-		Rect mRect;
+		
 		Element* mpParent;
+		Rect mRect;
 
 		using ListType = DlList<ref<Element>>;
 		ListType mChildren;

@@ -3,6 +3,8 @@
 #include "core/serialize/ObjectReadStream.hpp"
 #include "core/parse/Parse.hpp"
 
+#include <stack>
+
 template<typename ParserType>
 class JsonReadStream : public ObjectReadStream
 {
@@ -14,13 +16,14 @@ public:
 		: mParser(std::move(parser))
 	{}
 
-	virtual Result readNativeInteger(uint64_t& integer) override;
+	virtual Result readNativeInteger(int64_t& integer) override;
 	virtual Result readNativeFloat(double& flt) override
 	{
 		return Result::makeFailureWithStringLiteral("readFloat not implemented.");
 	}
 
 	virtual Result readString(std::string& str) override;
+    virtual Result peekString(bool& isString) override;
 
 	virtual Result readBoolean(bool& boolean) override;
 
@@ -39,17 +42,9 @@ public:
 		return Result::makeFailureWithStringLiteral("nextArrayItem not implemented.");
 	}
 
-	virtual Result peekObject(bool& isObject) override
-	{
-		return Result::makeFailureWithStringLiteral("peekObject not implemented.");
+	virtual Result peekObject(bool& isObject) override;
 
-	}
 
-	virtual Result peekString(bool& isString) override
-	{
-		return Result::makeFailureWithStringLiteral("peekString not implemented.");
-
-	}
 	
 	virtual Result beginObject() override;
 
@@ -67,17 +62,86 @@ private:
 
 	Result makeEofError();
 
+    struct Object {
+        Object()
+            : mFieldCount(0)
+            , mInField(false)
+        {
+        }
 
-	ParserType mParser;
+        unsigned int mFieldCount;
+        bool mInField;
+    };
+
+    ParserType mParser;
+    std::stack<Object> mStack;
 };
 
 template<typename ParserType>
-Result rJsonReadStream<ParserType>::readNativeInteger(uint64_t& integer)
+Result JsonReadStream<ParserType>::readNativeInteger(int64_t& integer)
+{
+    integer = 0;
+
+    OmParseEatWhite(&mParser);
+
+    CharType c;
+    if(!mParser.Next(&c)) {
+        return makeEofError();
+    }
+
+    int64_t negMult = 1;
+
+    if(c == '-')
+    {
+        negMult = -1;
+        if(!mParser.Next(&c)) {
+            return makeEofError();
+        }
+    }
+
+    // Remaining number
+
+    if(!OmCharIsNumber(c)) {
+        return
+            Result::makeFailureWithString(
+                formatString(
+                    "Expected decimal digit, not '%c'", c));
+    }
+
+    char digit = c - '0';
+    // LogFmt("FirstDigit: %d\n", (int)digit);
+
+    integer = (integer *10) + digit;
+
+    // Remaining digits
+    while(true) {
+        if(!mParser.Peek(&c) || (!OmCharIsNumber(c))) {
+            break;
+        }
+
+        char digit = c - '0';
+        // LogFmt("Digit: %d\n", (int)digit);
+
+        integer = (integer * 10) + digit;
+
+        mParser.Next(&c);
+    }
+
+    integer*= negMult;
+
+    // LogFmt("Integer! %d\n", (int) integer);
+
+    return Result::makeSuccess();    
+}
+
+template<typename ParserType>
+Result JsonReadStream<ParserType>::peekString(bool& isString)
 {
     CharType c;
-    mParser.Next(&c);
-
+    isString = (mParser.Peek(&c) && ('\"' == c));
+    return Result::makeSuccess();
 }
+
 
 template< typename ParserType >
 Result JsonReadStream< ParserType >::readString( std::string& s )
@@ -156,6 +220,26 @@ Result JsonReadStream< ParserType >::readString( std::string& s )
         mParser.Next();
     }
     
+    // LogFmt("Read string: %s\n", s.c_str());
+
+    return Result::makeSuccess();
+}
+
+template<typename ParserType>
+Result JsonReadStream<ParserType>::peekObject(bool& isObject)
+{
+    OmParseEatWhite(&mParser);
+
+    CharType c;
+    
+    if (!mParser.Peek(&c) || (c != '{'))
+    {
+        isObject = false;
+        return Result::makeSuccess();
+    }
+
+    isObject = true;
+
     return Result::makeSuccess();
 }
 
@@ -176,7 +260,9 @@ Result JsonReadStream<ParserType>::beginObject()
     	return makeError(formatString("Expected '{', not %c", c));
     }
 
-    Log("Object!\n");
+    mStack.push(Object());
+
+    //Log("Object!\n");
     
     return Result::makeSuccess();
 }
@@ -184,6 +270,9 @@ Result JsonReadStream<ParserType>::beginObject()
 template<typename ParserType>
 Result JsonReadStream<ParserType>::endObject()
 {
+    ASSERT(mStack.size() > 0);
+    mStack.pop();
+
     OmParseEatWhite(&mParser);
     CharType c;
     if(!mParser.Next(&c)) {
@@ -203,14 +292,35 @@ Result JsonReadStream<ParserType>::endObject()
 template<typename ParserType>
 Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 {
+    ASSERT(mStack.size() > 0);
+    Object& object = mStack.top();   
+    ASSERT(!object.mInField); 
+
     gotField = false;
 
 	OmParseEatWhite(&mParser);
 
     CharType c;
-    if(!mParser.Peek(&c)) {
-        return makeEofError();
+
+    // LogFmt("FieldCount: %d\n", (int) object.mFieldCount);
+
+    if(object.mFieldCount > 0) {
+        if(!mParser.Peek(&c)) {
+            return makeEofError();
+        }
+        // LogFmt("FieldCount > 0, char: %c\n", c);
+
+        if(c != ',') {
+            return Result::makeSuccess();
+        }
+
+        mParser.Next(&c);
+        OmParseEatWhite(&mParser);
     }
+
+    mParser.Peek(&c);
+
+    // LogFmt("FieldChar %c\n", c);
 
     if( c != '\"') {
         return Result::makeSuccess();
@@ -221,27 +331,35 @@ Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 		return r;
 	}
 
-	LogFmt("FieldName: %s\n", name.c_str());
+	// LogFmt("FieldName: %s\n", name.c_str());
 	OmParseEatWhite(&mParser);
 
 	if( !mParser.Next(&c)) {
 		return makeEofError();
 	}
 
-	LogFmt("char: %c\n", c);
+	// LogFmt("char: %c\n", c);
 
 	if( c != ':') {
 		return makeError("Expected ':'");
 	}
 
 	gotField = true;
-	LogFmt("Field! %s\n", name.c_str());
+	// LogFmt("Field! %s\n", name.c_str());
+
+    object.mInField = true;
 	return Result::makeSuccess();
 }
 
 template<typename ParserType>
 Result JsonReadStream<ParserType>::endField()
 {
+    ASSERT(mStack.size() > 0);
+    Object& object = mStack.top();
+    ASSERT(object.mInField);
+    object.mInField = false;
+    object.mFieldCount++;
+
     OmParseEatWhite(&mParser);
     CharType c;
 
@@ -252,7 +370,6 @@ Result JsonReadStream<ParserType>::endField()
 
     if(c == ',' )
     {
-        mParser.Next(&c);
         return Result::makeSuccess();
 
     }
