@@ -1,5 +1,6 @@
 #pragma once
 
+#if 0
 #include "core/json/Json.hpp"
 #include "core/json/Parse.hpp"
 #include "core/Type.hpp"
@@ -554,3 +555,5 @@ const bool JsonParser< PARSER_T >::ParseNumber( JsonBase::Ref* pRefJson )
     
     return OmTrue;
 }
+
+#endif

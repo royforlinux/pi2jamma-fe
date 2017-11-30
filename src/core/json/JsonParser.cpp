@@ -1,3 +1,4 @@
+#if 0
 #include "core/json/JsonParser.hpp"
 #include "core/json/Parser.hpp"
 #include "file/File.hpp"
@@ -45,3 +46,5 @@ Result JsonLoadFromFile( Json& json, const char* pFilename )
     
     return Result::makeSuccess();
 };
+
+#endif

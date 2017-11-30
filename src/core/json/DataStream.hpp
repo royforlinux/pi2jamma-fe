@@ -1,5 +1,5 @@
 #pragma once
-
+#if 0
 #include "core/json/Decoder.hpp"
 //#include "om/OmStream.h"
 
@@ -90,3 +90,4 @@ inline OmBool OmDataStream< ElementType >::GetIsEof( void )
     return ( mPosition >= mNumElements );
 }
 
+#endif

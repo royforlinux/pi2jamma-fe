@@ -1,5 +1,5 @@
 #pragma once
-
+#if 0
 
 template< typename STREAM_TYPE >
 class OmUtf8Decoder
@@ -176,3 +176,5 @@ const int OmUtf8Decoder< STREAM_TYPE >::decodeMultibyte( int c )
     }
     return UTF8_ERROR;
 }
+
+#endif

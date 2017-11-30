@@ -1,9 +1,13 @@
 {
-	"UpKey" : "UpArrow",
-	"DownKey" : "DownArrow",
-	"LeftKey" : "LeftArrow",
-	"RightKey" : "RightArrow",
-	"SelectKey" : "Space",
-	"BackKey" : "Escape",
+	"Keys" :
+	{
+		"Up" : "UpArrow",
+		"Down" : "DownArrow",
+		"Left" : "LeftArrow",
+		"Right" : "RightArrow",
+		"Select" : "Space",
+		"Back" : "Escape"
+	},
+
 	"SaveConfigOnExit" : true
 }

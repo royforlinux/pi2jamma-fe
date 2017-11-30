@@ -13,7 +13,7 @@ File::~File()
 	close();
 }
 
-Result File::open(const char* pFilePath, OpenMode openMode) {
+Result File::open(CStr filePath, OpenMode openMode) {
 	close();
 
 	const char* pMode =
@@ -23,13 +23,13 @@ Result File::open(const char* pFilePath, OpenMode openMode) {
 
 	mpFile =
 		fopen(
-			pFilePath,
+			filePath.c_str(),
 			pMode);
 
 
 	if(nullptr == mpFile) {
 		std::stringstream ss;
-		ss << "Failed to open file:'" << pFilePath <<"', Mode:'" << pMode << "'.";
+		ss << "Failed to open file:'" << filePath.c_str() <<"', Mode:'" << pMode << "'.";
 
 		return Result::makeFailureWithString(ss.str());
 
@@ -88,35 +88,4 @@ void File::close()
 	if(nullptr != mpFile) {
 		fclose(mpFile);
 	}
-}
-
-
- Result File::load(std::string& s, const char* pFilePath) {
-
-	File file;
-
-	Result r = file.open(pFilePath, File::OpenMode::Read);
-	if(r.peekFailed()) {
-		return r;
-	}
-
-	size_t fileSize = 0;
-	r = file.getSize(fileSize);
-	if(r.peekFailed()) {
-		return r;
-	}
-
-	std::string tempString;
-	tempString.reserve(fileSize + 1);
-
-	r = file.readExactly(&tempString[0], fileSize);
-	if(r.peekFailed()) {
-		return r;
-	}
-
-	tempString[fileSize] = '0';
-
-	s = std::move(tempString);
-
-	return Result::makeSuccess();
 }

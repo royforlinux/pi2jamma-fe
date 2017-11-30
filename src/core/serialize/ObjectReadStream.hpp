@@ -18,9 +18,11 @@ public:
 	virtual Result peekString(bool& isString) = 0;
 	
 	virtual Result beginObject() = 0;
-	virtual Result beginField(bool& done, CStr& name) = 0;
+	virtual Result beginField(bool& done, std::string& name) = 0;
 	virtual Result endField() = 0;
 	virtual Result endObject() = 0;
+
+	virtual Result makeError(CStr text) = 0;
 
 	template<typename T>
 	Result readInteger(T& t) {

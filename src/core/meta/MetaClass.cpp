@@ -36,25 +36,32 @@ Result MetaClassBase::load(void* object, ObjectReadStream& readStream) const
 
 	while(1)
 	{
-		CStr name;
-		bool moreFields = false;
+		std::string name;
+		bool gotField = true;
 
-		r = readStream.beginField(moreFields, name);
+		r = readStream.beginField(gotField, name);
 		if(r.peekFailed()) {
 			return r;
 		}
 		
-		if(!moreFields) {
+		if(!gotField) {
 			break;
 		}
 
 		const MetaClassProperty* pProp = mProperties.find(name);
 
 		if(nullptr == pProp) {
-			return Result::makeFailureWithString(formatString("%s is not a member of %s\n"));
+			return
+				readStream.makeError(
+					formatString("%s is not a member of %s",
+					name.c_str(),
+					getName().c_str()));
 		}
 
-		pProp->load(object, readStream);
+		r = pProp->load(object, readStream);
+		if(r.peekFailed()) {
+			return r;
+		}
 
 		r = readStream.endField();
 		if(r.peekFailed()) {

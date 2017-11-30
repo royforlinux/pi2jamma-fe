@@ -1,4 +1,4 @@
-
+#if 0
 #include "core/json/Json.hpp"
 
 ref<JsonNull> JsonNull::sSingleton = make_ref<JsonNull>();
@@ -25,5 +25,7 @@ void JsonBase::SetStringValueForKey(
     Arg< std::string >::Type val )
 {
 }
+
+#endif
 
 

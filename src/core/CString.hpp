@@ -5,12 +5,18 @@
 #include "core/debug.hpp"
 
 #include <memory.h>
+#include <string>
 
 extern const char* OM_EMPTY_C_STRING;
 
 class CStr
 {
 public:
+
+    CStr(const std::string& str)
+        : mpStr(str.c_str())
+    {
+    }
 
     CStr(const char* pStr = "")
         : mpStr(pStr) {

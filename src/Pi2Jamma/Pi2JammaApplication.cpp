@@ -5,7 +5,7 @@
 #include "core/file/FilePath.hpp"
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
-#include "core/serialize/Serializer.hpp"
+#include "core/serialize/json/JsonSerialize.hpp"
 #include "core/CommandLine/CommandLine.hpp"
 
 Result Pi2JammaApplication::initialize(int argc, const char* argv[])
@@ -20,7 +20,9 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
-	result = load(mConfiguration, CommandLineHandlerConfigFile::sSingleton.mConfigFile);
+	result = loadJson(
+		mConfiguration,
+		CommandLineHandlerConfigFile::sSingleton.mConfigFile);
 	if(result.peekFailed()) {
 		return result;
 	}
@@ -31,7 +33,7 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	std::string s = joinPath({pThemesDir, pThemeDir, "config.txt" });
 
 	Theme theme;
-	result = load(theme, s.c_str());
+	result = loadJson(theme, s.c_str());
 
 	if(result.peekFailed()) {
 		return result;

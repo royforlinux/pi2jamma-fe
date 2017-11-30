@@ -34,23 +34,6 @@ Result load(T& t, ObjectReadStream& readStream) {
 }
 
 template<typename T>
-Result load(T& t, CStr fileName)
-{
-	ASSERT(false);
-	return Result::makeFailureNotImplemented();
-	#if 0
-	Json json;
-
-	Result result = JsonLoadFromFile(json, fileName.c_str());
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	return load(t, json);
-	#endif
-};
-
-template<typename T>
 Result save(const T& t, ObjectWriteStream& writeStream) {
 	return Serializer<T>::save(t, writeStream);
 }
