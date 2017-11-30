@@ -33,6 +33,8 @@ List::List(
 	if(mItems.size() > 0 ) {
 		setSelection(0);
 	}
+
+	resize(Size(0,0), rect.getSize());
 }
 
 void List::setSelection(const int itemIndex)
@@ -85,25 +87,6 @@ ref<Surface> List::createSurface(
 	return refSurface;
 }
 
-#if 0
-
-struct FitRectResult
-{
-	Rect mTargetRect;
-	Rect mSourceRect;
-}
-
-FitRectResult fitRect(
-	HorizontalAlignment horizontalAlignment,
-	VerticalAlignment verticalAlignment,
-	const Rect& sourceRect,
-	const Rect& targetRect )
-{
-
-}
-
-#endif
-	
 
 void List::render(RenderContext& renderContext)
 {
