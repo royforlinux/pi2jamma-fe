@@ -28,12 +28,12 @@ public:
 
 		}
 
-	virtual Result load(void* pItem, const Json& json) const override {
-		return Serializer<T>::load(*static_cast<T*>(pItem), json);
+	virtual Result load(void* pItem, ObjectReadStream& readStream) const override {
+		return Serializer<T>::load(*static_cast<T*>(pItem), readStream);
 	}
 
-	virtual Result save(const void* pItem, Json& json) const override {
-		return Serializer<T>::save(*static_cast<const T*>(pItem), json);
+	virtual Result save(const void* pItem, ObjectWriteStream& writeStream) const override {
+		return Serializer<T>::save(*static_cast<const T*>(pItem), writeStream);
 	}
 
 };

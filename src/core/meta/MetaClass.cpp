@@ -27,51 +27,71 @@ MetaClassProperty::~MetaClassProperty()
 }
 
 
-Result MetaClassBase::load(void* object, const Json& json) const
+Result MetaClassBase::load(void* object, ObjectReadStream& readStream) const
 {
-	if(!json.IsObject() ) {
-		return Result::makeFailureWithStringLiteral("Not a class");
+	Result r = readStream.beginObject();
+	if(r.peekFailed()) {
+		return r;
 	}
 
-	for(auto&& prop : mProperties) {
+	while(1)
+	{
+		CStr name;
+		bool moreFields = false;
 
-		CStr propertyName = prop.getName();
-
-		Json propertyJson = json[propertyName];
-
-		if(propertyJson.IsNull()) {
-
-			// LogFmt("Load property (Not Found):'%s'\n", pPropertyName);		
-
-			continue;
+		r = readStream.beginField(moreFields, name);
+		if(r.peekFailed()) {
+			return r;
+		}
+		
+		if(!moreFields) {
+			break;
 		}
 
-		// LogFmt("Load property:%s\n", pPropertyName);		
+		const MetaClassProperty* pProp = mProperties.find(name);
 
-		Result r = prop.load(object, propertyJson);
-		if (r.peekFailed()) {
+		if(nullptr == pProp) {
+			return Result::makeFailureWithString(formatString("%s is not a member of %s\n"));
+		}
+
+		pProp->load(object, readStream);
+
+		r = readStream.endField();
+		if(r.peekFailed()) {
+			return r;
+		}
+	}
+
+	return readStream.endObject();
+}
+
+Result MetaClassBase::save(const void* pVoidObject, ObjectWriteStream& writeStream) const
+{
+	Result r = writeStream.beginObject();
+	if(r.peekFailed()) {
+		return r;
+	}
+
+	//
+	// TODO: Here write out in declaration order (need another list):
+	//
+	for(auto&& property : mProperties) {
+
+		r = writeStream.beginField(property.getName());
+		if(r.peekFailed()) {
 			return r;
 		}
 
-	}
-
-	return Result::makeSuccess();
-}
-
-Result MetaClassBase::save(const void* pVoidObject, Json& json) const
-{
-	json = Json(make_ref<JsonObject>());
-
-	for(auto&& property : mProperties) {
-
-		Json propertyJson;
-		Result r = property.save(pVoidObject, propertyJson);
+		r = property.save(pVoidObject, writeStream);
 
 		if( r.peekFailed()) {
 			return r;
 		}
 
-		json.SetValueForKey(std::string(property.getName().c_str()), propertyJson);
+		r = writeStream.endField();
+		if(r.peekFailed()) {
+			return r;
+		}
 	}
 
 	return Result::makeSuccess();

@@ -12,6 +12,6 @@ namespace ui
 template<>
 struct Serializer<Color>
 {
-	static Result load( Color& color, const Json& json);
-	static Result save( const Color& color, Json& json);	
+	static Result load( Color& color, ObjectReadStream& readStream);
+	static Result save( const Color& color, ObjectWriteStream& writeStream);	
 };

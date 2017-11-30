@@ -1,40 +1,44 @@
 #pragma once
 
-#include "core/json/JsonParser.hpp"
 #include "core/meta/MetaSystem.hpp"
+#include "core/serialize/ObjectWriteStream.hpp"
+#include "core/serialize/ObjectReadStream.hpp"
 
 template<typename T >
 struct Serializer
 {
-	static Result load(T& object, const Json& json) {
+	static Result load(T& object, ObjectReadStream& readStream) {
 		MetaType* pType = nullptr;
 		Result r = Meta::get().findType<T>(pType);
 		if( r.peekFailed()) {
 			return r;
 		}
 
-		return pType->load(&object, json);
+		return pType->load(&object, readStream);
 	}
 
-	static Result save(const T& object, Json& json) {
+	static Result save(const T& object, ObjectWriteStream& writeStream) {
 		MetaType* pType = nullptr;
 		Result r = Meta::get().findType<T>(pType);
 		if(r.peekFailed()) {
 			return r;
 		}
 		
-		return pType->save(&object, json);
+		return pType->save(&object, writeStream);
 	}
 };
 
 template<typename T>
-Result load(T& t, const Json& json) {
-	return Serializer<T>::load(t,json);
+Result load(T& t, ObjectReadStream& readStream) {
+	return Serializer<T>::load(t,readStream);
 }
 
 template<typename T>
 Result load(T& t, CStr fileName)
 {
+	ASSERT(false);
+	return Result::makeFailureNotImplemented();
+	#if 0
 	Json json;
 
 	Result result = JsonLoadFromFile(json, fileName.c_str());
@@ -43,32 +47,23 @@ Result load(T& t, CStr fileName)
 	}
 
 	return load(t, json);
+	#endif
 };
 
 template<typename T>
-Result save(const T& t, Json& json) {
-	return Serializer<T>::save(t, json);
+Result save(const T& t, ObjectWriteStream& writeStream) {
+	return Serializer<T>::save(t, writeStream);
 }
 
 template<typename T>
 struct SerializerInt
 {
-	static Result load(T& object, const Json& json) {
-		if(json.GetType() != JsonBase::Type::Integer) {
-			return Result::makeFailureWithStringLiteral("Not an ingeger");
-		}
-
-		object = json.GetInteger<T>();
-		LogFmt("Load Int %d\n", int(object) );
-
-		return Result::makeSuccess();
+	static Result load(T& object, ObjectReadStream& readStream) {
+		return readStream.readInteger(object);
 	}
 
-	static Result save(const T& object, Json& json) {
-		LogFmt("Save Int %d\n", int(object) );
-		json = Json(object);
-		return Result::makeSuccess();
-
+	static Result save(T object, ObjectWriteStream& writeStream) {
+		return writeStream.writeInteger(object);
 	}
 };
 
@@ -84,20 +79,12 @@ template<> struct Serializer<unsigned long> : public SerializerInt<unsigned long
 template<typename T>
 struct SerializerFloat
 {
-	static Result load(T& object, const Json& json) {
-		if(json.GetType() != JsonBase::Type::Real) {
-			return Result::makeFailureWithStringLiteral("Not a float.");
-		}
-
-		object = json.GetFloat<T>();
-
-		return Result::makeSuccess();
+	static Result load(T& object, ObjectReadStream& readStream) {
+		return readStream.readFloat(object);
 	}
 
-	static Result save(const T& object, Json& json) {
-		json = Json(object);
-		return Result::makeSuccess();
-
+	static Result save(T object, ObjectWriteStream& writeStream) {
+		return writeStream.writeFloat(object);
 	}	
 };
 
@@ -107,20 +94,12 @@ template<> struct Serializer<double> : public SerializerFloat<double>{};
 template<>
 struct Serializer<bool>
 {
-	static Result load(bool& object, const Json& json) {
-		if(!json.IsBool()) {
-			return Result::makeFailureWithStringLiteral("Not a bool");
-		}
-
-		object = json.GetBool();
-
-		return Result::makeSuccess();
+	static Result load(bool& object, ObjectReadStream& readStream) {
+		return readStream.readBoolean(object);
 	}
 
-	static Result save(bool object, Json& json) {
-		json = Json(object);
-		return Result::makeSuccess();
-
+	static Result save(bool object, ObjectWriteStream& writeStream) {
+		return writeStream.writeBoolean(object);
 	}	
 };
 

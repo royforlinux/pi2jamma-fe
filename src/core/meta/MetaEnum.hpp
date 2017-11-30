@@ -132,15 +132,17 @@ public:
 		: MetaEnumBase(pName, sizeof(T), typeid(T))
 	{}
 
-	virtual Result load(void* pVoidEnum, const Json& json) const override
+	virtual Result load(void* pVoidEnum, ObjectReadStream& readStream) const override
 	{
-		if(!json.IsString()) {
-			return Result::makeFailureWithStringLiteral("Expected string for enum value");
+		std::string valueName;
+		Result r = readStream.readCVariableName(valueName);
+		if(r.peekFailed()){
+			return r;
 		}
 
 		const MetaEnumValueBase* pValueBase = 0;
 
-		Result r = findValue(pValueBase, json.GetString().c_str());
+		r = findValue(pValueBase, valueName.c_str());
 
 		if(r.peekFailed()) {
 			return r;
@@ -157,7 +159,7 @@ public:
 		return Result::makeSuccess();
 	}
 
-	virtual Result save(const void* pVoidEnum, Json& json) const override
+	virtual Result save(const void* pVoidEnum, ObjectWriteStream& writeStream) const override
 	{
 		const T* pEnum = static_cast<const T*>(pVoidEnum);
 
@@ -168,9 +170,7 @@ public:
 			return r;
 		}
 
-		json = Json(pValueBase->getName().c_str());
-
-		return Result::makeSuccess();
+		return writeStream.writeCVariableName(pValueBase->getName());
 	}
 };
 

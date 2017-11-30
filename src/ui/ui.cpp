@@ -99,20 +99,37 @@ Result parseColor(Color& color, StringSpan stringSpan)
 	return Result::makeSuccess();
 }
 
-Result Serializer<Color>::load(Color& color, const Json& json)
+Result Serializer<Color>::load(Color& color, ObjectReadStream& readStream)
 {
-	if( json.IsObject()) {
-		return Meta::get().findType<Color>()->load(&color, json);
+	bool isObject = false;
+	Result r = readStream.peekObject(isObject);
+	if(r.peekFailed()) {
+		return r;
 	}
 
-	if(json.IsString()) {
-		return parseColor(color, json.GetString());
+	if(isObject) {
+		return Meta::get().findType<Color>()->load(&color, readStream);
+	}
+
+	bool isString = false;
+	r = readStream.peekString(isString);
+	if(r.peekFailed()) {
+		return r;
+	}
+
+	if(isString) {
+		std::string str;
+		r = readStream.readString(str);
+		if(r.peekFailed()) {
+			return r;
+		}
+		return parseColor(color, str);
 	}
 
 	return Result::makeFailureWithStringLiteral("Bad color object.");
 }
 
-Result Serializer<Color>::save( const Color& color, Json& json)
+Result Serializer<Color>::save( const Color& color, ObjectWriteStream& writeStream)
 {
-	return Meta::get().findType<Color>()->save(&color, json);
+	return Meta::get().findType<Color>()->save(&color, writeStream);
 }

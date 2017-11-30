@@ -5,7 +5,8 @@
 #include "core/StringUtil.hpp"
 
 #include "core/container/RbTree.hpp"
-#include "core/json/Json.hpp"
+#include "core/serialize/ObjectReadStream.hpp"
+#include "core/serialize/ObjectWriteStream.hpp"
 
 class MetaType
 {
@@ -21,8 +22,8 @@ public:
  		return mTypeInfo;
  	}
 
-	virtual Result load(void* pItem, const Json& fson) const = 0;
-	virtual Result save(const void* pItem, Json& json) const = 0;
+	virtual Result load(void* pItem, ObjectReadStream& readStream) const = 0;
+	virtual Result save(const void* pItem, ObjectWriteStream& writeStream) const = 0;
 
 protected:
 

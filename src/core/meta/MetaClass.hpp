@@ -47,8 +47,8 @@ public:
 		return mpPropertyType;
 	}
 
-	virtual Result load(void* pVoidObject, const Json& json) const= 0;
-	virtual Result save(const void* pVoidObject, Json& json) const = 0;
+	virtual Result load(void* pVoidObject, ObjectReadStream& readStream) const = 0;
+	virtual Result save(const void* pVoidObject, ObjectWriteStream& write) const = 0;
 
 private:
 
@@ -96,20 +96,20 @@ public:
 
 		}
 
-	virtual Result load(void* pVoidObject, const Json& json) const override
+	virtual Result load(void* pVoidObject, ObjectReadStream& readStream) const override
 	{
 		ClassType* pObject = static_cast<ClassType*>(pVoidObject);
 
 		PropertyType& prop = pObject->*mMember;
 
-		return Serializer<PropertyType>::load(prop, json);
+		return Serializer<PropertyType>::load(prop, readStream);
 	}
 
-	virtual Result save(const void* pVoidObject, Json& json) const override {
+	virtual Result save(const void* pVoidObject, ObjectWriteStream& writeStream) const override {
 		const ClassType* pObject = static_cast<const ClassType*>(pVoidObject);
 		const PropertyType& prop = pObject->*mMember;
 
-		return Serializer<PropertyType>::save(prop, json);
+		return Serializer<PropertyType>::save(prop, writeStream);
 	}	
 
 private:
@@ -140,11 +140,11 @@ public:
 		, mGetter(std::move(getter)) {
 	}
 
-	virtual Result load(void* pVoidObject, const Json& json) const override
+	virtual Result load(void* pVoidObject, ObjectReadStream& readStream) const override
 	{
 		DecayType value;
 
-		Result result = Serializer<DecayType>::load(value, json);
+		Result result = Serializer<DecayType>::load(value, readStream);
 		if(result.peekFailed()) {
 			return result;
 		}
@@ -155,9 +155,9 @@ public:
 		return Result::makeSuccess();
 	}
 
-	virtual Result save(const void* pVoidObject, Json& json) const override {
+	virtual Result save(const void* pVoidObject, ObjectWriteStream& writeStream) const override {
 		const ClassType* pObject = static_cast<const ClassType*>(pVoidObject);		
-		return Serializer<DecayType>::save((pObject->*mGetter)(), json);
+		return Serializer<DecayType>::save((pObject->*mGetter)(), writeStream);
 	}
 
 private:
@@ -185,9 +185,9 @@ public:
 		mProperties.remove(*pMetaClassProperty);
 	}
 
-	virtual Result load(void* pVoidObject, const Json& refJson) const override;
+	virtual Result load(void* pVoidObject, ObjectReadStream& readStream) const override;
 
-	virtual Result save(const void* pVoidObject, Json& json) const override;
+	virtual Result save(const void* pVoidObject, ObjectWriteStream& writeStream) const override;
 
 
 private:
