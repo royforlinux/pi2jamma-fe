@@ -16,13 +16,12 @@
 		#P, \
 		& C::m##P )
 
-
 #define META_CLASS_PROPERTY(C, P) \
-	using MetaClassGetSet##C##PType = decltype(std::declval<C>().get##P()); \
-	using MetaClassGetSet##C##PDecayType = std::decay<MetaClassGetSet##C##PType>::type; \
-	static MetaClassGetSet<C,MetaClassGetSet##C##PType,MetaClassGetSet##C##PDecayType> gMetaClassProperty##C##P( \
+	using MetaClassGetSet##C##P##Type = decltype(std::declval<C>().get##P()); \
+	using MetaClassGetSet##C##P##DecayType = std::decay<MetaClassGetSet##C##P##Type>::type; \
+	static MetaClassGetSet<C,MetaClassGetSet##C##P##Type,MetaClassGetSet##C##P##DecayType> gMetaClassProperty##C##P( \
 		Meta::get().findClass<C>(), \
-		Meta::get().findType<MetaClassGetSet##C##PDecayType>(), \
+		Meta::get().findType<MetaClassGetSet##C##P##DecayType>(), \
 		#P, \
 		& C::set##P, \
 		& C::get##P)

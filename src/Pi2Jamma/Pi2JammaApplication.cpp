@@ -1,39 +1,12 @@
 #include "Pi2Jamma/Pi2JammaApplication.hpp"
 
+#include "Pi2Jamma/CommandLine/CommandLineHandlerConfigFile.hpp"
 #include "Pi2Jamma/Theme.hpp"
 #include "core/file/FilePath.hpp"
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
 #include "core/serialize/Serializer.hpp"
 #include "core/CommandLine/CommandLine.hpp"
-
-class CommandLineHandlerConfigFile : public CommandLineHandler
-{
-public:
-	CommandLineHandlerConfigFile()
-		: CommandLineHandler( "--config-file", "-c")
-		, mConfigFile("./data/config.txt")
-	{}
-
-	virtual CStr getHelp() const override {
-		return "Loction of the config file.";
-	}
-
-	virtual Result parse(const char**& ppToken, const char** ppEnd) override{
-		if(ppToken >= ppEnd) {
-			return Result::makeFailureWithStringLiteral("Expected config file name.");
-		}
-
-		mConfigFile = *ppToken;
-		ppToken++;
-
-		return Result::makeSuccess();
-	}
-
-	CStr mConfigFile;
-
-} gCommandLineHandlerConfigFile;
-
 
 Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 {
@@ -47,7 +20,7 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
-	result = load(mConfiguration, gCommandLineHandlerConfigFile.mConfigFile);
+	result = load(mConfiguration, CommandLineHandlerConfigFile::sSingleton.mConfigFile);
 	if(result.peekFailed()) {
 		return result;
 	}

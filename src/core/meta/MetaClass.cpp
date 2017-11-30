@@ -32,13 +32,11 @@ Result MetaClassBase::load(void* object, const Json& json) const
 	if(!json.IsObject() ) {
 		return Result::makeFailureWithStringLiteral("Not a class");
 	}
+
 	for(auto&& prop : mProperties) {
 
 		CStr propertyName = prop.getName();
 
-		//
-		// TODO: Evil std::string constructor here!
-		//
 		Json propertyJson = json[propertyName];
 
 		if(propertyJson.IsNull()) {

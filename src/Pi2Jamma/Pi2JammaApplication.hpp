@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Pi2Jamma/Configuration.hpp"
+#include "Pi2Jamma/Configuration/Configuration.hpp"
 
 #include "ui/elements/Label.hpp"
 #include "ui/elements/Image.hpp"
