@@ -10,6 +10,13 @@ class DlListNode
 {
 public:
 
+	DlListNode()
+	#ifdef DEBUG_CONTAINER
+		: mpList(nullptr)
+	#endif	
+	{
+	}
+
 	DlListNode(const DlListNode& rhs) = delete;
 	DlListNode& operator=(const DlListNode& rhs) = delete;
 
@@ -46,10 +53,16 @@ public:
 	void remove(DlListNode* pNode);
 
 	DlListNode* getHead();
+	const DlListNode* getHead() const;
+
 	DlListNode* getTail();
+	const DlListNode* getTail() const;
 
 	DlListNode* getNext(DlListNode* pPrev);
+	const DlListNode* getNext(const DlListNode* pPrev) const;
+
 	DlListNode* getPrev(DlListNode* pNext);	
+	const DlListNode* getPrev(const DlListNode* pNext) const;
 
 private:
 	DlListNode* mpHead;
@@ -82,7 +95,7 @@ inline void DlListBase::abandon()
 	mpTail = nullptr;
 }
 
-void DlListBase::insertTail(DlListNode* pNode)
+inline void DlListBase::insertTail(DlListNode* pNode)
 {
 	#ifdef DEBUG_CONTAINER
 		ASSERT(nullptr == pNode->mpList);
@@ -104,7 +117,7 @@ void DlListBase::insertTail(DlListNode* pNode)
 	mpTail = pNode;
 }
 
-void DlListBase::remove(DlListNode* pNode)
+inline void DlListBase::remove(DlListNode* pNode)
 {
 	#ifdef DEBUG_CONTAINER
 		ASSERT(this == pNode->mpList);
@@ -130,23 +143,45 @@ void DlListBase::remove(DlListNode* pNode)
 	}
 }
 
-DlListNode* DlListBase::getHead()
+inline DlListNode* DlListBase::getHead()
 {
 	return mpHead;
 }
 
-DlListNode* DlListBase::getTail()
+inline const DlListNode* DlListBase::getHead() const
+{
+	return mpHead;
+}
+
+inline DlListNode* DlListBase::getTail()
 {
 	return mpTail;
 }
 
-DlListNode* DlListBase::getNext(DlListNode* pPrev)
+inline const DlListNode* DlListBase::getTail() const
+{
+	return mpTail;
+}
+
+inline const DlListNode* DlListBase::getNext(const DlListNode* pPrev) const
 {
 	ASSERT(nullptr != pPrev);
 	return pPrev->mpNext;
 }
 
-DlListNode* DlListBase::getPrev(DlListNode* pNext)
+inline DlListNode* DlListBase::getNext(DlListNode* pPrev)
+{
+	ASSERT(nullptr != pPrev);
+	return pPrev->mpNext;
+}
+
+inline DlListNode* DlListBase::getPrev(DlListNode* pNext)
+{
+	ASSERT(nullptr != pNext);
+	return pNext->mpPrev;
+}
+
+inline const DlListNode* DlListBase::getPrev(const DlListNode* pNext) const
 {
 	ASSERT(nullptr != pNext);
 	return pNext->mpPrev;

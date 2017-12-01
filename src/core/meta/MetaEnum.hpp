@@ -64,12 +64,12 @@ class MetaEnumBase : public MetaType
 public:
 	MetaEnumBase(CStrArg name, size_t numBytes, const std::type_info& typeInfo);
 
-	void addValue(const MetaEnumValueBase& value) {
+	void addValue(MetaEnumValueBase& value) {
 		mValuesByName.insert(value);
 		mValuesByValue.insert(value);
 	}
 
-	void removeValue(const MetaEnumValueBase& value) {
+	void removeValue(MetaEnumValueBase& value) {
 		mValuesByName.remove(value);
 		mValuesByValue.remove(value);
 	}
@@ -115,13 +115,19 @@ private:
 		MetaEnumValueBase,
 		CStr,
 		KeyFinderGetter<MetaEnumValueBase, CStr, & MetaEnumValueBase::getName>,
-		NodeFinderField<MetaEnumValueBase, &MetaEnumValueBase::mNameTreeNode>> mValuesByName;
+		NodeFinderField<
+			MetaEnumValueBase,
+			RbTreeNode,
+			&MetaEnumValueBase::mNameTreeNode>> mValuesByName;
 
 	RbTree<
 		MetaEnumValueBase,
 		uint64_t,
 		KeyFinderGetter<MetaEnumValueBase, uint64_t, & MetaEnumValueBase::getValue>,
-		NodeFinderField<MetaEnumValueBase, &MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
+		NodeFinderField<
+			MetaEnumValueBase,
+			RbTreeNode,
+			&MetaEnumValueBase::mValueTreeNode >> mValuesByValue;
 };
 
 template<typename T>

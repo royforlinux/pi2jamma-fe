@@ -57,8 +57,8 @@ public:
 		return downCast<MetaEnum<T>*>(findType(typeid(T)));
 	}
 
-	void addType(const MetaType& metaType);
-	void removeType(const MetaType& metaType);
+	void addType(MetaType& metaType);
+	void removeType(MetaType& metaType);
 
 private:
 
@@ -66,13 +66,19 @@ private:
 		MetaType,
 		CStr,
 		KeyFinderGetter<MetaType, CStr, & MetaType::getName>,
-		NodeFinderField<MetaType, & MetaType::mByNameTreeNode>> mTypesByName;
+		NodeFinderField<
+			MetaType,
+			RbTreeNode,
+			& MetaType::mByNameTreeNode>> mTypesByName;
 
 	RbTree<
 		MetaType,
 		std::type_info,
 		KeyFinderGetter<MetaType, std::type_info, & MetaType::getTypeInfo>,
-		NodeFinderField<MetaType, & MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
+		NodeFinderField<
+			MetaType,
+			RbTreeNode,
+			& MetaType::mByTypeInfoTreeNode>> mTypesByTypeInfo;
 
 	static Meta* spSingleton;
 };

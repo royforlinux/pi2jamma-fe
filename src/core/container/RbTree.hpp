@@ -1,42 +1,10 @@
 #pragma once
 
 #include "core/container/RbTreeBase.hpp"
+#include "core/container/KeyFinder.hpp"
 #include "core/container/LifetimePolicy.hpp"
+#include "core/container/NodeFinder.hpp"
 #include "core/Compare.hpp"
-
-template<typename ItemType, RbTreeNode ItemType::*Member >
-struct NodeFinderField
-{
-    static size_t offset() {
-
-        RbTreeNode& member = ((ItemType*)(nullptr))->*Member;
-
-        const size_t o =
-            reinterpret_cast<char*>(&member)
-                - reinterpret_cast<char*>((ItemType*)(nullptr));   
-
-        return o;   
-    }
-
-    static ItemType& fromNode(const RbTreeNode& node) {
-        return
-            *reinterpret_cast<ItemType*>(
-                const_cast<char*>(
-                    reinterpret_cast<const char*>(&node) - offset()));
-    }
-
-    static RbTreeNode& toNode(const ItemType& itemType) {
-        return *((RbTreeNode*)(& (itemType.*Member)));
-    }
-};
-
-template<typename ItemType, typename KeyType, typename Arg<KeyType>::Type (ItemType::*Getter)() const>
-struct KeyFinderGetter
-{
-    static typename Arg<KeyType>::Type get(const ItemType& item) {
-        return (item.*Getter)();
-    }
-};
 
 template<
     typename ItemType,
@@ -52,7 +20,7 @@ public:
         clear();
     }
 
-    void insert(const ItemType& item) {
+    void insert(ItemType& item) {
         mTree.insert(
             & NodeFinderType::toNode(item),
             [](const RbTreeNode* n1, const RbTreeNode* n2) {
@@ -88,7 +56,7 @@ public:
         return & NodeFinderType::fromNode(*pNodeBase);
     }
 
-    void remove(const ItemType& item) {
+    void remove(ItemType& item) {
         mTree.remove(& NodeFinderType::toNode(item));
         LifetimePolicy::release(item);
     }
@@ -114,11 +82,15 @@ public:
         mTree.clear();
     }
 
+    template<
+        typename TreeType,
+        typename IterItemType,
+        typename NodeType>
     class iterator {
         public:
             iterator(
-                RbTree* pTree,
-                RbTreeNode* pNode)
+                TreeType* pTree,
+                NodeType* pNode)
                 : mpTree(pTree)
                 , mpNode(pNode) {
             }
@@ -133,62 +105,43 @@ public:
                 return *this;
             }
 
-            ItemType& operator*() {
+            IterItemType& operator*() {
                 ASSERT(nullptr != mpNode);
                 return NodeFinderType::fromNode(*mpNode);
             }
 
         private:
 
-            RbTree* mpTree;
-            RbTreeNode* mpNode;            
+            TreeType* mpTree;
+            NodeType* mpNode;            
     };
 
-    class const_iterator {
-        public:
-            const_iterator(
-                const RbTree* pTree,
-                const RbTreeNode* pNode)
-                : mpTree(pTree)
-                , mpNode(pNode) {
-            }
+    using ConstIterator =
+        iterator<
+            const RbTree,
+            const ItemType,
+            const RbTreeNode>;
 
-            bool operator !=(const_iterator& rhs) {
-                return mpNode != rhs.mpNode;
-            }
+    using NonConstIterator =
+        iterator<
+            RbTree,
+            ItemType,
+            RbTreeNode>;
 
-            const_iterator& operator++() {
-                ASSERT(nullptr != mpNode);
-                mpNode = mpTree->mTree.getNext(mpNode);
-                return *this;
-            }
-
-            ItemType& operator*() {
-                ASSERT(nullptr != mpNode);
-                return NodeFinderType::fromNode(*mpNode);
-            }
-
-        private:
-            
-            const RbTree* mpTree;
-            const RbTreeNode* mpNode;
-
-    };
-
-    iterator begin() {
-        return iterator(this, mTree.getFirst());
+    NonConstIterator begin() {
+        return NonConstIterator(this, mTree.getFirst());
     }
 
-    iterator end() {
-        return iterator(this, nullptr);
+    NonConstIterator end() {
+        return NonConstIterator(this, nullptr);
     }
 
-    const_iterator begin() const {
-        return const_iterator(this, mTree.getFirst());
+    ConstIterator begin() const {
+        return ConstIterator(this, mTree.getFirst());
     }
 
-    const_iterator end() const {
-        return const_iterator(this, nullptr);
+    ConstIterator end() const {
+        return ConstIterator(this, nullptr);
     }
 
 private:

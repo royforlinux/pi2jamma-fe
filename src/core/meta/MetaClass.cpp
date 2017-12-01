@@ -1,6 +1,6 @@
+#include "core/debug.hpp"
 #include "core/meta/MetaClass.hpp"
 #include "core/meta/Meta.hpp"
-#include "core/debug.hpp"
 
 MetaClassBase::MetaClassBase(CStrArg name, const std::type_info& typeInfo)
 	: MetaType(name, typeInfo)
@@ -18,12 +18,12 @@ MetaClassProperty::MetaClassProperty(
 	ASSERT(nullptr != pMetaClassBase);
 	ASSERT(nullptr != pPropertyType);
 	
-	pMetaClassBase->addProperty(this);
+	pMetaClassBase->addProperty(*this);
 }
 
 MetaClassProperty::~MetaClassProperty()
 {
-	mpMetaClassBase->removeProperty(this);
+	mpMetaClassBase->removeProperty(*this);
 }
 
 
@@ -82,7 +82,7 @@ Result MetaClassBase::save(const void* pVoidObject, ObjectWriteStream& writeStre
 	//
 	// TODO: Here write out in declaration order (need another list):
 	//
-	for(auto&& property : mProperties) {
+	for(auto&& property : mPropertiesInDeclarationOrder) {
 
 		r = writeStream.beginField(property.getName());
 		if(r.peekFailed()) {

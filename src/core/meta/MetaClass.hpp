@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/meta/MetaType.hpp"
-
 #include "core/cast.hpp"
+#include "core/container/DlList.hpp"
 #include "core/serialize/Serializer.hpp"
 
 #define META_CLASS(C) \
@@ -58,6 +58,7 @@ private:
 
 public:
 	RbTreeNode mTreeNode;
+	DlListNode mListNode;
 };
 
 template<typename ClassType, typename PropertyType>
@@ -177,12 +178,14 @@ public:
 		return mProperties.find(name);
 	}
 
-	void addProperty(MetaClassProperty* pMetaClassProperty) {
-		mProperties.insert(*pMetaClassProperty);
+	void addProperty(MetaClassProperty& metaClassProperty) {
+		mProperties.insert(metaClassProperty);
+		mPropertiesInDeclarationOrder.insertTail(metaClassProperty);
 	}
 
-	void removeProperty(MetaClassProperty* pMetaClassProperty) {
-		mProperties.remove(*pMetaClassProperty);
+	void removeProperty(MetaClassProperty& metaClassProperty) {
+		mProperties.remove(metaClassProperty);
+		mPropertiesInDeclarationOrder.remove(metaClassProperty);
 	}
 
 	virtual Result load(void* pVoidObject, ObjectReadStream& readStream) const override;
@@ -200,7 +203,17 @@ private:
 		MetaClassProperty,
 		CStr,
 		KeyFinderGetter<MetaClassProperty, CStr, & MetaClassProperty::getName>,
-		NodeFinderField<MetaClassProperty, &MetaClassProperty::mTreeNode>> mProperties;
+		NodeFinderField<
+			MetaClassProperty,
+			RbTreeNode,
+			&MetaClassProperty::mTreeNode>> mProperties;
+
+	DlList<
+		MetaClassProperty,
+		NodeFinderField<
+			MetaClassProperty,
+			DlListNode,
+			& MetaClassProperty::mListNode>> mPropertiesInDeclarationOrder;
 };
 
 template<typename T>

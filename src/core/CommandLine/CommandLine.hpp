@@ -6,8 +6,8 @@ class CommandLine
 {
 public:
 	static CommandLine& get();
-	void addHandler(const CommandLineHandler& handler);
-	void removeHandler(const CommandLineHandler& handler);
+	void addHandler(CommandLineHandler& handler);
+	void removeHandler(CommandLineHandler& handler);
 
 	Result parse(int argc, const char* argv[]);
 	void printHelp() const;
@@ -25,6 +25,7 @@ private:
 			& CommandLineHandler::getShortName>,
 		NodeFinderField<
 			CommandLineHandler,
+			RbTreeNode,
 			& CommandLineHandler::mShortNameNode>> mHandlersByShortName;
 
 	RbTree<
@@ -36,6 +37,7 @@ private:
 			& CommandLineHandler::getLongName>,
 		NodeFinderField<
 			CommandLineHandler,
+			RbTreeNode,
 			& CommandLineHandler::mLongNameNode>> mHandlersByLongName;
 };
 

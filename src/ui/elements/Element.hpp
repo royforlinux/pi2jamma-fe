@@ -32,10 +32,17 @@ class Element : public RefCounted
 		
 		Element* mpParent;
 		Rect mRect;
+		DlListNode mListNode;
 
-		using ListType = DlList<ref<Element>>;
+		using ListType =
+			DlList<
+				Element,
+				NodeFinderField<
+					Element,
+					DlListNode,
+					& Element::mListNode>>;
+
 		ListType mChildren;
-		ListType::Node mListNode;
 };
 
 inline const Rect& Element::getRect() const

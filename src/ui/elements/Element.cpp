@@ -3,10 +3,9 @@
 Element::Element(Element* pParent, const Rect& rect)
 	: mpParent(pParent)
 	, mRect(rect)
-	, mListNode(this)
 {
 	if(mpParent) {
-		mpParent->mChildren.insertTail(&mListNode);
+		mpParent->mChildren.insertTail(*this);
 	}
 }
 
@@ -23,7 +22,7 @@ void Element::setRect(const Rect& rect)
 Element::~Element()
 {
 	if(mpParent) {
-		mpParent->mChildren.remove(&mListNode);
+		mpParent->mChildren.remove(*this);
 	}
 }
 
@@ -39,6 +38,6 @@ void Element::renderTree(RenderContext& renderContext)
 
 	
 	for(auto && child : mChildren) {
-		child->render(renderContext);
+		child.render(renderContext);
 	}
 }

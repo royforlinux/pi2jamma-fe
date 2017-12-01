@@ -29,7 +29,7 @@ Meta::Meta()
 	META_PRIMITIVE(bool);
 }
 
-void Meta::addType(const MetaType& metaType)
+void Meta::addType(MetaType& metaType)
 {
 	LogFmt(
 		"registering meta-type: name: '%s' typeinfo: '%s\n",
@@ -40,7 +40,7 @@ void Meta::addType(const MetaType& metaType)
 	mTypesByTypeInfo.insert(metaType);
 }
 
-void Meta::removeType(const MetaType& metaType)
+void Meta::removeType(MetaType& metaType)
 {
 	mTypesByName.remove(metaType);
 	mTypesByTypeInfo.remove(metaType);

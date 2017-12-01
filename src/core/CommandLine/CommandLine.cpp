@@ -65,13 +65,13 @@ void CommandLine::printHelp() const
 	}
 }
 
-void CommandLine::addHandler(const CommandLineHandler& handler)
+void CommandLine::addHandler(CommandLineHandler& handler)
 {
 	mHandlersByShortName.insert(handler);
 	mHandlersByLongName.insert(handler);
 }
 
-void CommandLine::removeHandler(const CommandLineHandler& handler)
+void CommandLine::removeHandler(CommandLineHandler& handler)
 {
 	mHandlersByShortName.remove(handler);
 	mHandlersByLongName.remove(handler);

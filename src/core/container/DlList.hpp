@@ -1,38 +1,48 @@
 #pragma once
 
 #include "core/container/DlListBase.hpp"
+#include "core/container/NodeFinder.hpp"
 
 template<typename ItemType, typename NodeFinderType>
 class DlList final
 {
 public:
 
-	class Iter
+	template<
+		typename ListType,
+		typename IteratorItemType,
+		typename NodeType>
+	class Iterator
 	{
 	public:
-		Iter& operator++() {
-			mpNode = mpNode->mpNext;
+		Iterator& operator++() {
+			mpNode = mpList->mList.getNext(mpNode);
 			return *this;
 		}
 
-		bool operator !=(const Iter& rhs) const{
+		bool operator !=(const Iterator& rhs) const{
 			return mpNode != rhs.mpNode;
 		}
 
-		const ItemType& operator*() {
+		IteratorItemType& operator*() {
 			ASSERT(nullptr != mpNode);
-			return NodeFinderType::fdomNode(mpNode);
+			return NodeFinderType::fromNode(*mpNode);
 		}
 
 	private:
-		Iter(DlListNode* pNode)
-			: mpNode(pNode) {}	
+		Iterator(ListType* pList, NodeType* pNode)
+			: mpList(pList)
+			, mpNode(pNode) {}	
 
-		DlListNode* mpNode;
+		ListType* mpList;
+		NodeType* mpNode;
 
 	friend class DlList;
 
 	};
+
+	using ConstIterator = Iterator<const DlList, const ItemType, const DlListNode >;
+	using NonConstIterator = Iterator<DlList, ItemType, DlListNode >;
 
 	DlList();
 	~DlList();
@@ -42,16 +52,27 @@ public:
 	void remove(ItemType& item);
 
 	ItemType* getHead();
+	const ItemType* getHead() const;
+
 	ItemType* getTail();
+	const ItemType* getTail() const;
 
 	ItemType* getNext(ItemType& prev);
-	ItemType* getPrev(ItemType& next);
+	const ItemType* getNext(const ItemType& prev) const;
 
-	Iter begin();
-	Iter end();
+	ItemType* getPrev(ItemType& next);
+	const ItemType* getPrev(const ItemType& next) const;
+
+	ConstIterator begin() const;
+	ConstIterator end() const;
+
+	NonConstIterator begin();
+	NonConstIterator end();	
 
 private:
 
+	ItemType* toItemPtr(DlListNode* pNode);
+	const ItemType* toItemPtr(const DlListNode* pNode) const;
 	DlListBase mList;
 };
 
@@ -68,19 +89,25 @@ DlList<ItemType, NodeFinderType>::~DlList()
 template<typename ItemType, typename NodeFinderType>
 void DlList<ItemType, NodeFinderType>::insertHead(ItemType& item)
 {
-	mList.insertHead(NodeFinderType::toNode(item));
+	mList.insertHead(&NodeFinderType::toNode(item));
 }
 
 template<typename ItemType, typename NodeFinderType>
 void DlList<ItemType, NodeFinderType>::insertTail(ItemType& item)
 {
-	mList.insertTail(NodeFinderType::toNode(item));
+	mList.insertTail(&NodeFinderType::toNode(item));
 }
 
 template<typename ItemType, typename NodeFinderType>
 void DlList<ItemType, NodeFinderType>::remove(ItemType& item)
 {
-	mList.remove(NodeFinderType::toNode(item));
+	mList.remove(&NodeFinderType::toNode(item));
+}
+
+template<typename ItemType, typename NodeFinderType>
+const ItemType* DlList<ItemType, NodeFinderType>::getHead() const
+{
+	return toItemPtr(mList.getHead());
 }
 
 template<typename ItemType, typename NodeFinderType>
@@ -90,21 +117,49 @@ ItemType* DlList<ItemType, NodeFinderType>::getHead()
 }
 
 template<typename ItemType, typename NodeFinderType>
-T* DlList<ItemType, NodeFinderType>::getTail()
+const ItemType* DlList<ItemType, NodeFinderType>::getTail() const
 {
 	return toItemPtr(mList.getTail());
 }
 
 template<typename ItemType, typename NodeFinderType>
+ItemType* DlList<ItemType, NodeFinderType>::getTail()
+{
+	return toItemPtr(mList.getTail());
+}
+
+template<typename ItemType, typename NodeFinderType>
+const ItemType* DlList<ItemType, NodeFinderType>::getNext(const ItemType& prev) const
+{
+	return toItemPtr(mList.getNext(&NodeFinderType::toNode(prev)));
+}
+
+template<typename ItemType, typename NodeFinderType>
 ItemType* DlList<ItemType, NodeFinderType>::getNext(ItemType& prev)
 {
-	return toItemPtr(mList.getNext(NodeFinderType::toNode(prev)));
+	return toItemPtr(mList.getNext(&NodeFinderType::toNode(prev)));
+}
+
+template<typename ItemType, typename NodeFinderType>
+const ItemType* DlList<ItemType, NodeFinderType>::getPrev(const ItemType& next) const
+{
+	return toItemPtr(mList.getPrev(&NodeFinderType::toNode(next)));
 }
 
 template<typename ItemType, typename NodeFinderType>
 ItemType* DlList<ItemType, NodeFinderType>::getPrev(ItemType& next)
 {
-	return toItemPtr(mList.getPrev(NodeFinderType::toNode(next)));
+	return toItemPtr(mList.getPrev(&NodeFinderType::toNode(next)));
+}
+
+template<typename ItemType, typename NodeFinderType>
+const ItemType* DlList<ItemType, NodeFinderType>::toItemPtr(const DlListNode* pNode) const
+{
+	if(nullptr == pNode) {
+		return nullptr;
+	}
+
+	return & NodeFinderType::fromNode(pNode);
 }
 
 template<typename ItemType, typename NodeFinderType>
@@ -114,20 +169,33 @@ ItemType* DlList<ItemType, NodeFinderType>::toItemPtr(DlListNode* pNode)
 		return nullptr;
 	}
 
-	return & NodeFinder::fromNode(pNode);
+	return & NodeFinderType::fromNode(pNode);
 }
 
 template<typename ItemType, typename NodeFinderType>
-typename DlList<ItemType, NodeFinderType>::Iter DlList<ItemType, NodeFinderType>::begin()
+typename DlList<ItemType, NodeFinderType>::NonConstIterator DlList<ItemType, NodeFinderType>::begin()
 {
-	return Iter(mList.getHead());
+	return NonConstIterator(this, mList.getHead());
 }
 
 template<typename ItemType, typename NodeFinderType>
-typename DlList<ItemType, NodeFinderType>::Iter DlList<ItemType, NodeFinderType>::end()
+typename DlList<ItemType, NodeFinderType>::NonConstIterator DlList<ItemType, NodeFinderType>::end()
 {
-	return Iter(mList.getTail());
+	return NonConstIterator(this, nullptr);
 }
+
+template<typename ItemType, typename NodeFinderType>
+typename DlList<ItemType, NodeFinderType>::ConstIterator DlList<ItemType, NodeFinderType>::begin() const
+{
+	return ConstIterator(this, mList.getHead());
+}
+
+template<typename ItemType, typename NodeFinderType>
+typename DlList<ItemType, NodeFinderType>::ConstIterator DlList<ItemType, NodeFinderType>::end() const
+{
+	return ConstIterator(this, nullptr);
+}
+
 
 
 
