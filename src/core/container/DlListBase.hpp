@@ -52,17 +52,11 @@ public:
 	void insertTail(DlListNode* pNode);
 	void remove(DlListNode* pNode);
 
-	DlListNode* getHead();
-	const DlListNode* getHead() const;
+	DlListNode* getHead() const;
+	DlListNode* getNext(DlListNode* pPrev) const;
 
-	DlListNode* getTail();
-	const DlListNode* getTail() const;
-
-	DlListNode* getNext(DlListNode* pPrev);
-	const DlListNode* getNext(const DlListNode* pPrev) const;
-
-	DlListNode* getPrev(DlListNode* pNext);	
-	const DlListNode* getPrev(const DlListNode* pNext) const;
+	DlListNode* getTail() const;
+	DlListNode* getPrev(DlListNode* pNext) const;
 
 private:
 	DlListNode* mpHead;
@@ -143,45 +137,23 @@ inline void DlListBase::remove(DlListNode* pNode)
 	}
 }
 
-inline DlListNode* DlListBase::getHead()
+inline DlListNode* DlListBase::getHead() const
 {
 	return mpHead;
 }
 
-inline const DlListNode* DlListBase::getHead() const
-{
-	return mpHead;
-}
-
-inline DlListNode* DlListBase::getTail()
+inline DlListNode* DlListBase::getTail() const
 {
 	return mpTail;
 }
 
-inline const DlListNode* DlListBase::getTail() const
-{
-	return mpTail;
-}
-
-inline const DlListNode* DlListBase::getNext(const DlListNode* pPrev) const
+inline DlListNode* DlListBase::getNext(DlListNode* pPrev) const
 {
 	ASSERT(nullptr != pPrev);
 	return pPrev->mpNext;
 }
 
-inline DlListNode* DlListBase::getNext(DlListNode* pPrev)
-{
-	ASSERT(nullptr != pPrev);
-	return pPrev->mpNext;
-}
-
-inline DlListNode* DlListBase::getPrev(DlListNode* pNext)
-{
-	ASSERT(nullptr != pNext);
-	return pNext->mpPrev;
-}
-
-inline const DlListNode* DlListBase::getPrev(const DlListNode* pNext) const
+inline DlListNode* DlListBase::getPrev(DlListNode* pNext) const
 {
 	ASSERT(nullptr != pNext);
 	return pNext->mpPrev;
