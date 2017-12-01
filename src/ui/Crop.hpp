@@ -8,21 +8,23 @@
 namespace ui
 {
 
-#if 0
-struct CropRectResult {
-	Rect& targetRect,
-	Rect& sourceRect
+struct CropResult {
+	Rect sourceRect;
+	Rect targetRect;
 };
 
-CropRectResult cropRect(
-	const Rect& targetRect,
-	const Rect& sourceRect,
-	VerticalAlignment verticalAlignment,
+CropResult crop(
+	Rect& targetOut,
+	Rect& sourceOut,
+	const Rect& target,
+	const Rect& source,
 	HorizontalAlignment horizontalAlignment,
-	CromMode cropMode );
-#endif
+	VerticalAlignment verticalAlignment,
+	CropMode cropMode);
 
-}
+
+
+	
 
 
 
