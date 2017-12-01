@@ -26,11 +26,11 @@ public:
 
 private:
 
-    mutable RbTreeNode* mpLeft;
-    mutable RbTreeNode* mpRight;
-    mutable RbTreeNode* mpParent;
+    RbTreeNode* mpLeft;
+    RbTreeNode* mpRight;
+    RbTreeNode* mpParent;
 
-    mutable size_t mRed;    
+    size_t mRed;    
 
     #ifdef DEBUG_CONTAINER
         mutable RbTreeBase* mpTree;
@@ -47,35 +47,28 @@ public:
 	RbTreeBase();
 	~RbTreeBase();
 
-	using InsertFunction = const std::function<int(const RbTreeNode*, const RbTreeNode*)>;
-	using CompareFunction = const std::function<int(const RbTreeNode*)>;
+	using InsertFunction = const std::function<int(RbTreeNode*, RbTreeNode*)>;
+	using CompareFunction = const std::function<int(RbTreeNode*)>;
 
 	void clear();
 	void insert(RbTreeNode* pTreeNode, const InsertFunction& insrtFunction);
 	void remove(RbTreeNode* pTreeNode);
 
-	RbTreeNode* find(const CompareFunction& compare);
-	const RbTreeNode* find(const CompareFunction& compare) const;
+	RbTreeNode* find(const CompareFunction& compare) const;
 
-    const RbTreeNode* findClosest(const CompareFunction& compare) const;
-    RbTreeNode* findClosest(const CompareFunction& compare);
+    RbTreeNode* findClosest(const CompareFunction& compare) const;
 
-	RbTreeNode* getFirst();
-	const RbTreeNode* getFirst() const;
+	RbTreeNode* getFirst() const;
 
-	RbTreeNode* getNext(RbTreeNode* pPrev);
-	const RbTreeNode* getNext(const RbTreeNode* pPrev) const;
+	RbTreeNode* getNext(RbTreeNode* pPrev) const;
 
-	const RbTreeNode* getLast() const;
-	RbTreeNode* getLast();
+	RbTreeNode* getLast() const;
 
-	const RbTreeNode* getPrev(const RbTreeNode* pNext) const;
-	RbTreeNode* getPrev(RbTreeNode* pNext);
+	RbTreeNode* getPrev(RbTreeNode* pNext) const;
 
 	size_t count() const;
 
-	RbTreeNode* findAt(size_t index);
-	const RbTreeNode* findAt(size_t index) const;
+	RbTreeNode* findAt(size_t index) const;
 
 private:
 
@@ -86,10 +79,10 @@ private:
 
 	void leftRotate(RbTreeNode* pX);
 	void rightRotate(RbTreeNode* pY);
-	const RbTreeNode* successor(const RbTreeNode* pX) const;
+	RbTreeNode* successor(RbTreeNode* pX) const;
 	RbTreeNode* successor(RbTreeNode* pX);
-	const RbTreeNode* predecessor(const RbTreeNode* pX) const;
+	RbTreeNode* predecessor(RbTreeNode* pX) const;
 
-    RbTreeNode mRoot;
-    RbTreeNode mSentinal;	
+    mutable RbTreeNode mRoot;
+    mutable RbTreeNode mSentinal;	
 };	

@@ -115,15 +115,10 @@ void RbTreeBase::insert(
     mRoot.mpLeft->mRed=0;
 }
 
-RbTreeNode* RbTreeBase::find(const CompareFunction& compare) {
-	return const_cast<RbTreeNode*>(
-		const_cast<RbTreeBase*>(this)->find(compare));
-}
-
-const RbTreeNode* RbTreeBase::find(const CompareFunction& compare) const
+RbTreeNode* RbTreeBase::find(const CompareFunction& compare) const
 {
-    const RbTreeNode* pX = mRoot.mpLeft;
-    const RbTreeNode* pSentinal= & mSentinal;
+    RbTreeNode* pX = mRoot.mpLeft;
+    RbTreeNode* pSentinal= & mSentinal;
   
     int compVal;
     
@@ -155,7 +150,7 @@ const RbTreeNode* RbTreeBase::find(const CompareFunction& compare) const
 
     while( true )
     {
-        const RbTreeNode* pPrev = predecessor( pX );
+        RbTreeNode* pPrev = predecessor( pX );
     
         if ( pPrev == pSentinal )
         {
@@ -436,11 +431,11 @@ RbTreeNode* RbTreeBase::successor(RbTreeNode* pX) {
             const_cast<const RbTreeBase*>(this)->successor(pX));
 }
 
-const RbTreeNode* RbTreeBase::successor( const RbTreeNode* pX ) const
+RbTreeNode* RbTreeBase::successor(RbTreeNode* pX) const
 { 
-    const RbTreeNode* pY = nullptr;
-    const RbTreeNode* pSentinal= & mSentinal;
-    const RbTreeNode* root=& mRoot;
+    RbTreeNode* pY = nullptr;
+    RbTreeNode* pSentinal= & mSentinal;
+    RbTreeNode* root=& mRoot;
 
     if ( pSentinal != ( pY = pX->mpRight) )
     {
@@ -469,11 +464,11 @@ const RbTreeNode* RbTreeBase::successor( const RbTreeNode* pX ) const
     }
 }
 
-const RbTreeNode* RbTreeBase::predecessor(const RbTreeNode* pX) const
+RbTreeNode* RbTreeBase::predecessor(RbTreeNode* pX) const
 {
-    const RbTreeNode* pY = nullptr;
-    const RbTreeNode* pSentinal= & mSentinal;
-    const RbTreeNode* root=& mRoot;
+    RbTreeNode* pY = nullptr;
+    RbTreeNode* pSentinal= & mSentinal;
+    RbTreeNode* root=& mRoot;
 
     if ( pSentinal != ( pY = pX->mpLeft ) )
     {
@@ -503,11 +498,11 @@ const RbTreeNode* RbTreeBase::predecessor(const RbTreeNode* pX) const
     }
 }
 
-const RbTreeNode* RbTreeBase::getFirst() const
+RbTreeNode* RbTreeBase::getFirst() const
 {
-    const RbTreeNode* pX = mRoot.mpLeft;
-    const RbTreeNode* pParent = 0;
-    const RbTreeNode* pSentinal = & mSentinal;
+    RbTreeNode* pX = mRoot.mpLeft;
+    RbTreeNode* pParent = 0;
+    RbTreeNode* pSentinal = & mSentinal;
     
     while( pX != pSentinal )
     {
@@ -518,18 +513,11 @@ const RbTreeNode* RbTreeBase::getFirst() const
     return pParent;
 }
 
-RbTreeNode* RbTreeBase::getFirst()
-{
-	return
-		const_cast<RbTreeNode*>(
-			const_cast<const RbTreeBase*>(this)->getFirst());
-}
-
-const RbTreeNode* RbTreeBase::getNext(const RbTreeNode* pPrev) const
+RbTreeNode* RbTreeBase::getNext(RbTreeNode* pPrev) const
 {
     ASSERT(nullptr != pPrev);
 
-    const RbTreeNode* pNext = successor(pPrev);
+    RbTreeNode* pNext = successor(pPrev);
     
     if ( pNext == ( & mSentinal ) )
     {
@@ -539,16 +527,9 @@ const RbTreeNode* RbTreeBase::getNext(const RbTreeNode* pPrev) const
     return pNext;
 }
 
-RbTreeNode* RbTreeBase::getNext(RbTreeNode* pPrev)
+RbTreeNode* RbTreeBase::findAt( size_t index ) const
 {
-	return
-		const_cast<RbTreeNode*>(
-			const_cast<const RbTreeBase*>(this)->getNext(pPrev));
-}
-
-const RbTreeNode* RbTreeBase::findAt( size_t index ) const
-{
-    const RbTreeNode* pS = getFirst();
+    RbTreeNode* pS = getFirst();
     
     size_t count = 0;
     
@@ -569,18 +550,11 @@ const RbTreeNode* RbTreeBase::findAt( size_t index ) const
     return nullptr;
 }
 
-RbTreeNode* RbTreeBase::findAt(size_t index)
+RbTreeNode* RbTreeBase::getLast(void) const
 {
-    return
-        const_cast<RbTreeNode*>(
-            const_cast<const RbTreeBase*>(this)->findAt(index));
-}
-
-const RbTreeNode* RbTreeBase::getLast(void) const
-{
-    const RbTreeNode* pX = mRoot.mpLeft;
-    const RbTreeNode* pParent = nullptr;
-    const RbTreeNode* pSentinal = & mSentinal;
+    RbTreeNode* pX = mRoot.mpLeft;
+    RbTreeNode* pParent = nullptr;
+    RbTreeNode* pSentinal = & mSentinal;
     
     while( pX != pSentinal )
     {
@@ -591,18 +565,11 @@ const RbTreeNode* RbTreeBase::getLast(void) const
     return pParent;
 }
 
-RbTreeNode* RbTreeBase::getLast()
-{
-    return
-        const_cast<RbTreeNode*>(
-            const_cast<const RbTreeBase*>(this)->getLast());
-}
-
-const RbTreeNode* RbTreeBase::getPrev(const RbTreeNode* pNext) const
+RbTreeNode* RbTreeBase::getPrev(RbTreeNode* pNext) const
 {
     ASSERT(nullptr != pNext);
     
-    const RbTreeNode* pPrev = predecessor( pNext );
+    RbTreeNode* pPrev = predecessor( pNext );
     
     if ( pPrev == ( & mSentinal ) )
     {
@@ -612,16 +579,9 @@ const RbTreeNode* RbTreeBase::getPrev(const RbTreeNode* pNext) const
     return pPrev;
 }
 
-RbTreeNode* RbTreeBase::getPrev(RbTreeNode* pNext)
-{
-    return
-        const_cast<RbTreeNode*>(
-            const_cast<const RbTreeBase*>(this)->getPrev(pNext));
-}
-
 size_t RbTreeBase::count() const
 {
-    const RbTreeNode* pS = getFirst();
+    RbTreeNode* pS = getFirst();
     
     size_t count = 0;
     
@@ -634,11 +594,11 @@ size_t RbTreeBase::count() const
     return count;
 }
 
-const RbTreeNode* RbTreeBase::findClosest(
+RbTreeNode* RbTreeBase::findClosest(
     const CompareFunction& compare) const
 {
-    const RbTreeNode* pX = mRoot.mpLeft;
-    const RbTreeNode* pSentinal= & mSentinal;
+    RbTreeNode* pX = mRoot.mpLeft;
+    RbTreeNode* pSentinal= & mSentinal;
   
     int compVal;
     
@@ -651,7 +611,7 @@ const RbTreeNode* RbTreeBase::findClosest(
     
     while( 0 != compVal )
     {
-        const RbTreeNode* pPrev = pX;
+        RbTreeNode* pPrev = pX;
 
         if ( compVal >= 1 )
         {
@@ -672,7 +632,7 @@ const RbTreeNode* RbTreeBase::findClosest(
 
     while( true )
     {
-        const RbTreeNode* pPrev = predecessor( pX );
+        RbTreeNode* pPrev = predecessor( pX );
     
         if ( pPrev == pSentinal )
         {
@@ -692,9 +652,3 @@ const RbTreeNode* RbTreeBase::findClosest(
     return pX;
 }
 
-RbTreeNode* RbTreeBase::findClosest(const CompareFunction& compare)
-{
-    return
-        const_cast<RbTreeNode*>(
-            const_cast<const RbTreeBase*>(this)->findClosest(compare));
-}
