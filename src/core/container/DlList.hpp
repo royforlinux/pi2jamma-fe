@@ -1,54 +1,16 @@
 #pragma once
 
-#include "debug.hpp"
+#include "core/container/DlListBase.hpp"
 
-template<typename T>
+template<typename ItemType, typename NodeFinderType>
 class DlList final
 {
 public:
 
-	class Node
-	{
-	public:
-
-		Node(const T& object)
-			: mObject(object)
-		{
-		}
-
-		Node(T&& object)
-			: mObject(std::move(object))
-		{
-		}
-
-		~Node()
-		{
-			#ifdef DEBUG_CONTAINER
-				ASSERT(nullptr == mpParent);
-			#endif
-		}
-
-	const T& get() { return mObject; }
-
-	private:
-
-		Node* mpNext = nullptr;
-		Node* mpPrev = nullptr;
-		T mObject;
-
-		#ifdef DEBUG_CONTAINER
-			DlList* mpParent = nullptr;
-		#endif
-
-	friend class DlList;
-
-	};	
-
 	class Iter
 	{
 	public:
-		Iter& operator++()
-		{
+		Iter& operator++() {
 			mpNode = mpNode->mpNext;
 			return *this;
 		}
@@ -57,14 +19,16 @@ public:
 			return mpNode != rhs.mpNode;
 		}
 
-		const T& operator*() {
-			return mpNode->get();
+		const ItemType& operator*() {
+			ASSERT(nullptr != mpNode);
+			return NodeFinderType::fdomNode(mpNode);
 		}
 
 	private:
-		Iter(Node* pNode)
-			: mpNode(pNode) {}		
-		Node* mpNode;
+		Iter(DlListNode* pNode)
+			: mpNode(pNode) {}	
+
+		DlListNode* mpNode;
 
 	friend class DlList;
 
@@ -73,148 +37,98 @@ public:
 	DlList();
 	~DlList();
 
-	void insertHead(Node* pNode);
-	void insertTail(Node* pNode);
-	void remove(Node* pNode);
+	void insertHead(ItemType& item);
+	void insertTail(ItemType& item);
+	void remove(ItemType& item);
 
-	Node* getHead();
-	Node* getTail();
+	ItemType* getHead();
+	ItemType* getTail();
 
-	Node* getNext(Node* pPrev);
-	Node* getPrev(Node* pNext);
+	ItemType* getNext(ItemType& prev);
+	ItemType* getPrev(ItemType& next);
 
 	Iter begin();
 	Iter end();
 
-
 private:
 
-	Node* mpHead;
-	Node* mpTail;
+	DlListBase mList;
 };
 
-template<typename T>
-DlList<T>::DlList()
-	: mpHead(nullptr)
-	, mpTail(nullptr)
+template<typename ItemType, typename NodeFinderType>
+DlList<ItemType, NodeFinderType>::DlList()
 {
 }
 
-template<typename T>
-DlList<T>::~DlList()
+template<typename ItemType, typename NodeFinderType>
+DlList<ItemType, NodeFinderType>::~DlList()
 {
-	ASSERT(mpHead == nullptr);
 }
 
-template<typename T>
-void DlList<T>::insertHead(Node* pNode)
+template<typename ItemType, typename NodeFinderType>
+void DlList<ItemType, NodeFinderType>::insertHead(ItemType& item)
 {
-	#ifdef DEBUG_CONTAINER
-		ASSERT(nullptr == pNode->mpParent);
-		pNode->mpParent = this;
-	#endif
+	mList.insertHead(NodeFinderType::toNode(item));
+}
 
-	pNode->mpNext = mpHead;
-	pNode->mpPrev = nullptr;
+template<typename ItemType, typename NodeFinderType>
+void DlList<ItemType, NodeFinderType>::insertTail(ItemType& item)
+{
+	mList.insertTail(NodeFinderType::toNode(item));
+}
 
-	if(nullptr == mpHead)
-	{
-		mpTail = pNode;
-	}	
-	else
-	{
-		mpHead->mpPrev = pNode;
+template<typename ItemType, typename NodeFinderType>
+void DlList<ItemType, NodeFinderType>::remove(ItemType& item)
+{
+	mList.remove(NodeFinderType::toNode(item));
+}
+
+template<typename ItemType, typename NodeFinderType>
+ItemType* DlList<ItemType, NodeFinderType>::getHead()
+{
+	return toItemPtr(mList.getHead());
+}
+
+template<typename ItemType, typename NodeFinderType>
+T* DlList<ItemType, NodeFinderType>::getTail()
+{
+	return toItemPtr(mList.getTail());
+}
+
+template<typename ItemType, typename NodeFinderType>
+ItemType* DlList<ItemType, NodeFinderType>::getNext(ItemType& prev)
+{
+	return toItemPtr(mList.getNext(NodeFinderType::toNode(prev)));
+}
+
+template<typename ItemType, typename NodeFinderType>
+ItemType* DlList<ItemType, NodeFinderType>::getPrev(ItemType& next)
+{
+	return toItemPtr(mList.getPrev(NodeFinderType::toNode(next)));
+}
+
+template<typename ItemType, typename NodeFinderType>
+ItemType* DlList<ItemType, NodeFinderType>::toItemPtr(DlListNode* pNode)
+{
+	if(nullptr == pNode) {
+		return nullptr;
 	}
 
-	mpHead = pNode;
+	return & NodeFinder::fromNode(pNode);
 }
 
-template<typename T>
-void DlList<T>::insertTail(Node* pNode)
+template<typename ItemType, typename NodeFinderType>
+typename DlList<ItemType, NodeFinderType>::Iter DlList<ItemType, NodeFinderType>::begin()
 {
-	#ifdef DEBUG_CONTAINER
-		ASSERT(nullptr == pNode->mpParent);
-		pNode->mpParent = this;
-	#endif
-
-	pNode->mpNext = nullptr;
-	pNode->mpPrev = mpTail;
-
-	if(nullptr == mpTail)
-	{
-		mpHead = pNode;
-	}
-	else
-	{
-		mpTail->mpNext = pNode;		
-	}
-
-	mpTail = pNode;
+	return Iter(mList.getHead());
 }
 
-template<typename T>
-void DlList<T>::remove(Node* pNode)
+template<typename ItemType, typename NodeFinderType>
+typename DlList<ItemType, NodeFinderType>::Iter DlList<ItemType, NodeFinderType>::end()
 {
-	#ifdef DEBUG_CONTAINER
-		ASSERT(this == pNode->mpParent);
-		pNode->mpParent = nullptr;
-	#endif
-
-	if(nullptr != pNode->mpNext)
-	{
-		pNode->mpNext->mpPrev = pNode->mpPrev;
-	}
-	else
-	{
-		mpTail = pNode->mpPrev;
-	}
-
-	if(nullptr != pNode->mpPrev)
-	{
-		pNode->mpPrev->mpNext = pNode->mpNext;
-	}
-	else
-	{
-		mpHead = pNode->mpNext;
-	}
+	return Iter(mList.getTail());
 }
 
-template<typename T>
-typename DlList<T>::Node* DlList<T>::getHead()
-{
-	return mpHead;
-}
 
-template<typename T>
-typename DlList<T>::Node* DlList<T>::getTail()
-{
-	return mpTail;
-}
-
-template<typename T>
-typename DlList<T>::Node* DlList<T>::getNext(Node* pPrev)
-{
-	ASSERT(nullptr != pPrev);
-	return pPrev->mpNext;
-}
-
-template<typename T>
-typename DlList<T>::Node* DlList<T>::getPrev(Node* pNext)
-{
-	ASSERT(nullptr != pNext);
-	return pNext->mpPrev;
-}
-
-template<typename T>
-typename DlList<T>::Iter DlList<T>::begin()
-{
-	return Iter(mpHead);
-}
-
-template<typename T>
-typename DlList<T>::Iter DlList<T>::end()
-{
-	return Iter(mpTail);
-}
 
 

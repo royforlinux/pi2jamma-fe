@@ -4,6 +4,8 @@
 #include "core/container/Container.hpp"
 #include "core/debug.hpp"
 
+class RbTreeBase;
+
 class RbTreeNode
 {
 public:
@@ -22,6 +24,8 @@ public:
     RbTreeNode(const RbTreeNode& rhs) = delete;
     RbTreeNode& operator=(const RbTreeNode& rhs) = delete;
 
+private:
+
     mutable RbTreeNode* mpLeft;
     mutable RbTreeNode* mpRight;
     mutable RbTreeNode* mpParent;
@@ -29,8 +33,10 @@ public:
     mutable size_t mRed;    
 
     #ifdef DEBUG_CONTAINER
-        mutable void* mpTree;
+        mutable RbTreeBase* mpTree;
     #endif
+
+friend class RbTreeBase;
 
 };
 
