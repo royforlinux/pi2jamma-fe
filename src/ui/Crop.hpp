@@ -22,8 +22,13 @@ struct FitRectResult
 	PROPERTY(Rect, SourceRect);
 };
 
+FitRectResult clip(
+	const Rect& targetRect,
+	const Rect& sourceTargetRect,
+	const Rect& sourceRect);
+
 FitRectResult fitRect(
-	const Size& sourceSize,
+	const Rect& sourceRect,
 	const Rect& targetRect,
 	CropMode cropMode,
 	HorizontalAlignment horizontalAlignment,

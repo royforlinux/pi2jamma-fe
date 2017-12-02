@@ -2,6 +2,7 @@
 #include "ui/elements/List.hpp"
 
 #include "ui/Application.hpp"
+#include "ui/Crop.hpp"
 #include "ui/Point.hpp"
 
 namespace ui {
@@ -14,13 +15,15 @@ List::List(
 	const Color& selectedColor,
 	UnitType lineHeight,
 	std::vector<std::string> items,
-	HorizontalAlignment horizontalAlignment)
+	HorizontalAlignment horizontalAlignment,
+	VerticalAlignment verticalAlignment)
 	: Element(pParent, rect)
 	, mrefFont(std::move(refFont))
 	, mUnselectedColor(unselectedColor)
 	, mSelectedColor(selectedColor)
 	, mLineHeight(lineHeight)
 	, mHorizontalAlignment(horizontalAlignment)	
+	, mVerticalAlignment(verticalAlignment)
 	, mItems(std::move(items))
 {
 	mLabels.reserve(mItems.size());
@@ -98,7 +101,7 @@ void List::render(RenderContext& renderContext)
 	UnitType centerY = getRect().getYCenter();
 
 	UnitType x = getX();
-	UnitType y = centerY - (mLineHeight/2);
+	UnitType y = centerY - (mLineHeight / 2);
 	y -= ((mNumItemsToDisplay / 2) * mLineHeight);
 
 	int numItems = mLabels.size();
@@ -125,9 +128,24 @@ void List::render(RenderContext& renderContext)
 			refSurface = mrefSelectedSurface;
 		}
 
+		Rect targetRect(
+			position,
+			Size(getWidth(), mLineHeight));
+
+		auto fitResult =
+			fitRect(
+				Rect(
+					Point(0, 0),
+					refSurface->getSize()),
+				targetRect,
+				CropMode::None,
+				mHorizontalAlignment,
+				mVerticalAlignment);
+
 		renderContext.draw(
 			refSurface,
-			position);
+			fitResult.getTargetRect(),
+			fitResult.getSourceRect());
 	}
 }
 

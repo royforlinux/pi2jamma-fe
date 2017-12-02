@@ -50,9 +50,6 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
-	d = dump(theme);
-	LogFmt("%s\n", d.c_str());
-
 	mrefBackground =
 		make_ref<ui::Image>(
 			nullptr,
@@ -75,9 +72,6 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
-	d = dump(games);
-	LogFmt("%s\n", d.c_str());
-
 	mrefTitle =
 		make_ref<ui::Label>(
 			nullptr,
@@ -88,6 +82,9 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 			theme.getTitleAlignment());
 
 	std::vector<std::string> items;
+	for(auto&& game : games.getGameList()) {
+		items.push_back(game.getDisplayName());
+	}
 	mrefList =
 		make_ref<ui::List>(
 			nullptr,

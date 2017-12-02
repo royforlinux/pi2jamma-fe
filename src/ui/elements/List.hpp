@@ -4,6 +4,7 @@
 #include "ui/Font.hpp"
 #include "ui/Surface.hpp"
 #include "ui/HorizontalAlignment.hpp"
+#include "ui/VerticalAlignment.hpp"
 #include "ui/elements/Element.hpp"
 
 #include <vector>
@@ -22,7 +23,8 @@ public:
 		const Color& selectedColor,
 		UnitType lineHeight,		
 		std::vector<std::string> items,
-		HorizontalAlignment = HorizontalAlignment::Center);
+		HorizontalAlignment = HorizontalAlignment::Center,
+		VerticalAlignment = VerticalAlignment::Center);
 
 	void setSelection(const int itemIndex);
 
@@ -45,6 +47,7 @@ private:
 	Color mSelectedColor;
 	UnitType mLineHeight;
 	HorizontalAlignment mHorizontalAlignment;
+	VerticalAlignment mVerticalAlignment;
 
 	std::vector<std::string> mItems;
 	std::vector<ref<Surface>> mLabels;

@@ -4,7 +4,7 @@
 		{ "DisplayName" : "Dig Dug" },
 		{ "DisplayName" : "Pacman" },
 		{ "DisplayName" : "Dig-Dug" },
-		{ "DisplayName" : "Burger Time (Midway) V1 (Old Rom Set)" },
+		{ "DisplayName" : "Burger Time (Midway) V1 (Old Ro)" },
 		{ "DisplayName" : "Galaxian V1" },
 		{ "DisplayName" : "Galaxian V2" },
 		{ "DisplayName" : "Galaxian V3" },

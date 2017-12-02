@@ -6,6 +6,38 @@
 namespace ui
 {
 
+FitRectResult clip(
+	const Rect& targetRect,
+	const Rect& sourceTargetRect,
+	const Rect& sourceRect) {
+
+	auto targetWidth = targetRect.getWidth();
+	auto sourceTargetWidth = sourceTargetRect.getWidth();
+
+	Rect sourceRectOut = sourceRect;
+	Rect targetRectOut = sourceTargetRect;
+
+	if(sourceTargetWidth > targetWidth)
+	{
+		float diffPercent =
+			static_cast<float>(targetWidth) /
+			static_cast<float>(sourceTargetWidth);
+
+		targetRectOut.setX(targetRect.getX());
+		targetRectOut.setWidth(targetRect.getWidth());
+		UnitType sourceWidth =
+			static_cast<UnitType>(diffPercent * sourceRect.getWidth());
+		UnitType diff = sourceRect.getWidth() - sourceWidth;
+		sourceRectOut.setX(
+			sourceRect.getX() + diff / 2 );
+		sourceRectOut.setWidth(sourceWidth);
+	}
+
+	return FitRectResult(
+		targetRectOut,
+		sourceRectOut );
+}
+
 Rect getRectForSizeAlignedInRect(
 	const Size& sourceSize,
 	const Rect& targetRect,
@@ -45,7 +77,7 @@ Rect getRectForSizeAlignedInRect(
 }
 
 FitRectResult fitRect(
-	const Size& sourceSize,
+	const Rect& sourceRect,
 	const Rect& targetRect,
 	CropMode cropMode,
 	HorizontalAlignment horizontalAlignment,
@@ -55,7 +87,7 @@ FitRectResult fitRect(
 
 	if(CropMode::AspectFit == cropMode)
 	{
-		float sourceAspectRatio = sourceSize.getAspectRatio();
+		float sourceAspectRatio = sourceRect.getAspectRatio();
 		float rectToFitAspectRatio = targetRect.getAspectRatio();
 
 		if(rectToFitAspectRatio < sourceAspectRatio)
@@ -79,21 +111,20 @@ FitRectResult fitRect(
 	}
 	else if(CropMode::None == cropMode)
 	{
-		resultingSize = sourceSize;
+		resultingSize = sourceRect.getSize();
 	}
 
-	Rect r =
+	Rect sourceTargetRect =
 		getRectForSizeAlignedInRect(
 			resultingSize,
 			targetRect,
 			horizontalAlignment,
 			verticalAlignment);
 
-	return FitRectResult(
-		r,
-		Rect(Point(0,0), sourceSize));
+	auto result = clip(targetRect, sourceTargetRect, sourceRect);
+
+	return result;
 }
 
 }
-
 

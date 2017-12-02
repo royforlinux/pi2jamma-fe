@@ -3,6 +3,7 @@
 
 #include "ui/Application.hpp"
 #include "ui/Crop.hpp"
+#include "ui/Point.hpp"
 
 namespace ui {
 
@@ -37,7 +38,9 @@ void Label::render(RenderContext& renderContext)
 {
 	auto fitRects =
 		fitRect(
-			mrefSurface->getSize(),
+			Rect(
+				Point(0, 0),
+				mrefSurface->getSize()),
 			getRect(),
 			CropMode::None,
 			mHorizontalAlignment,

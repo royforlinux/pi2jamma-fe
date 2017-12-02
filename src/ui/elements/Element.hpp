@@ -22,8 +22,11 @@ class Element : public RefCounted
 		const Rect& getRect() const;
 		void setRect(const Rect& rect);
 
+		Size getSize() const;
+
 		UnitType getX() const;
 		UnitType getY() const;
+		UnitType getWidth() const;
 
 		void renderTree(RenderContext& renderContext);
 
@@ -54,6 +57,12 @@ inline const Rect& Element::getRect() const
 	return mRect;
 }
 
+inline Size Element::getSize() const
+{
+	return mRect.getSize();
+}
+
+
 inline UnitType Element::getX() const
 {
 	return mRect.getX();
@@ -62,6 +71,11 @@ inline UnitType Element::getX() const
 inline UnitType Element::getY() const
 {
 	return mRect.getY();
+}
+
+inline UnitType Element::getWidth() const
+{
+	return mRect.getWidth();
 }
 
 }
