@@ -9,5 +9,12 @@
 		"Back" : "Escape"
 	},
 
-	"SaveConfigOnExit" : true
+	"SaveConfigOnExit" : true,
+
+	"Ui" :
+	{
+		"ScreenOrientation" : "Portrait",
+		"LandscapeTheme" : "burgertime",
+		"PortraitTheme" : "burgertime"
+	}
 }

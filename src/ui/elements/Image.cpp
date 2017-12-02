@@ -6,10 +6,10 @@ namespace ui {
 Image::Image(
 	Element* pParent,
 	const Rect& rect,
-	const char* pFilePath)
+	CStr filePath)
 	: Element(pParent, rect)
 {
-	Result r = Application::get().loadSurface(mrefSurface, pFilePath);
+	Result r = Application::get().loadSurface(mrefSurface, filePath);
 	r.ignore();
 }
 

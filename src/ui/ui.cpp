@@ -10,6 +10,7 @@
 #include "ui/Key.hpp"
 #include "ui/Rect.hpp"
 #include "ui/HorizontalAlignment.hpp"
+#include "ui/Orientation.hpp"
 #include "ui/VerticalAlignment.hpp"
 
 namespace ui
@@ -45,6 +46,10 @@ void initialize() {
 	META_ENUM_VALUE(VerticalAlignment, Top);
 	META_ENUM_VALUE(VerticalAlignment, Center);
 	META_ENUM_VALUE(VerticalAlignment, Bottom);	
+
+	META_ENUM(Orientation);
+	META_ENUM_VALUE(Orientation, Landscape);
+	META_ENUM_VALUE(Orientation, Portrait);
 }
 
 template<typename T >

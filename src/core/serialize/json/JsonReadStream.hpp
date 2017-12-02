@@ -289,7 +289,7 @@ Result JsonReadStream<ParserType>::endArray()
     }
 
     mStack.pop();
-    
+
     return Result::makeSuccess();
 }
 
@@ -410,7 +410,7 @@ Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 	// LogFmt("char: %c\n", c);
 
 	if( c != ':') {
-		return makeError("Expected ':'");
+		return makeError("Expected ':', after field name.");
 	}
 
 	gotField = true;
@@ -481,8 +481,9 @@ Result JsonReadStream<ParserType>::makeError(CStr message)
 	return
         Result::makeFailureWithString(
             formatString(
-                "Error: %s\n\tLine:%d\n\tColumn:%d\n",
+                "Error: %s\n\tFile:%s\n\tLine:%d\n\tColumn:%d\n",
                 message.c_str(),
+                mParser.GetFilename().c_str(),
                 (int) mParser.GetLineCount(),
                 (int) mParser.GetColumnCount()));
 }

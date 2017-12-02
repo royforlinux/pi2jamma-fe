@@ -24,4 +24,5 @@ class Theme
 		PROPERTY(size_t, MenuTextSize);
 		PROPERTY(ui::HorizontalAlignment, MenuTextAlignment);
 
+		PROPERTY(std::string, FontFilePath);
 };

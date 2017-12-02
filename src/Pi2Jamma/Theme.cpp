@@ -15,4 +15,6 @@ void Theme::initialize()
 	META_CLASS_FIELD(Theme, MenuTextHighlightColor);	
 	META_CLASS_FIELD(Theme, MenuTextSize);	
 	META_CLASS_FIELD(Theme, MenuTextAlignment);
+
+	META_CLASS_FIELD(Theme, FontFilePath);
 }

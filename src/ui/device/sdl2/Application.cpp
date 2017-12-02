@@ -96,17 +96,15 @@ Result Application::renderLoop()
 
 Result Application::loadSurface(
 	ref<Surface>& refSurface,
-	const char* filePath)
+	CStr filePath)
 {
-	ASSERT(nullptr != filePath);
-
 	std::unique_ptr<SDL_Texture> uptSdlTexture(
 		IMG_LoadTexture(
 			muptSdlRenderer.get(),
-			filePath));
+			filePath.c_str()));
 
 	if(!uptSdlTexture) {
-		LogFmt( "Failed to load texture: %s\n", filePath);		
+		LogFmt( "Failed to load texture: %s\n", filePath.c_str());		
 		return Result::makeFailureWithString(IMG_GetError());
 	}
 
@@ -115,10 +113,13 @@ Result Application::loadSurface(
 	return Result::makeSuccess();
 }
 
-Result Application::loadFont(ref<Font>& refFont, UnitType sizePx, const char* filename)
+Result Application::loadFont(
+	ref<Font>& refFont,
+	UnitType sizePx,
+	CStr fileName)
 {
 	std::unique_ptr<TTF_Font> uptSdlFont(
-		TTF_OpenFont(filename, sizePx));
+		TTF_OpenFont(fileName.c_str(), sizePx));
 
 	if(!uptSdlFont) {
 		return Result::makeFailureWithString(TTF_GetError());
@@ -133,12 +134,12 @@ Result Application::renderText(
 	ref<Surface>& refSurface,
 	const ref<Font>& refFont,
 	const Color& color,
-	const char* text)
+	CStr text)
 {
 	std::unique_ptr<SDL_Surface> uptSdlSurface(
 		TTF_RenderText_Solid(
 			refFont->muptSdlFont.get(),
-			text,
+			text.c_str(),
 			color.mSdlColor));
 
 	if(!uptSdlSurface) {

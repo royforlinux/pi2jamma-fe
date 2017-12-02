@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/CString.hpp"
+#include "core/Result.hpp"
+
 #include "ui/device/sdl2/sdl2types.hpp"
 #include "ui/device/sdl2/Color.hpp"
 #include "ui/device/sdl2/Rect.hpp"
@@ -7,8 +10,6 @@
 #include "ui/device/sdl2/KeyDownEvent.hpp"
 #include "ui/device/sdl2/Surface.hpp"
 #include "ui/device/sdl2/Font.hpp"
-
-#include "core/Result.hpp"
 
 namespace ui { namespace device { namespace sdl2 {
 
@@ -28,18 +29,18 @@ public:
 	virtual void render(RenderContext& renderContext) = 0;
 	virtual void keyDownEvent(const KeyDownEvent& keyDownEvent) = 0;
 
-	Result loadSurface(ref<Surface>& surface, const char* filename);
+	Result loadSurface(ref<Surface>& surface, CStr fileName);
 	
 	Result loadFont(
 		ref<Font>& refFont,
 		UnitType sizePx,
-		const char* filename);
+		CStr fileName);
 	
 	Result renderText(
 		ref<Surface>& refSurface,
 		const ref<Font>& font,
 		const Color& color,
-		const char* text);
+		CStr text);
 
 private:
 

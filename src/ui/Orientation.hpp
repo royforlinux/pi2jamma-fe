@@ -1,6 +1,11 @@
 #pragma once
 
-enum class Orientation {
-	Horizontal,
-	Vertical
+namespace ui {
+
+enum class Orientation
+{
+	Landscape,
+	Portrait
 };
+
+}

@@ -13,7 +13,7 @@ class OmParser
         using CharType = typename StreamType::CharType;
         using WorkAreaType = std::vector< CharType >;
     
-        OmParser( );
+        //OmParser( );
         OmParser(
             typename Arg< StreamType >::Type stream,
             std::vector< CharType >& wWorkArea,
@@ -54,15 +54,17 @@ class OmParser
         std::vector< CharType >* mpWorkArea;
 };
 
-template< typename StreamType>
+/* template< typename StreamType>
 OmParser< StreamType>::OmParser( )
     :
     mEof( true ),
+    mCurrentChar(0),
     mLineCount( 0 ),
     mColumnCount( 0 ),
+    mpFilename(nullptr),
     mpWorkArea(nullptr)
 {
-}
+} */
 
 template< typename StreamType>
 OmParser< StreamType>::OmParser(
@@ -73,8 +75,8 @@ OmParser< StreamType>::OmParser(
     mStream( stream ),
     mCurrentChar(0),
     mEof( OmDecoderResult_Ok != mStream.NextChar( & mCurrentChar ) ),
-    mLineCount( 0 ),
-    mColumnCount( 0 ),
+    mLineCount( 1 ),
+    mColumnCount( 1 ),
     mFileName(fileName),   
     mpWorkArea(&workArea )    
 {
@@ -208,7 +210,7 @@ void OmParser< StreamType>::AdvanceLineColumnCount( void )
     if ( '\n' == mCurrentChar )
     {
         mLineCount++;
-        mColumnCount = 0;
+        mColumnCount = 1;
     }
     else
     {

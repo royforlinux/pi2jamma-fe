@@ -26,5 +26,7 @@
 	"MenuTextHighlightColor" : "#FFFFFF",
 	"MenuTextColor" : "#000000",
 	"MenuTextSize" : 16,
- 	"MenuTextAlignment" : "Left"
+ 	"MenuTextAlignment" : "Left",
+
+ 	"FontFilePath" : "vgafix.fon"
 }

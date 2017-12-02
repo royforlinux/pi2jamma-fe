@@ -32,16 +32,31 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	if(result.peekFailed()) {
 		return result;
 	}
-	
-	std::string d = dump(mConfiguration);
-	LogFmt("%s\n", d.c_str());
 
-	const char* pDataDir = "/home/x/arcade/pi2jamma-fe/data";
-	std::string themesDir = joinPath(pDataDir, "themes");
-	std::string themeDir = joinPath(themesDir, "vertical/burgertime");
+	CStr dataDir = "/home/x/arcade/pi2jamma-fe/data";
+	std::string themesDir = joinPath(dataDir, "themes");
 
-	std::string configFilePath = joinPath(themeDir, "config.txt");
-	std::string gamesPath = joinPath(pDataDir, "games.txt");
+	const UiConfiguration& uiConfig = mConfiguration.getUi();
+
+	bool portrait =
+		(ui::Orientation::Portrait == uiConfig.getScreenOrientation());
+
+	CStr orientationDir =
+		portrait
+			? "portrait"
+			: "landsape";
+
+	CStr themeDir =
+		portrait
+			? uiConfig.getPortraitTheme()
+			: uiConfig.getLandscapeTheme();
+
+
+	std::string fullThemeDir =
+		joinPath(themesDir, orientationDir, themeDir);
+
+	std::string configFilePath = joinPath(fullThemeDir, "config.txt");
+	std::string gamesPath = joinPath(dataDir, "games.txt");
 
 	Theme theme;
 	result = loadJson(theme, configFilePath.c_str());
@@ -54,13 +69,13 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		make_ref<ui::Image>(
 			nullptr,
 			ui::Rect(0, 0, 240, 320),
-			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/background.png");
+			joinPath(fullThemeDir, "background.png"));
 
 	result =
 		loadFont(
 			mrefFont,
 			theme.getMenuTextSize(),
-			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/vgafix.fon");
+			joinPath(fullThemeDir, theme.getFontFilePath()));
 
 	if(result.peekFailed()) {
 		return result;
