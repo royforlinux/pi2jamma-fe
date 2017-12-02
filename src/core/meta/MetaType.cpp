@@ -3,9 +3,13 @@
 #include "core/meta/Meta.hpp"
 
 
-MetaType::MetaType(CStr name, const std::type_info& typeInfo)
+MetaType::MetaType(
+	CStr name,
+	const std::type_info& typeInfo,
+	Type type)
 	: mName(name)
 	, mTypeInfo(typeInfo)
+	, mType(type)
 {
 	Meta::get().addType(*this);
 }

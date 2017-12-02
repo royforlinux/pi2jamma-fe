@@ -15,7 +15,9 @@ public:
 	virtual Result readCVariableName(std::string& str) = 0;
 
 	virtual Result beginArray() = 0;
-	virtual Result nextArrayItem() = 0;
+	virtual Result nextArrayItem(bool& gotItem) = 0;
+	virtual Result endArray() = 0;
+
 	virtual Result peekObject(bool& isObject) = 0;
 	virtual Result peekString(bool& isString) = 0;
 	

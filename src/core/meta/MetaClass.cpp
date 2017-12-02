@@ -3,7 +3,10 @@
 #include "core/meta/Meta.hpp"
 
 MetaClassBase::MetaClassBase(CStrArg name, const std::type_info& typeInfo)
-	: MetaType(name, typeInfo)
+	: MetaType(
+		name,
+		typeInfo,
+		Type::Class)
 {
 }
 

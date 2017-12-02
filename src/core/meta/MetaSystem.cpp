@@ -27,6 +27,9 @@ Meta::Meta()
 	META_PRIMITIVE(double);
 
 	META_PRIMITIVE(bool);
+
+	using String = std::string;
+	META_PRIMITIVE(String);
 }
 
 void Meta::addType(MetaType& metaType)

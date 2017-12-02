@@ -20,6 +20,8 @@ public:
 	virtual Result endField() override;
 	virtual Result endObject() override;
 	virtual Result beginArray() override;
+	virtual Result beginArrayItem() override;
+	virtual Result endArrayItem() override;
 	virtual Result endArray() override;
 private:
 
@@ -29,17 +31,21 @@ private:
 
 	StreamType mStream;
 
-	struct Object {
-		Object()
-			: mInField(false)
-			, mFieldCount(0)
+	struct StackFrame {
+		enum class Type { Object, Array };
+
+		StackFrame(Type type)
+			: mInItem(false)
+			, mItemCount(0)
+			, mType(type)
 		{}
 
-		bool mInField;
-		unsigned int mFieldCount;
+		bool mInItem;
+		unsigned int mItemCount;
+		Type mType;
 	};
 
-	std::stack<Object> mStack;	
+	std::stack<StackFrame> mStack;	
 	std::string mWorkArea;
 
 };
@@ -101,7 +107,7 @@ Result JsonWriteStream<StreamType>::writeString(StringSpan s)
 template<typename StreamType>
 Result JsonWriteStream<StreamType>::beginObject()
 {
-	mStack.push(Object());
+	mStack.push(StackFrame(StackFrame::Type::Object));
 
 	return write('{');
 }
@@ -112,8 +118,9 @@ Result JsonWriteStream<StreamType>::beginField(StringSpan name)
 	static StringSpan sColon(" : ");
 
 	ASSERT(mStack.size() > 0);
-	Object& object = mStack.top();
-	if(object.mFieldCount > 0) {
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Object == stackFrame.mType);
+	if(stackFrame.mItemCount > 0) {
 		Result r = write(',');
 		if(r.peekFailed()) {
 			return r;
@@ -141,8 +148,8 @@ Result JsonWriteStream<StreamType>::beginField(StringSpan name)
 		return r;
 	}
 
-	object.mFieldCount++;
-	object.mInField = true;
+	stackFrame.mItemCount++;
+	stackFrame.mInItem = true;
 	return Result::makeSuccess();
 }
 
@@ -150,10 +157,11 @@ template<typename StreamType>
 Result JsonWriteStream<StreamType>::endField()
 {
 	ASSERT(mStack.size() > 0);
-	Object& object = mStack.top();
-	ASSERT(object.mFieldCount > 0);
-	ASSERT(object.mInField);
-	object.mInField = false;
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Object == stackFrame.mType);
+	ASSERT(stackFrame.mItemCount > 0);
+	ASSERT(stackFrame.mInItem);
+	stackFrame.mInItem = false;
 	return Result::makeSuccess();
 }
 
@@ -161,7 +169,9 @@ template<typename StreamType>
 Result JsonWriteStream<StreamType>::endObject()
 {
 	ASSERT(mStack.size() > 0);
-	ASSERT(mStack.top().mInField == false);
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Object == stackFrame.mType);
+	ASSERT(stackFrame.mInItem == false);
 	mStack.pop();
 	
 	Result r = write('\n');
@@ -179,17 +189,65 @@ Result JsonWriteStream<StreamType>::endObject()
 template<typename StreamType>
 Result JsonWriteStream<StreamType>::beginArray()
 {
-	return
-		Result::makeFailureWithStringLiteral(
-			"beginArray not impemented" );
+	mStack.push(StackFrame(StackFrame::Type::Array));
+	return write('[');
+
+}
+
+template<typename StreamType>
+Result JsonWriteStream<StreamType>::beginArrayItem()
+{
+	ASSERT(mStack.size() > 0);
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Array == stackFrame.mType);
+	ASSERT(!stackFrame.mInItem);
+	stackFrame.mInItem = true;
+
+	if(stackFrame.mItemCount > 0) {
+		Result r = write(',');
+		if(r.peekFailed()) {
+			return r;
+		}
+	}
+
+	Result r = write('\n');
+	if(r.peekFailed()) {
+		return r;
+	}
+
+	r = writeIndent();
+	if(r.peekFailed()) {
+		return r;
+	}
+
+	return Result::makeSuccess();
+}
+
+template<typename StreamType>
+Result JsonWriteStream<StreamType>::endArrayItem()
+{
+	ASSERT(mStack.size() > 0);
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Array == stackFrame.mType);
+	ASSERT(stackFrame.mInItem);
+
+	stackFrame.mInItem = false;
+	stackFrame.mItemCount++;
+
+	return Result::makeSuccess();
 }
 
 template<typename StreamType>
 Result JsonWriteStream<StreamType>::endArray()
 {
-	return
-		Result::makeFailureWithStringLiteral(
-			"endArray not impemented" );
+	ASSERT(mStack.size() > 0);
+	StackFrame& stackFrame = mStack.top();
+	ASSERT(StackFrame::Type::Array == stackFrame.mType);
+	ASSERT(!stackFrame.mInItem);
+
+	mStack.pop();
+
+	return write( ']');
 }
 
 template<typename StreamType>

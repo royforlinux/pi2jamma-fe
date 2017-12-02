@@ -13,6 +13,10 @@ Result metaSystemLoad(
 		return r;
 	}
 
+	ASSERTFMT(
+		!pType->isPrimitive(),
+		"Primitive serialization function not registered! :%s",
+		pType->getName().c_str());
 	return pType->load(pObject, readStream);	
 }
 
@@ -27,5 +31,9 @@ Result metaSystemSave(
 		return r;
 	}
 	
+	ASSERTFMT(
+		!pType->isPrimitive(),
+		"Primitive serialization function not registered! :%s",
+		pType->getName().c_str());	
 	return pType->save(pObject, writeStream);
 }

@@ -33,26 +33,14 @@ public:
 		return readString(str);	
 	}
 
-	virtual Result beginArray() override
-	{
-		return Result::makeFailureWithStringLiteral("beginArray not implemented.");
-	}
-
-	virtual Result nextArrayItem() override
-	{
-		return Result::makeFailureWithStringLiteral("nextArrayItem not implemented.");
-	}
-
+	virtual Result beginArray() override;
+	virtual Result nextArrayItem(bool& hasItem) override;
+    virtual Result endArray() override;
+    
 	virtual Result peekObject(bool& isObject) override;
-
-
-	
 	virtual Result beginObject() override;
-
 	virtual Result beginField(bool& done, std::string& name) override;
-
 	virtual Result endField() override;
-
 	virtual Result endObject() override;
 
     virtual Result makeError(CStr message) override;
@@ -63,19 +51,24 @@ private:
 
 	Result makeEofError();
 
-    struct Object {
-        Object()
-            : mFieldCount(0)
+    struct StackFrame {
+
+        enum class Type {Object, Array};
+
+        StackFrame(Type type)
+            : mType(type)
+            , mItemCount(0)
             , mInField(false)
         {
         }
 
-        unsigned int mFieldCount;
+        Type mType;
+        unsigned int mItemCount;
         bool mInField;
     };
 
     ParserType mParser;
-    std::stack<Object> mStack;
+    std::stack<StackFrame> mStack;
 };
 
 template<typename ParserType>
@@ -227,6 +220,80 @@ Result JsonReadStream< ParserType >::readString( std::string& s )
 }
 
 template<typename ParserType>
+Result JsonReadStream<ParserType>::beginArray()
+{
+    OmParseEatWhite(&mParser);
+    CharType c;
+    if (!mParser.Next(&c)) {
+        return makeEofError();
+    }
+
+    if('[' != c ) {
+        return makeError("Expected '[' opening array.");
+    }
+
+    mStack.push(StackFrame(StackFrame::Type::Array));
+    return Result::makeSuccess();
+}
+
+template<typename ParserType>
+Result JsonReadStream<ParserType>::nextArrayItem(bool& hasItem)
+{
+    OM_ASSERT(mStack.size() > 0);
+    StackFrame& stackFrame = mStack.top();
+    OM_ASSERT(StackFrame::Type::Array == stackFrame.mType);
+
+    hasItem = false;
+    OmParseEatWhite(&mParser);
+
+    CharType c;
+    if (!mParser.Peek(&c)) {
+        return makeEofError();
+    }
+
+    if(stackFrame.mItemCount > 0) {
+        if(c != ',') {
+            return Result::makeSuccess();
+        }
+        if (!mParser.Next(&c)) {
+            return makeEofError();
+        }
+    }
+
+    hasItem = true;
+    stackFrame.mItemCount++;
+
+    return Result::makeSuccess();
+}
+
+template<typename ParserType>
+Result JsonReadStream<ParserType>::endArray()
+{
+    ASSERT(mStack.size() > 0);
+    StackFrame& stackFrame = mStack.top();
+    ASSERT(StackFrame::Type::Array == stackFrame.mType);
+
+    OmParseEatWhite(&mParser);
+
+    CharType c;
+    if(!mParser.Next(&c)) {
+        return makeError("Unexpected EOF looking for ']' ending array.");
+    }
+
+    if(']' != c ) {
+        return
+            makeError(
+                formatString(
+                    "Expected ']' ending array, not '%c'",
+                    c ));
+    }
+
+    mStack.pop();
+    
+    return Result::makeSuccess();
+}
+
+template<typename ParserType>
 Result JsonReadStream<ParserType>::peekObject(bool& isObject)
 {
     OmParseEatWhite(&mParser);
@@ -261,9 +328,9 @@ Result JsonReadStream<ParserType>::beginObject()
     	return makeError(formatString("Expected '{', not %c", c));
     }
 
-    mStack.push(Object());
+    mStack.push(StackFrame(StackFrame::Type::Object));
 
-    //Log("Object!\n");
+    //Log("StackFrame!\n");
     
     return Result::makeSuccess();
 }
@@ -283,7 +350,7 @@ Result JsonReadStream<ParserType>::endObject()
     if( c != '}') {
         return makeError(
             formatString(
-                "Expected '}' not '%c' closing object",
+                "Expected '}' not '%c' closing stackFrame",
                 c));
     }
 
@@ -294,8 +361,9 @@ template<typename ParserType>
 Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 {
     ASSERT(mStack.size() > 0);
-    Object& object = mStack.top();   
-    ASSERT(!object.mInField); 
+    StackFrame& stackFrame = mStack.top(); 
+    ASSERT(StackFrame::Type::Object == stackFrame.mType);  
+    ASSERT(!stackFrame.mInField); 
 
     gotField = false;
 
@@ -303,9 +371,9 @@ Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 
     CharType c;
 
-    // LogFmt("FieldCount: %d\n", (int) object.mFieldCount);
+    // LogFmt("FieldCount: %d\n", (int) stackFrame.mItemCount);
 
-    if(object.mFieldCount > 0) {
+    if(stackFrame.mItemCount > 0) {
         if(!mParser.Peek(&c)) {
             return makeEofError();
         }
@@ -348,7 +416,7 @@ Result JsonReadStream<ParserType>::beginField(bool& gotField, std::string& name)
 	gotField = true;
 	// LogFmt("Field! %s\n", name.c_str());
 
-    object.mInField = true;
+    stackFrame.mInField = true;
 	return Result::makeSuccess();
 }
 
@@ -356,10 +424,10 @@ template<typename ParserType>
 Result JsonReadStream<ParserType>::endField()
 {
     ASSERT(mStack.size() > 0);
-    Object& object = mStack.top();
-    ASSERT(object.mInField);
-    object.mInField = false;
-    object.mFieldCount++;
+    StackFrame& stackFrame = mStack.top();
+    ASSERT(stackFrame.mInField);
+    stackFrame.mInField = false;
+    stackFrame.mItemCount++;
 
     OmParseEatWhite(&mParser);
     CharType c;

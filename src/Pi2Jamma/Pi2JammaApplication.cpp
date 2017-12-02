@@ -1,6 +1,7 @@
 #include "Pi2Jamma/Pi2JammaApplication.hpp"
 
 #include "Pi2Jamma/CommandLine/CommandLineHandlerConfigFile.hpp"
+#include "Pi2Jamma/Game.hpp"
 #include "Pi2Jamma/Theme.hpp"
 #include "core/file/FilePath.hpp"
 #include "core/meta/Meta.hpp"
@@ -13,8 +14,11 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 {
 	Meta::initialize();
 	ui::initialize();
+
 	Configuration::initialize();
 	Theme::initialize();
+	Game::initialize();
+	Games::initialize();
 
 	Result result = CommandLine::get().parse(argc, argv);
 	if(result.peekFailed()) {
@@ -32,13 +36,15 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	std::string d = dump(mConfiguration);
 	LogFmt("%s\n", d.c_str());
 
-	const char* pThemesDir = "/home/x/arcade/pi2jamma-fe/data/themes";
-	const char* pThemeDir = "vertical/burgertime";
+	const char* pDataDir = "/home/x/arcade/pi2jamma-fe/data";
+	std::string themesDir = joinPath(pDataDir, "themes");
+	std::string themeDir = joinPath(themesDir, "vertical/burgertime");
 
-	std::string s = joinPath({pThemesDir, pThemeDir, "config.txt" });
+	std::string configFilePath = joinPath(themeDir, "config.txt");
+	std::string gamesPath = joinPath(pDataDir, "games.txt");
 
 	Theme theme;
-	result = loadJson(theme, s.c_str());
+	result = loadJson(theme, configFilePath.c_str());
 
 	if(result.peekFailed()) {
 		return result;
@@ -63,6 +69,15 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
+	Games games;
+	result = loadJson(games, gamesPath);
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	d = dump(games);
+	LogFmt("%s\n", d.c_str());
+
 	mrefTitle =
 		make_ref<ui::Label>(
 			nullptr,
@@ -72,17 +87,7 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 			"Title",
 			theme.getTitleAlignment());
 
-	std::vector<std::string> items({
-		"pacman",
-		"dig-dig",
-		"ms.pacman",
-		"burgertime (Midway) V1",
-		"galaxian V1",
-		"galaxian V2",
-		"galaxian V3",
-		"galaxian V5",
-		"halo"});
-
+	std::vector<std::string> items;
 	mrefList =
 		make_ref<ui::List>(
 			nullptr,

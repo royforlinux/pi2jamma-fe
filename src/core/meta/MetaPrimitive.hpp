@@ -16,7 +16,10 @@ class MetaPrimitiveBase :public MetaType
 {
 public:
 	MetaPrimitiveBase(CStrArg name, const std::type_info& typeInfo) :
-		MetaType(name, typeInfo)
+		MetaType(
+			name,
+			typeInfo,
+			Type::Primitive)
 	{}
 };
 

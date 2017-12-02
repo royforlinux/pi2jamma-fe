@@ -76,4 +76,17 @@ struct Serializer<bool>
 	}	
 };
 
+template<>
+struct Serializer<std::string>
+{
+	static Result load(std::string& s, ObjectReadStream& readStream) {
+		return readStream.readString(s);
+	}
+
+	static Result save(const std::string& s, ObjectWriteStream& writeStream) {
+		return writeStream.writeString(s);
+	}	
+};
+
+
 

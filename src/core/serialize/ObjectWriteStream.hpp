@@ -18,7 +18,10 @@ public:
 	virtual Result beginField(StringSpan s) = 0;
 	virtual Result endField() = 0;
 	virtual Result endObject() = 0;
+
 	virtual Result beginArray() = 0;
+	virtual Result beginArrayItem() = 0;
+	virtual Result endArrayItem() = 0;
 	virtual Result endArray() = 0;
 	
 	template<typename T>
