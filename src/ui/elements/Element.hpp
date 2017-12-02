@@ -30,7 +30,7 @@ class Element : public RefCounted
 	protected:
 
 		virtual void render(RenderContext& renderContext) = 0;
-		virtual void resize(const Size& oldSize, const Size& newSize) = 0;
+		virtual void resize(const Size& oldSize, const Size& newSize) {}
 
 	private:
 		

@@ -1,9 +1,12 @@
 #pragma once
 
+#include "ui/device/sdl2/sdl2types.hpp"
 #include "ui/device/sdl2/Size.hpp"
 #include "core/RefCounted.hpp"
 
-namespace ui { namespace device { namespace sdl2 {
+namespace ui {
+namespace device {
+namespace sdl2 {
 
 class Surface : public RefCounted
 {

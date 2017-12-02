@@ -2,7 +2,9 @@
 
 #include "ui/device/sdl2/sdl2types.hpp"
 
-namespace ui { namespace device { namespace sdl2 {
+namespace ui {
+namespace device {
+namespace sdl2 {
 
 class Size final
 {

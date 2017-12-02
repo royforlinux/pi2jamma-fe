@@ -85,7 +85,8 @@ Result Application::renderLoop()
 		}
 
 		SDL_RenderClear(muptSdlRenderer.get());
-		render();
+		RenderContext renderContext(*muptSdlRenderer);
+		render(renderContext);
 		SDL_RenderPresent(muptSdlRenderer.get());
 	}
 
@@ -112,47 +113,6 @@ Result Application::loadSurface(
 
 	return Result::makeSuccess();
 }
-
-
-void Application::draw(
-	const ref<Surface>& refSurface,
-	const Point& targetPoint)
-{
-	SDL_Rect dst = {
-		targetPoint.getX(),
-		targetPoint.getY(),
-		refSurface->getSize().getWidth(),
-		refSurface->getSize().getHeight() };
-
-	SDL_RenderCopy(
-		muptSdlRenderer.get(),
-		refSurface->getSdlTexture(),
-		nullptr,
-		&dst);
-}
-
-void Application::drawRect(const Rect& rect, const Color& color)
-{
-	auto pRenderer = muptSdlRenderer.get();
-
-	auto result =
-		SDL_SetRenderDrawColor(
-			pRenderer,
-			color.getRed(),
-			color.getGreen(),
-			color.getBlue(),
-			color.getAlpha());
-
-	ASSERT(0 == result);
-
-	result =
-		SDL_RenderDrawRect(
-			pRenderer,
-			rect.getSdlRect());
-
-	ASSERT(0 == result);
-}
-
 
 Result Application::loadFont(ref<Font>& refFont, UnitType sizePx, const char* filename)
 {
@@ -209,5 +169,7 @@ void Application::dispatchEvent(const SDL_Event& sdlEvent)
 		keyDownEvent(KeyDownEvent(sdlEvent));
 	}
 }
+
+
 
 }}}

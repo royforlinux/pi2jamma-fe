@@ -2,7 +2,9 @@
 
 #include "debug.hpp"
 
-namespace ui { namespace device { namespace sdl2 {
+namespace ui {
+namespace device {
+namespace sdl2 {
 
 Surface::Surface(std::unique_ptr<SDL_Texture> uptSdlTexture)
 	: muptSdlTexture(std::move(uptSdlTexture))

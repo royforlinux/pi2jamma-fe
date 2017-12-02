@@ -81,7 +81,7 @@ ref<Surface> List::createSurface(
 	ref<Surface> refSurface;
 
 	Result r =
-		Application::get()->renderText(
+		Application::get().renderText(
 			refSurface,
 			mrefFont,
 			color,

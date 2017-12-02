@@ -1,6 +1,7 @@
 #include "ui/Crop.hpp"
 
 #include "core/debug.hpp"
+#include "ui/Point.hpp"
 
 namespace ui
 {
@@ -43,7 +44,7 @@ Rect getRectForSizeAlignedInRect(
 	return rect;
 }
 
-Rect fitRect(
+FitRectResult fitRect(
 	const Size& sourceSize,
 	const Rect& targetRect,
 	CropMode cropMode,
@@ -68,22 +69,29 @@ Rect fitRect(
 			resultingSize.setWidth(resultingSize.getHeight() * sourceAspectRatio);
 		}
 	}
-	else if(CropMode::AspectFill == cropMode) {
+	else if(CropMode::AspectFill == cropMode)
+	{
 		ASSERTMSG(false, "CropMode::AspectFill not implemented");
 	}
-	else if(CropMode::Stretch == cropMode) {
+	else if(CropMode::Stretch == cropMode)
+	{
 		resultingSize = targetRect.getSize();
 	}
-	else if(CropMode::None == cropMode) {
+	else if(CropMode::None == cropMode)
+	{
 		resultingSize = sourceSize;
 	}
 
-	return
+	Rect r =
 		getRectForSizeAlignedInRect(
 			resultingSize,
 			targetRect,
 			horizontalAlignment,
 			verticalAlignment);
+
+	return FitRectResult(
+		r,
+		Rect(Point(0,0), sourceSize));
 }
 
 }

@@ -4,6 +4,7 @@
 
 #include "ui/Application.hpp"
 #include "ui/KeyDownEvent.hpp"
+#include "ui/RenderContext.hpp"
 #include "ui/elements/Label.hpp"
 #include "ui/elements/Image.hpp"
 #include "ui/elements/List.hpp"
@@ -13,7 +14,7 @@ class Pi2JammaApplication : public ui::Application
 private:
 	virtual Result initialize(int argc, const char* argv[]) override;
 
-	virtual void render() override;
+	virtual void render(ui::RenderContext& renderContext) override;
 
 	virtual void keyDownEvent(const ui::KeyDownEvent& keyDownEvent) override;
 

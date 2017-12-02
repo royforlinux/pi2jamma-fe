@@ -9,7 +9,7 @@ Image::Image(
 	const char* pFilePath)
 	: Element(pParent, rect)
 {
-	Result r = Application::get()->loadSurface(mrefSurface, pFilePath);
+	Result r = Application::get().loadSurface(mrefSurface, pFilePath);
 	r.ignore();
 }
 

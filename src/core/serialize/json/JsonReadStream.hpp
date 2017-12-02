@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/StringUtil.hpp"
 #include "core/serialize/ObjectReadStream.hpp"
 #include "core/parse/Parse.hpp"
 

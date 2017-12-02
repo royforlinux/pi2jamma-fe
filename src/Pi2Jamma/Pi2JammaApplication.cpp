@@ -25,8 +25,6 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		mConfiguration,
 		CommandLineHandlerConfigFile::sSingleton.mConfigFile);
 
-
-
 	if(result.peekFailed()) {
 		return result;
 	}
@@ -71,7 +69,8 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 			theme.getTitleRect(),
 			mrefFont,
 			theme.getTitleTextColor(),
-			"Title");
+			"Title",
+			theme.getTitleAlignment());
 
 	std::vector<std::string> items({
 		"pacman",
@@ -97,11 +96,11 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	return Result::makeSuccess();
 }
 
-void Pi2JammaApplication::render()
+void Pi2JammaApplication::render(ui::RenderContext& renderContext)
 {
-	mrefBackground->renderTree(*this);
-	mrefTitle->renderTree(*this);
-	mrefList->renderTree(*this);
+	mrefBackground->renderTree(renderContext);
+	mrefTitle->renderTree(renderContext);
+	mrefList->renderTree(renderContext);
 }
 
 void Pi2JammaApplication::keyDownEvent(const ui::KeyDownEvent& keyDownEvent)
