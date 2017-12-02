@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Result.hpp"
+
 class ObjectReadStream
 {
 public:

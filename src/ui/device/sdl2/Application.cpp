@@ -1,5 +1,7 @@
 #include "ui/device/sdl2/Application.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 Application* Application::spSingleton = nullptr;
 
 Application::Application()
@@ -207,3 +209,5 @@ void Application::dispatchEvent(const SDL_Event& sdlEvent)
 		keyDownEvent(KeyDownEvent(sdlEvent));
 	}
 }
+
+}}}

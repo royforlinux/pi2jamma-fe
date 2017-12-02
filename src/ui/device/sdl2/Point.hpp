@@ -2,6 +2,8 @@
 
 #include "ui/device/sdl2/sdl2types.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 class Point
 {
 public:
@@ -28,3 +30,5 @@ inline UnitType Point::getY() const
 {
 	return mSdlPoint.y;
 }
+
+}}}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "core/Arg.hpp"
+
 #define PROPERTY_GET( TYPE, NAME ) \
     public: \
         inline Arg< TYPE >::Type get##NAME( void ) const { return m##NAME; } \

@@ -1,6 +1,11 @@
 #pragma once
 
 #include "ui/elements/Element.hpp"
+#include "ui/Color.hpp"
+#include "ui/Font.hpp"
+#include "ui/Surface.hpp"
+
+namespace ui {
 
 class Label final : public Element
 {
@@ -9,9 +14,9 @@ public:
 	Label(
 		Element* pParent,
 		const Rect& rect,
-		const ref<Font>& refFont,
+		ref<Font> refFont,
 		const Color& color,
-		const char* text);		
+		std::string text);		
 
 protected:
 
@@ -21,5 +26,9 @@ protected:
 private:
 
 	ref<Surface> mrefSurface;
-
+	ref<Font> mrefFont;
+	Color mColor;
+	std::string mText;
 };
+
+}

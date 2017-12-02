@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/meta/MetaType.hpp"
 #include "core/serialize/Serializer.hpp"
 
 #define META_PRIMITIVE(Type) \
@@ -25,7 +26,6 @@ class MetaPrimitive final : public MetaPrimitiveBase
 public:
 	MetaPrimitive(CStrArg name)
 		: MetaPrimitiveBase(name,typeid(T)) {
-
 		}
 
 	virtual Result load(void* pItem, ObjectReadStream& readStream) const override {

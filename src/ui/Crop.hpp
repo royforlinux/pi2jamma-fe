@@ -1,26 +1,22 @@
 #pragma once
 
-#include "ui/device/UiDevice.hpp"
-#include "ui/HorizontalAlignment.hpp"
-#include "ui/VerticalAlignment.hpp"
 #include "ui/CropMode.hpp"
+#include "ui/HorizontalAlignment.hpp"
+#include "ui/Size.hpp"
+#include "ui/Rect.hpp"
+#include "ui/VerticalAlignment.hpp"
 
 namespace ui
 {
 
-struct CropResult {
-	Rect sourceRect;
-	Rect targetRect;
-};
-
-CropResult crop(
-	Rect& targetOut,
-	Rect& sourceOut,
-	const Rect& target,
-	const Rect& source,
+Rect fitRect(
+	const Size& sourceSize,
+	const Rect& targetRect,
+	CropMode cropMode,
 	HorizontalAlignment horizontalAlignment,
-	VerticalAlignment verticalAlignment,
-	CropMode cropMode);
+	VerticalAlignment verticalAlignment);
+
+}
 
 
 

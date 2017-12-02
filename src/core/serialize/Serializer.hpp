@@ -1,30 +1,20 @@
 #pragma once
 
-#include "core/meta/MetaSystem.hpp"
 #include "core/serialize/ObjectWriteStream.hpp"
 #include "core/serialize/ObjectReadStream.hpp"
+
+Result metaSystemLoad(const std::type_info& type, void* pObject, ObjectReadStream& readStream);
+Result metaSystemSave(const std::type_info& type, const void* pObject, ObjectWriteStream& writeStream);
 
 template<typename T >
 struct Serializer
 {
 	static Result load(T& object, ObjectReadStream& readStream) {
-		MetaType* pType = nullptr;
-		Result r = Meta::get().findType<T>(pType);
-		if( r.peekFailed()) {
-			return r;
-		}
-
-		return pType->load(&object, readStream);
+		return metaSystemLoad(typeid(T), &object, readStream);
 	}
 
 	static Result save(const T& object, ObjectWriteStream& writeStream) {
-		MetaType* pType = nullptr;
-		Result r = Meta::get().findType<T>(pType);
-		if(r.peekFailed()) {
-			return r;
-		}
-		
-		return pType->save(&object, writeStream);
+		return metaSystemSave(typeid(T), &object, writeStream);
 	}
 };
 

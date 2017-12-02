@@ -1,11 +1,15 @@
 #pragma once
 
-#include "ui/ui.hpp"
 #include "core/container/DlList.hpp"
+#include "ui/Rect.hpp"
+#include "ui/RenderContext.hpp"
+#include "ui/Size.hpp"
+
 #include "core/RefCounted.hpp"
-#include <vector>
 
 #define DEBUG_ELEMENT
+
+namespace ui {
 
 class Element : public RefCounted
 {
@@ -58,4 +62,6 @@ inline UnitType Element::getX() const
 inline UnitType Element::getY() const
 {
 	return mRect.getY();
+}
+
 }

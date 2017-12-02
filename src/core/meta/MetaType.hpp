@@ -25,10 +25,6 @@ public:
 	virtual Result load(void* pItem, ObjectReadStream& readStream) const = 0;
 	virtual Result save(const void* pItem, ObjectWriteStream& writeStream) const = 0;
 
-protected:
-
-
-
 private:
 
 	CStr mName;

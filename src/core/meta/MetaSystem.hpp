@@ -1,6 +1,7 @@
 #pragma once
 
-#include "core/meta/MetaType.hpp"
+#include "core/meta/MetaEnum.hpp"
+#include "core/meta/MetaClass.hpp"
 #include "core/CString.hpp"
 #include "core/container/RbTree.hpp"
 
@@ -8,8 +9,6 @@
 #include <typeindex>
 
 class MetaClassBase;
-template<typename T> class MetaClass;
-template<typename T> class MetaEnum;
 
 class Meta
 {
@@ -22,6 +21,8 @@ public:
 	Meta();
 
 	MetaType* findType(const std::type_info& typeInfo);
+	Result findType(MetaType*& pMetaTypeOut, const std::type_info& typeInfo);
+
 	MetaType* findType(CStrArg name);
 
 	template<typename T>

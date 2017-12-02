@@ -48,7 +48,7 @@ public:
 	
 	virtual Result beginObject() override;
 
-	virtual Result beginField(bool& done, std::string&name) override;
+	virtual Result beginField(bool& done, std::string& name) override;
 
 	virtual Result endField() override;
 

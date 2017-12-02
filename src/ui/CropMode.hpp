@@ -4,9 +4,10 @@ namespace ui
 {
 
 enum class CropMode {
-	Fit,
+	AspectFit,
+	AspectFill,
 	Stretch,
-	Fill
+	None
 };
 
 }

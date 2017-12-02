@@ -1,4 +1,7 @@
 #include "ui/elements/Image.hpp"
+#include "ui/Application.hpp"
+
+namespace ui {
 
 Image::Image(
 	Element* pParent,
@@ -20,4 +23,6 @@ void Image::render(RenderContext& renderContext)
 	renderContext.draw(
 		mrefSurface,
 		getRect().getPosition());
+}
+
 }

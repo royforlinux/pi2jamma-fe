@@ -1,6 +1,11 @@
 
 #include "ui/elements/List.hpp"
 
+#include "ui/Application.hpp"
+#include "ui/Point.hpp"
+
+namespace ui {
+
 List::List(
 	Element* pParent,
 	const Rect& rect,
@@ -135,5 +140,7 @@ void List::resize(const Size& oldSize, const Size& newSize)
 	}
 
 	mNumItemsToDisplay = std::max(mNumItemsToDisplay, 1);
+}
+
 }
 

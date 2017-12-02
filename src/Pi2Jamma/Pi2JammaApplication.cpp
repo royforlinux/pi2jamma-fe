@@ -7,6 +7,7 @@
 #include "core/json/JsonParser.hpp"
 #include "core/serialize/json/JsonSerialize.hpp"
 #include "core/CommandLine/CommandLine.hpp"
+#include "ui/ui.hpp"
 
 Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 {
@@ -49,9 +50,9 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	LogFmt("%s\n", d.c_str());
 
 	mrefBackground =
-		make_ref<Image>(
+		make_ref<ui::Image>(
 			nullptr,
-			Rect(0, 0, 240, 320),
+			ui::Rect(0, 0, 240, 320),
 			"/home/x/arcade/pi2jamma-fe/data/themes/vertical/burgertime/background.png");
 
 	result =
@@ -65,7 +66,7 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	}
 
 	mrefTitle =
-		make_ref<Label>(
+		make_ref<ui::Label>(
 			nullptr,
 			theme.getTitleRect(),
 			mrefFont,
@@ -84,7 +85,7 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		"halo"});
 
 	mrefList =
-		make_ref<List>(
+		make_ref<ui::List>(
 			nullptr,
 			theme.getMenuRect(),
 			mrefFont,
@@ -103,19 +104,19 @@ void Pi2JammaApplication::render()
 	mrefList->renderTree(*this);
 }
 
-void Pi2JammaApplication::keyDownEvent(const KeyDownEvent& keyDownEvent)
+void Pi2JammaApplication::keyDownEvent(const ui::KeyDownEvent& keyDownEvent)
 {
-	if (keyDownEvent.getKey() == Key::UpArrow) {
+	if (keyDownEvent.getKey() == ui::Key::UpArrow) {
 		mrefList->up();
 		return;
 	}
 
-	if (keyDownEvent.getKey() == Key::DownArrow) {
+	if (keyDownEvent.getKey() == ui::Key::DownArrow) {
 		mrefList->down();
 		return;
 	}
 
-	if(keyDownEvent.getKey() == Key::Escape)
+	if(keyDownEvent.getKey() == ui::Key::Escape)
 	{
 		quit();
 	}

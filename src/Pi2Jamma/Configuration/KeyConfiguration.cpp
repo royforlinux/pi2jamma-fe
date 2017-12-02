@@ -1,5 +1,7 @@
 #include "Pi2Jamma/Configuration/KeyConfiguration.hpp"
 
+#include "core/meta/Meta.hpp"
+
 void KeyConfiguration::initialize()
 {
 	META_CLASS(KeyConfiguration);
@@ -12,10 +14,10 @@ void KeyConfiguration::initialize()
 }
 
 KeyConfiguration::KeyConfiguration()
-	: mUp(Key::UpArrow)
-	, mDown(Key::DownArrow)
-	, mLeft(Key::LeftArrow)
-	, mRight(Key::RightArrow)
-	, mSelect(Key::Space)
-	, mBack(Key::Escape)
+	: mUp(ui::Key::UpArrow)
+	, mDown(ui::Key::DownArrow)
+	, mLeft(ui::Key::LeftArrow)
+	, mRight(ui::Key::RightArrow)
+	, mSelect(ui::Key::Space)
+	, mBack(ui::Key::Escape)
 {}

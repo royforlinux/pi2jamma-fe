@@ -2,6 +2,8 @@
 
 #include "ui/device/sdl2/sdl2types.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 class Color
 {
 public:
@@ -85,4 +87,6 @@ inline void Color::setAlpha(ElementType alpha)
 {
 	mSdlColor.a = alpha;
 }
+
+}}}
 

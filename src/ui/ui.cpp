@@ -6,6 +6,9 @@
 #include "core/StringSpan.hpp"
 #include "core/meta/Meta.hpp"
 
+#include "ui/Color.hpp"
+#include "ui/Key.hpp"
+#include "ui/Rect.hpp"
 #include "ui/HorizontalAlignment.hpp"
 #include "ui/VerticalAlignment.hpp"
 
@@ -44,10 +47,8 @@ void initialize() {
 	META_ENUM_VALUE(VerticalAlignment, Bottom);	
 }
 
-} // namespace ui
-
 template<typename T >
-Result parseHex(T& t, StringSpan s) {
+static Result parseHex(T& t, StringSpan s) {
 	t = static_cast<T>(0);
 	for( auto&& c : s ) {
 		T hexValue = 0;
@@ -99,7 +100,9 @@ Result parseColor(Color& color, StringSpan stringSpan)
 	return Result::makeSuccess();
 }
 
-Result Serializer<Color>::load(Color& color, ObjectReadStream& readStream)
+} // namespace ui
+
+Result Serializer<ui::Color>::load(ui::Color& color, ObjectReadStream& readStream)
 {
 	bool isObject = false;
 	Result r = readStream.peekObject(isObject);
@@ -108,7 +111,7 @@ Result Serializer<Color>::load(Color& color, ObjectReadStream& readStream)
 	}
 
 	if(isObject) {
-		return Meta::get().findType<Color>()->load(&color, readStream);
+		return Meta::get().findType<ui::Color>()->load(&color, readStream);
 	}
 
 	bool isString = false;
@@ -123,13 +126,13 @@ Result Serializer<Color>::load(Color& color, ObjectReadStream& readStream)
 		if(r.peekFailed()) {
 			return r;
 		}
-		return parseColor(color, str);
+		return ui::parseColor(color, str);
 	}
 
 	return Result::makeFailureWithStringLiteral("Bad color object.");
 }
 
-Result Serializer<Color>::save( const Color& color, ObjectWriteStream& writeStream)
+Result Serializer<ui::Color>::save(const ui::Color& color, ObjectWriteStream& writeStream)
 {
-	return Meta::get().findType<Color>()->save(&color, writeStream);
+	return Meta::get().findType<ui::Color>()->save(&color, writeStream);
 }

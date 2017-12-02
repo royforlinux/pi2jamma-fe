@@ -1,5 +1,7 @@
 #include "Pi2Jamma/Configuration/Configuration.hpp"
 
+#include "core/meta/Meta.hpp"
+
 void Configuration::initialize()
 {
 	KeyConfiguration::initialize();

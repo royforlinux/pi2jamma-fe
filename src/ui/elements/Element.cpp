@@ -1,4 +1,7 @@
 #include "ui/elements/Element.hpp"
+#include "ui/Color.hpp"
+
+namespace ui {
 
 Element::Element(Element* pParent, const Rect& rect)
 	: mpParent(pParent)
@@ -33,11 +36,13 @@ void Element::renderTree(RenderContext& renderContext)
 	#ifdef DEBUG_ELEMENT
 		renderContext.drawRect(
 			getRect(),
-			Color(0x80, 0x80, 0x80, 0x80) );
+			ui::Color(0x80, 0x80, 0x80, 0x80) );
 	#endif
 
 	
 	for(auto && child : mChildren) {
 		child.render(renderContext);
 	}
+}
+
 }

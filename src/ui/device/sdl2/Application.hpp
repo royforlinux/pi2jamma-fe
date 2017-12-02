@@ -9,6 +9,8 @@
 
 #include "core/Result.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 class Application
 {
 	public:
@@ -66,3 +68,5 @@ inline void Application::quit()
 {
 	mQuit = true;
 }
+
+}}}

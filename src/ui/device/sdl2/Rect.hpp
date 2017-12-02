@@ -3,6 +3,8 @@
 #include "ui/device/sdl2/Point.hpp"
 #include "ui/device/sdl2/Size.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 class Rect
 {
 public:
@@ -24,9 +26,15 @@ public:
 	UnitType getYCenter() const;
 
 	Size getSize() const;
+	void setSize(Size size);
 
 	Point getPosition() const;
 	void setPosition(const Point& position);
+
+	UnitType getRightExclusive() const;
+	UnitType getBottomExclusive() const;
+
+	float getAspectRatio() const;
 
 	const SDL_Rect* getSdlRect() const;
 	
@@ -102,11 +110,35 @@ inline void Rect::setPosition(const Point& position)
 	mSdlRect.y = position.getY();
 }
 
+inline UnitType Rect::getRightExclusive() const
+{
+	return mSdlRect.x + mSdlRect.w;
+}
+
+inline UnitType Rect::getBottomExclusive() const
+{
+	return mSdlRect.y + mSdlRect.h;
+}
+
+inline float Rect::getAspectRatio() const
+{
+	return getSize().getAspectRatio();
+}
+
 inline const SDL_Rect* Rect::getSdlRect() const
 {
 	return &mSdlRect;
 }
 
-inline Size Rect::getSize() const {
+inline Size Rect::getSize() const
+{
 	return Size(mSdlRect.w, mSdlRect.h);
 }
+
+inline void Rect::setSize(Size size)
+{
+	mSdlRect.w = size.getWidth();
+	mSdlRect.h = size.getHeight();
+}
+
+}}}

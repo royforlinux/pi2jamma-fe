@@ -11,7 +11,8 @@ template<
     typename KeyType,
     typename KeyFinderType,
     typename NodeFinderType,
-    typename LifetimePolicy = LifetimePolicyNone<ItemType> >
+    typename LifetimePolicy = LifetimePolicyNone<ItemType>,
+    bool AllowDuplicates = false >
 class RbTree final
 {
 public:

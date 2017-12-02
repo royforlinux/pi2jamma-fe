@@ -2,6 +2,7 @@
 #include "core/Arg.hpp"
 #include "core/Type.hpp"
 #include <cmath>
+#include <cstring>
 
 struct NULLTYPE { };
 typedef int OmNullType;

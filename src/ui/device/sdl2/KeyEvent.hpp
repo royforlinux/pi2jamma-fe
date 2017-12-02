@@ -2,6 +2,8 @@
 
 #include "ui/device/sdl2/Key.hpp"
 
+namespace ui { namespace device { namespace sdl2 {
+
 class KeyEvent
 {
 public:
@@ -22,3 +24,5 @@ inline Key KeyEvent::getKey() const
 {
 	return static_cast<Key>(mSdlEvent.key.keysym.sym);
 }
+
+}}}

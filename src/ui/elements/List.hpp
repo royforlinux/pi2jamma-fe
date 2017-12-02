@@ -1,7 +1,14 @@
 #pragma once
 
-#include "ui/elements/Element.hpp"
+#include "ui/Color.hpp"
+#include "ui/Font.hpp"
+#include "ui/Surface.hpp"
 #include "ui/HorizontalAlignment.hpp"
+#include "ui/elements/Element.hpp"
+
+#include <vector>
+
+namespace ui {
 
 class List final : public Element
 {
@@ -47,4 +54,6 @@ private:
 	int mSelectedItem = -1;
 	int mNumItemsToDisplay = 0;
 };
+
+}
 

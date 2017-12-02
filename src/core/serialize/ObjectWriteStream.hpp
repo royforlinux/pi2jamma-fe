@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Result.hpp"
 #include "core/StringSpan.hpp"
 
 class ObjectWriteStream

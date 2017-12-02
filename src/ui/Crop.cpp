@@ -1,75 +1,90 @@
-#include "ui/Align.hpp"
+#include "ui/Crop.hpp"
 
-struct Span {
-	Span(UnitType start, UnitType length)
-		: mStart(start)
-		, mLength(length)
-	{
-	}
+#include "core/debug.hpp"
 
-	PROPERTY(UnitType, Start);
-	PROPERTY(UnitType, Length);
-};
-
-cropAxis(
-	const Span& sourceSpan,
-	const Span& targetSpan
-	HorizontalAlignment alignment,
-	CropMode cropMode)
+namespace ui
 {
-	auto sourceLength = sourceSpan.getLength();
-	auto targetLength = targetSpan.getLength();
-	auto sourceStart = sourceSpan.getStart();
-	auto targetStart = targetSpan.getStart();
-	
-	if(sourceSpan.getLength() > targetSpan.getLength()) {
-		auto span = targetSp
-	}
 
-}
-CropResult crop(
-	Rect& targetOut,
-	Rect& sourceOut,
-	const Rect& target,
-	const Rect& source,
+Rect getRectForSizeAlignedInRect(
+	const Size& sourceSize,
+	const Rect& targetRect,
 	HorizontalAlignment horizontalAlignment,
-	VerticalAlignment verticalAlignment,
-	CropMode cropMode)
+	VerticalAlignment verticalAlignment)
 {
-	auto sourceWidth = source.getWidth();
-	auto targetWidth = target.getWidth();
+	Rect rect;
+	rect.setSize(sourceSize);
 
-	auto sourceX = source.getX();
-	auto targetX = target.getX();
+	if(HorizontalAlignment::Center == horizontalAlignment)
+	{
+		rect.setX(targetRect.getX() + (targetRect.getWidth()-rect.getWidth())/2);
+	}
+	else if(HorizontalAlignment::Left == horizontalAlignment)
+	{
+		rect.setX(targetRect.getX());
+	}
+	else if(HorizontalAlignment::Right == horizontalAlignment)
+	{
+		rect.setX(targetRect.getRightExclusive() - sourceSize.getWidth());
+	} 
 
-	UnitType sourceWidthOut;
-	UintType targetWidthOut;
-	UnitType targetXOut;
-	UnitType targetYOut;
-
-	// Center only, for now.
-
-	if(targetWidth > sourceWidth) {
-		auto width = targetWidth;
-		auto halfWidth = width / 2;
-		auto targetCenter = targetX + (targetWidth / 2);
-		tagetXOut = targetCenter - halfWidth;
-		targetWidthOut = width;
-
-		auto sourceCenter = sourceX + (sourceWidth / 2);
-		sourceXOut = sourceCenter - halfWidth;
-		sourceWidthOut = width;
+	if(VerticalAlignment::Center == verticalAlignment)
+	{
+		rect.setY(targetRect.getY() + (targetRect.getHeight() - rect.getHeight()) / 2);
+	}
+	else if(VerticalAlignment::Top == verticalAlignment)
+	{
+		rect.setY(targetRect.getY());
+	}
+	else if(VerticalAlignment::Bottom == verticalAlignment)
+	{
+		rect.setY(targetRect.getBottomExclusive() - sourceSize.getHeight());
 	}
 
-	CropResult result;
-	result.sourceRect = Rext(sourceXOut, )
+	return rect;
+}
 
-	auto widthDif = sourceWidth - targetWidth;
+Rect fitRect(
+	const Size& sourceSize,
+	const Rect& targetRect,
+	CropMode cropMode,
+	HorizontalAlignment horizontalAlignment,
+	VerticalAlignment verticalAlignment)
+{
+	Size resultingSize;
 
+	if(CropMode::AspectFit == cropMode)
+	{
+		float sourceAspectRatio = sourceSize.getAspectRatio();
+		float rectToFitAspectRatio = targetRect.getAspectRatio();
 
-	auto targetCenter = target.getCenter();
-	auto sourceCenter = source.getCenter();
+		if(rectToFitAspectRatio < sourceAspectRatio)
+		{
+			resultingSize.setWidth(targetRect.getWidth());
+			resultingSize.setHeight(resultingSize.getWidth() / sourceAspectRatio);
+		}
+		else
+		{
+			resultingSize.setHeight(targetRect.getHeight());
+			resultingSize.setWidth(resultingSize.getHeight() * sourceAspectRatio);
+		}
+	}
+	else if(CropMode::AspectFill == cropMode) {
+		ASSERTMSG(false, "CropMode::AspectFill not implemented");
+	}
+	else if(CropMode::Stretch == cropMode) {
+		resultingSize = targetRect.getSize();
+	}
+	else if(CropMode::None == cropMode) {
+		resultingSize = sourceSize;
+	}
 
+	return
+		getRectForSizeAlignedInRect(
+			resultingSize,
+			targetRect,
+			horizontalAlignment,
+			verticalAlignment);
+}
 
 }
 

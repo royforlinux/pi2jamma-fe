@@ -1,6 +1,9 @@
 #pragma once
 
+#include "ui/Surface.hpp"
 #include "ui/elements/Element.hpp"
+
+namespace ui {
 
 class Image final : public Element
 {
@@ -18,5 +21,7 @@ class Image final : public Element
 
 	private:
 
-		ref<Surface> mrefSurface;
+		ref<ui::Surface> mrefSurface;
 };
+
+}
