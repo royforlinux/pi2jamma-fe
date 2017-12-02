@@ -6,36 +6,109 @@
 namespace ui
 {
 
-FitRectResult clip(
-	const Rect& targetRect,
-	const Rect& sourceTargetRect,
-	const Rect& sourceRect) {
+Rect clipRect(const Rect& clipToRect, const Rect& drawRect)
+{
+	UnitType l = drawRect.getLeft();
+	UnitType t = drawRect.getTop();
+	UnitType r = drawRect.getRightExclusive();
+	UnitType b = drawRect.getBottomExclusive();
 
-	auto targetWidth = targetRect.getWidth();
-	auto sourceTargetWidth = sourceTargetRect.getWidth();
+	UnitType clipL = clipToRect.getLeft();
+	UnitType clipT = clipToRect.getTop();
+	UnitType clipR = clipToRect.getRightExclusive();
+	UnitType clipB = clipToRect.getBottomExclusive();
 
-	Rect sourceRectOut = sourceRect;
-	Rect targetRectOut = sourceTargetRect;
-
-	if(sourceTargetWidth > targetWidth)
+	if(l < clipL)
 	{
-		float diffPercent =
-			static_cast<float>(targetWidth) /
-			static_cast<float>(sourceTargetWidth);
-
-		targetRectOut.setX(targetRect.getX());
-		targetRectOut.setWidth(targetRect.getWidth());
-		UnitType sourceWidth =
-			static_cast<UnitType>(diffPercent * sourceRect.getWidth());
-		UnitType diff = sourceRect.getWidth() - sourceWidth;
-		sourceRectOut.setX(
-			sourceRect.getX() + diff / 2 );
-		sourceRectOut.setWidth(sourceWidth);
+		l = clipL;
 	}
 
-	return FitRectResult(
-		targetRectOut,
-		sourceRectOut );
+	if(r > clipR)
+	{
+		r = clipR;
+	}
+
+	if(t < clipT)
+	{
+		t = clipT;
+	}
+
+	if(b > clipB)
+	{
+		b = clipB;
+	}
+
+	return Rect(l, t, r - l, b - t);
+}
+
+FitRectResult clipAndCrop(
+	const Rect& clipToRect,
+	const Rect& targetRect,
+	const Rect& sourceRect,
+	HorizontalAlignment horizontalAlignment,
+	VerticalAlignment verticalAlignment)
+{
+	Rect clippedTargetRect
+		= clipRect(clipToRect, targetRect);
+
+	float widthRatio =
+		static_cast<float>(clippedTargetRect.getWidth())
+			/ static_cast<float>(targetRect.getWidth());
+
+	float heightRatio =
+		static_cast<float>(clippedTargetRect.getHeight())
+			/ static_cast<float>(targetRect.getHeight());
+
+	UnitType sourceWidth = sourceRect.getWidth() * widthRatio;
+	UnitType x;
+
+	if(HorizontalAlignment::Left == horizontalAlignment)
+	{
+		x = sourceRect.getX();
+	}
+	else if(HorizontalAlignment::Center == horizontalAlignment)
+	{
+		UnitType xOffset = static_cast<UnitType>(
+			(clippedTargetRect.getX() - targetRect.getX())
+				* widthRatio);
+
+		x = sourceRect.getX() + xOffset;
+	}
+	else if(HorizontalAlignment::Right == horizontalAlignment)
+	{
+		x = sourceRect.getRightExclusive() - sourceWidth;
+	}
+
+	UnitType sourceHeight = sourceRect.getHeight() * heightRatio;
+	UnitType y;
+
+	if(VerticalAlignment::Top == verticalAlignment)
+	{
+	 	y = sourceRect.getY();
+	}
+	else if(VerticalAlignment::Center == verticalAlignment)
+	{
+		UnitType yOffset =
+			static_cast<UnitType>(
+				(clippedTargetRect.getTop() - targetRect.getTop()) * heightRatio);
+
+		y = sourceRect.getTop() + yOffset;
+	}
+	else
+	{
+		y = sourceRect.getBottomExclusive() - sourceHeight;
+	}
+
+	Rect sourceRectOut(
+		x,
+		y,
+		sourceWidth,
+		sourceHeight);
+
+	return
+		FitRectResult(
+			clippedTargetRect,
+			sourceRectOut);
 }
 
 Rect getRectForSizeAlignedInRect(
@@ -80,6 +153,8 @@ FitRectResult fitRect(
 	const Rect& sourceRect,
 	const Rect& targetRect,
 	CropMode cropMode,
+	HorizontalAlignment cropHorizontalAlignment,
+	VerticalAlignment cropVerticalAlignment,
 	HorizontalAlignment horizontalAlignment,
 	VerticalAlignment verticalAlignment)
 {
@@ -121,7 +196,13 @@ FitRectResult fitRect(
 			horizontalAlignment,
 			verticalAlignment);
 
-	auto result = clip(targetRect, sourceTargetRect, sourceRect);
+	auto result =
+		clipAndCrop(
+			targetRect,
+			sourceTargetRect,
+			sourceRect,
+			cropHorizontalAlignment,
+			cropVerticalAlignment);
 
 	return result;
 }

@@ -10,6 +10,8 @@
 namespace ui
 {
 
+Rect clipRect(const Rect& clipToRect, const Rect& drawRect);
+
 struct FitRectResult
 {
 	FitRectResult(
@@ -22,15 +24,19 @@ struct FitRectResult
 	PROPERTY(Rect, SourceRect);
 };
 
-FitRectResult clip(
+FitRectResult clipAndCrop(
+	const Rect& clipToRect,
 	const Rect& targetRect,
-	const Rect& sourceTargetRect,
-	const Rect& sourceRect);
+	const Rect& sourceRect,
+	HorizontalAlignment horizontalAlignment,
+	VerticalAlignment verticalAlignment);
 
 FitRectResult fitRect(
 	const Rect& sourceRect,
 	const Rect& targetRect,
 	CropMode cropMode,
+	HorizontalAlignment clipHorizontalAlignment,
+	VerticalAlignment clipVerticalAlignment,
 	HorizontalAlignment horizontalAlignment,
 	VerticalAlignment verticalAlignment);
 

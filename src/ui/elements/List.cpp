@@ -139,6 +139,8 @@ void List::render(RenderContext& renderContext)
 					refSurface->getSize()),
 				targetRect,
 				CropMode::None,
+				HorizontalAlignment::Left,
+				VerticalAlignment::Center,
 				mHorizontalAlignment,
 				mVerticalAlignment);
 

@@ -85,6 +85,9 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 	for(auto&& game : games.getGameList()) {
 		items.push_back(game.getDisplayName());
 	}
+
+	items.push_back("Burgertime Midway V1 (RomSet 14)");
+
 	mrefList =
 		make_ref<ui::List>(
 			nullptr,

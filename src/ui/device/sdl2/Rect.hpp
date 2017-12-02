@@ -34,6 +34,9 @@ public:
 	Point getPosition() const;
 	void setPosition(const Point& position);
 
+	UnitType getLeft() const;
+	UnitType getTop() const;
+
 	UnitType getRightExclusive() const;
 	UnitType getBottomExclusive() const;
 
@@ -120,6 +123,16 @@ inline void Rect::setPosition(const Point& position)
 {
 	mSdlRect.x = position.getX();
 	mSdlRect.y = position.getY();
+}
+
+inline UnitType Rect::getLeft() const
+{
+	return mSdlRect.x;
+}
+
+inline UnitType Rect::getTop() const
+{
+	return mSdlRect.y;
 }
 
 inline UnitType Rect::getRightExclusive() const

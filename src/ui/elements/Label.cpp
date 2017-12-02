@@ -43,6 +43,8 @@ void Label::render(RenderContext& renderContext)
 				mrefSurface->getSize()),
 			getRect(),
 			CropMode::None,
+			HorizontalAlignment::Left,
+			VerticalAlignment::Center,
 			mHorizontalAlignment,
 			mVerticalAlignment);
 
