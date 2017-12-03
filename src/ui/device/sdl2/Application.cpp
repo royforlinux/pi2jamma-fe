@@ -172,6 +172,14 @@ void Application::dispatchEvent(const SDL_Event& sdlEvent)
 	}
 }
 
-
+Size Application::getScreenSize() {
+	int w;
+	int h;
+	SDL_GetWindowSize(
+		muptSdlWindow.get(),
+		&w, 
+		&h);
+	return Size(w,h);
+}
 
 }}}

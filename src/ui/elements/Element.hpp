@@ -1,9 +1,11 @@
 #pragma once
 
 #include "core/container/DlList.hpp"
+
 #include "ui/Rect.hpp"
 #include "ui/RenderContext.hpp"
 #include "ui/Size.hpp"
+#include "ui/elements/InputEvent.hpp"
 
 #include "core/RefCounted.hpp"
 
@@ -29,11 +31,13 @@ class Element : public RefCounted
 		UnitType getWidth() const;
 
 		void renderTree(RenderContext& renderContext);
+		void inputEvent(InputEvent& inputEvent);
 
 	protected:
 
-		virtual void render(RenderContext& renderContext) = 0;
+		virtual void render(RenderContext& renderContext) {}
 		virtual void resize(const Size& oldSize, const Size& newSize) {}
+		virtual void input(InputEvent& inputEvent) {}
 
 	private:
 		

@@ -42,6 +42,8 @@ public:
 		const Color& color,
 		CStr text);
 
+	Size getScreenSize();
+
 private:
 
 	Result renderLoop();

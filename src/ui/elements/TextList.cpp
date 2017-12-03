@@ -1,5 +1,5 @@
 
-#include "ui/elements/List.hpp"
+#include "ui/elements/TextList.hpp"
 
 #include "ui/Application.hpp"
 #include "ui/Crop.hpp"
@@ -7,45 +7,47 @@
 
 namespace ui {
 
-List::List(
+TextList::TextList(
+	TextListModel& listModel,
 	Element* pParent,
 	const Rect& rect,
 	ref<Font> refFont,
 	const Color& unselectedColor,
 	const Color& selectedColor,
 	UnitType lineHeight,
-	std::vector<std::string> items,
 	HorizontalAlignment horizontalAlignment,
 	VerticalAlignment verticalAlignment)
 	: Element(pParent, rect)
+	, mListModel(listModel)
 	, mrefFont(std::move(refFont))
 	, mUnselectedColor(unselectedColor)
 	, mSelectedColor(selectedColor)
 	, mLineHeight(lineHeight)
 	, mHorizontalAlignment(horizontalAlignment)	
 	, mVerticalAlignment(verticalAlignment)
-	, mItems(std::move(items))
 {
-	mLabels.reserve(mItems.size());
-	
-	for(auto&& s : mItems)
+	auto numItems = mListModel.getNumItems();
+
+	mLabels.reserve(numItems);
+
+	for(size_t i = 0; i < numItems; i++)
 	{
 		ref<Surface> refSurface;
 
 		mLabels.emplace_back(
 			createSurface(
 				mUnselectedColor,
-				s));
+				mListModel.getItem(i)));
 	}
 
-	if(mItems.size() > 0 ) {
+	if(numItems > 0 ) {
 		setSelection(0);
 	}
 
 	resize(Size(0,0), rect.getSize());
 }
 
-void List::setSelection(const int itemIndex)
+void TextList::setSelection(int itemIndex)
 {
 	if(itemIndex == mSelectedItem) {
 		return;
@@ -56,10 +58,28 @@ void List::setSelection(const int itemIndex)
 	mrefSelectedSurface =
 		createSurface(
 			mSelectedColor,
-			mItems[mSelectedItem]);
+			mListModel.getItem(mSelectedItem));
 }
 
-void List::up()
+void TextList::input(InputEvent& inputEvent)
+{
+	if(inputEvent.getAction() == Action::Down) {
+		down();
+		return;
+	}
+
+	if(inputEvent.getAction() == Action::Up) {
+		up();
+		return;
+	}
+
+	if(inputEvent.getAction() == Action::Select) {
+		select();
+	}
+
+}
+
+void TextList::up()
 {
 	if (mSelectedItem <= 0 ) {
 		return;
@@ -68,18 +88,23 @@ void List::up()
 	setSelection(mSelectedItem - 1);
 }
 
-void List::down()
+void TextList::down()
 {
-	if( mSelectedItem < static_cast<int>(mItems.size()) - 1 )
+	if( mSelectedItem < static_cast<int>(mListModel.getNumItems()) - 1 )
 	{
 		setSelection(mSelectedItem + 1);
 	}
 
 }
 
-ref<Surface> List::createSurface(
+void TextList::select()
+{
+	mListModel.onSelect(mSelectedItem);
+}
+
+ref<Surface> TextList::createSurface(
 	const Color& color,
-	const std::string& text)
+	CStr text)
 {
 	ref<Surface> refSurface;
 
@@ -96,7 +121,7 @@ ref<Surface> List::createSurface(
 }
 
 
-void List::render(RenderContext& renderContext)
+void TextList::render(RenderContext& renderContext)
 {
 	UnitType centerY = getRect().getYCenter();
 
@@ -151,7 +176,7 @@ void List::render(RenderContext& renderContext)
 	}
 }
 
-void List::resize(const Size& oldSize, const Size& newSize)
+void TextList::resize(const Size& oldSize, const Size& newSize)
 {
 	mNumItemsToDisplay = newSize.getHeight() / mLineHeight;
 

@@ -6,42 +6,48 @@
 #include "ui/HorizontalAlignment.hpp"
 #include "ui/VerticalAlignment.hpp"
 #include "ui/elements/Element.hpp"
+#include "ui/elements/ListModel.hpp"
 
 #include <vector>
 
 namespace ui {
 
-class List final : public Element
+using TextListModel = ListModel<CStr>;
+
+class TextList final : public Element
 {
 public:
 
-	List(
+	TextList(
+		TextListModel& listModel,
 		Element* pParent,
 		const Rect& rect,
 		ref<Font> refFont,
 		const Color& unselectedColor,
 		const Color& selectedColor,
 		UnitType lineHeight,		
-		std::vector<std::string> items,
 		HorizontalAlignment = HorizontalAlignment::Center,
 		VerticalAlignment = VerticalAlignment::Center);
 
-	void setSelection(const int itemIndex);
+	void setSelection(int itemIndex);
 
 	void up();
 	void down();
+	void select();
 
 protected:
 
 	virtual void render(RenderContext& renderContext) override;
 	virtual void resize(const Size& oldSize, const Size& newSize) override;
+	virtual void input(InputEvent& inputEvent) override;
 
 private:
 
 	ref<Surface> createSurface(
 		const Color& color,
-		const std::string& text);
+		CStr text);
 
+	TextListModel& mListModel;
 	ref<Font> mrefFont;
 	Color mUnselectedColor;
 	Color mSelectedColor;
@@ -49,7 +55,6 @@ private:
 	HorizontalAlignment mHorizontalAlignment;
 	VerticalAlignment mVerticalAlignment;
 
-	std::vector<std::string> mItems;
 	std::vector<ref<Surface>> mLabels;
 
 	ref<Surface> mrefSelectedSurface;

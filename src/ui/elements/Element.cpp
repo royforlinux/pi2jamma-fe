@@ -45,4 +45,11 @@ void Element::renderTree(RenderContext& renderContext)
 	}
 }
 
+void Element::inputEvent(InputEvent& inputEvent)
+{
+	for(auto&& child : mChildren) {
+		child.input(inputEvent);
+	}
+}
+
 }

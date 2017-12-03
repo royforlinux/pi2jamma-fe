@@ -13,13 +13,11 @@ Image::Image(
 	r.ignore();
 }
 
-void Image::resize(const Size& oldSize, const Size& newSize)
-{
-
-}
-
 void Image::render(RenderContext& renderContext)
 {
+	if(mrefSurface.isNull()) {
+		return;
+	}
 	renderContext.draw(
 		mrefSurface,
 		getRect().getPosition());

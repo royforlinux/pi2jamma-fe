@@ -1,8 +1,9 @@
 #include "Pi2Jamma/Pi2JammaApplication.hpp"
 
 #include "Pi2Jamma/CommandLine/CommandLineHandlerConfigFile.hpp"
-#include "Pi2Jamma/Game.hpp"
 #include "Pi2Jamma/Theme.hpp"
+#include "Pi2Jamma/screens/GameSelectScreen.hpp"
+
 #include "core/file/FilePath.hpp"
 #include "core/meta/Meta.hpp"
 #include "core/json/JsonParser.hpp"
@@ -25,7 +26,17 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 		return result;
 	}
 
-	result = loadJson(
+	result = loadConfiguration();
+	if(result.peekFailed()) {
+		return result;
+	}
+
+	return setupUi();
+}
+
+Result Pi2JammaApplication::loadConfiguration()
+{
+	Result result = loadJson(
 		mConfiguration,
 		CommandLineHandlerConfigFile::sSingleton.mConfigFile);
 
@@ -35,7 +46,6 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 
 	CStr dataDir = "/home/x/arcade/pi2jamma-fe/data";
 	std::string themesDir = joinPath(dataDir, "themes");
-
 	const UiConfiguration& uiConfig = mConfiguration.getUi();
 
 	bool portrait =
@@ -51,92 +61,62 @@ Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 			? uiConfig.getPortraitTheme()
 			: uiConfig.getLandscapeTheme();
 
+	mSnapsDir = joinPath(dataDir, "snaps", orientationDir);			
 
-	std::string fullThemeDir =
+	// Load theme
+
+	mFullThemeDir =
 		joinPath(themesDir, orientationDir, themeDir);
 
-	std::string configFilePath = joinPath(fullThemeDir, "config.txt");
+	// Load Games
+
 	std::string gamesPath = joinPath(dataDir, "games.txt");
 
-	Theme theme;
-	result = loadJson(theme, configFilePath.c_str());
-
+	result = loadJson(mGames, gamesPath);
 	if(result.peekFailed()) {
 		return result;
 	}
 
-	mrefBackground =
-		make_ref<ui::Image>(
-			nullptr,
-			ui::Rect(0, 0, 240, 320),
-			joinPath(fullThemeDir, "background.png"));
-
-	result =
-		loadFont(
-			mrefFont,
-			theme.getMenuTextSize(),
-			joinPath(fullThemeDir, theme.getFontFilePath()));
-
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	Games games;
-	result = loadJson(games, gamesPath);
-	if(result.peekFailed()) {
-		return result;
-	}
-
-	mrefTitle =
-		make_ref<ui::Label>(
-			nullptr,
-			theme.getTitleRect(),
-			mrefFont,
-			theme.getTitleTextColor(),
-			"Title",
-			theme.getTitleAlignment());
-
-	std::vector<std::string> items;
-	for(auto&& game : games.getGameList()) {
-		items.push_back(game.getDisplayName());
-	}
-
-	items.push_back("Burgertime Midway V1 (RomSet 14)");
-
-	mrefList =
-		make_ref<ui::List>(
-			nullptr,
-			theme.getMenuRect(),
-			mrefFont,
-			theme.getMenuTextColor(),
-			theme.getMenuTextHighlightColor(),
-			theme.getMenuTextSize(),
-			std::move(items));
+	return Result::makeSuccess();
+}
+Result Pi2JammaApplication::setupUi()
+{
+	mrefRootElement =
+		make_ref<GameSelectScreen>(
+			*this,
+			mGames,
+			mFullThemeDir,
+			mSnapsDir);
 
 	return Result::makeSuccess();
 }
 
 void Pi2JammaApplication::render(ui::RenderContext& renderContext)
 {
-	mrefBackground->renderTree(renderContext);
-	mrefTitle->renderTree(renderContext);
-	mrefList->renderTree(renderContext);
+	mrefRootElement->renderTree(renderContext);
 }
 
 void Pi2JammaApplication::keyDownEvent(const ui::KeyDownEvent& keyDownEvent)
 {
-	if (keyDownEvent.getKey() == ui::Key::UpArrow) {
-		mrefList->up();
-		return;
-	}
-
-	if (keyDownEvent.getKey() == ui::Key::DownArrow) {
-		mrefList->down();
-		return;
-	}
 
 	if(keyDownEvent.getKey() == ui::Key::Escape)
 	{
 		quit();
 	}
+
+	ui::InputEvent inputEvent;
+
+	const KeyConfiguration& keyConfig = mConfiguration.getKeys();
+
+	if (keyDownEvent.getKey() == keyConfig.getUp()) {
+		inputEvent.setAction(ui::Action::Up);
+	} 
+	else if (keyDownEvent.getKey() == keyConfig.getDown()) {
+		inputEvent.setAction(ui::Action::Down);
+	}
+	else if(keyDownEvent.getKey() == keyConfig.getSelect()) {
+		inputEvent.setAction(ui::Action::Select);
+	}
+
+	mrefRootElement->inputEvent(inputEvent);
 }
