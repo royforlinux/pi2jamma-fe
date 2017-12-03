@@ -1,9 +1,8 @@
 #pragma once
 
-#include "core/String.hpp"
 #include "debug.hpp"
 #include <functional>
-
+#include <string>
 
 class Result final
 {
@@ -11,7 +10,7 @@ public:
 
 	static Result makeSuccess();
 	static Result makeFailureWithStringLiteral(const char* msg);
-	static Result makeFailureWithString(String msg);
+	static Result makeFailureWithString(std::string msg);
 	static Result makeFailureNotImplemented();
 
 	Result(Result&& result);
@@ -63,7 +62,7 @@ inline Result Result::makeFailureWithStringLiteral(const char* msg)
 			} );
 }
 
-inline Result Result::makeFailureWithString(String msg)
+inline Result Result::makeFailureWithString(std::string msg)
 {
 	return
 		Result(
