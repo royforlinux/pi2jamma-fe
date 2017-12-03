@@ -12,14 +12,17 @@ class GameSelectScreen : public ui::Element
 public:
 	GameSelectScreen(
 		Pi2JammaApplication& application,
-		Games& games,
+		const Games& games,
 		CStr fullThemeDir,
 		std::string snapsDir);
+
+	void launchGame(const Game& game);
+	const Games& getGames();
 
 private:
 	
 	Pi2JammaApplication& mApplication;
-	Games mGames;
+	const Games& mGames;
 	Theme mTheme;
 	std::string mSnapsDir;
 
@@ -32,3 +35,8 @@ private:
 	ref<ui::TextList> mrefTextList;
 	ref<ui::Image> mrefSnapsImage;
 };
+
+inline const Games& GameSelectScreen::getGames()
+{
+	return mGames;
+}

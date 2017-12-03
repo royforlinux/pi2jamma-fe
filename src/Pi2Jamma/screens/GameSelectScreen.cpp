@@ -5,7 +5,7 @@
 
 GameSelectScreen::GameSelectScreen(
 	Pi2JammaApplication& application,
-	Games& games,
+	const Games& games,
 	CStr fullThemeDir,
 	std::string snapsDir)
 	: ui::Element(
@@ -16,7 +16,7 @@ GameSelectScreen::GameSelectScreen(
 	, mApplication(application)
 	, mGames(games)
 	, mSnapsDir(std::move(snapsDir))
-	, mGamesListModel(games)
+	, mGamesListModel(*this)
 {
 	std::string configFilePath =
 		joinPath(fullThemeDir, "config.txt");
@@ -62,3 +62,10 @@ GameSelectScreen::GameSelectScreen(
 			mTheme.getMenuTextHighlightColor(),
 			mTheme.getMenuTextSize());
 }
+
+void GameSelectScreen::launchGame(const Game& game)
+{
+	LogFmt("Select game!: %s\n", game.getDisplayName().c_str());
+
+}
+

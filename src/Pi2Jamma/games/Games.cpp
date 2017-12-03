@@ -1,4 +1,4 @@
-#include "Pi2Jamma/Games.hpp"
+#include "Pi2Jamma/games/Games.hpp"
 
 #include "core/meta/Meta.hpp"
 #include "core/serialize/SerializeVector.hpp"

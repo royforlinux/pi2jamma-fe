@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Pi2Jamma/Configuration/Configuration.hpp"
-#include "Pi2Jamma/Games.hpp"
+#include "Pi2Jamma/games/Games.hpp"
 #include "Pi2Jamma/Theme.hpp"
 
 #include "ui/Application.hpp"
