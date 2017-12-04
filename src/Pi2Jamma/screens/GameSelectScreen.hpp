@@ -19,6 +19,7 @@ public:
 	void launchGame(const Game& game);
 	const Games& getGames();
 
+	void showSnapForGame(const Game& game);
 private:
 	
 	Pi2JammaApplication& mApplication;

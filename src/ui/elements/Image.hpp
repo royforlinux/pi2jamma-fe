@@ -14,6 +14,9 @@ class Image final : public Element
 			const Rect& rect,
 			CStr filePath);
 
+		void loadFromFile(CStr filePath);
+		void setSurface(ref<ui::Surface> refSurface);
+		
 	protected:
 
 		virtual void render(RenderContext& renderContext) override;

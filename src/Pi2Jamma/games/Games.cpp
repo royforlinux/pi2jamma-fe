@@ -7,6 +7,9 @@ void Game::initialize()
 {
 	META_CLASS(Game);
 	META_CLASS_PROPERTY(Game, DisplayName);
+	META_CLASS_PROPERTY(Game, RomName);
+	META_CLASS_PROPERTY(Game, SnapName);
+	META_CLASS_PROPERTY(Game, Orientation);
 }
 
 void Games::initialize()

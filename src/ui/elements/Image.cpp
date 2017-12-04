@@ -9,8 +9,7 @@ Image::Image(
 	CStr filePath)
 	: Element(pParent, rect)
 {
-	Result r = Application::get().loadSurface(mrefSurface, filePath);
-	r.ignore();
+	loadFromFile(filePath);
 }
 
 void Image::render(RenderContext& renderContext)
@@ -18,9 +17,28 @@ void Image::render(RenderContext& renderContext)
 	if(mrefSurface.isNull()) {
 		return;
 	}
+
 	renderContext.draw(
 		mrefSurface,
 		getRect().getPosition());
+}
+
+void Image::loadFromFile(CStr filePath)
+{
+	if(filePath.empty())
+	{
+		mrefSurface = nullptr;
+		return;
+	}
+
+	Application::get().loadSurface(
+		mrefSurface,
+		filePath).ignore();
+}
+
+void Image::setSurface(ref<ui::Surface> refSurface)
+{
+	mrefSurface = std::move(refSurface);
 }
 
 }

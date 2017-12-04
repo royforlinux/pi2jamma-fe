@@ -66,6 +66,20 @@ GameSelectScreen::GameSelectScreen(
 void GameSelectScreen::launchGame(const Game& game)
 {
 	LogFmt("Select game!: %s\n", game.getDisplayName().c_str());
+}
 
+void GameSelectScreen::showSnapForGame(const Game& game)
+{
+	auto&& snapName = game.getSnapName();
+	if(snapName.size() <= 0)
+	{
+		mrefSnapsImage->setSurface(nullptr);
+		return;
+	}
+
+	mrefSnapsImage->loadFromFile(
+		joinPath(
+			mSnapsDir,
+			game.getSnapName()));
 }
 

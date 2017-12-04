@@ -2,7 +2,10 @@
 "GameList" :
 	[
 		{ "DisplayName" : "Dig Dug" },
-		{ "DisplayName" : "Pacman" },
+		{
+			"DisplayName" : "Pacman",
+			"SnapName" : "pacman.png"
+		},
 		{ "DisplayName" : "Dig-Dug" },
 		{ "DisplayName" : "Burger Time (Midway) V1 (Old Rom)" },
 		{ "DisplayName" : "Galaxian V1" },

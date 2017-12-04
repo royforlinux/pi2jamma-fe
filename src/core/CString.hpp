@@ -26,6 +26,10 @@ public:
         return strlen(mpStr);
     }
 
+    bool empty() const {
+        return mpStr[0] == '\0';
+    }
+
     bool operator==(const CStr& rhs) const {
         return strcmp(mpStr, rhs.mpStr) == 0;
     }

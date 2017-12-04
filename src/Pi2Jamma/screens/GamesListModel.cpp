@@ -21,7 +21,17 @@ CStr GamesListModel::getItem(size_t index) const
 					.getDisplayName().c_str();
 }
 
-void GamesListModel::onSelect(size_t newSelection) {
+void GamesListModel::onHighlighted(size_t newSelection)
+{
+	mGameSelectScreen.showSnapForGame(
+		mGameSelectScreen
+			.getGames()
+				.getGameList()[newSelection]);
+}
+
+
+void GamesListModel::onSelect(size_t newSelection)
+{
 	mGameSelectScreen.launchGame(
 		mGameSelectScreen
 			.getGames()

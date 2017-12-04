@@ -59,6 +59,8 @@ void TextList::setSelection(int itemIndex)
 		createSurface(
 			mSelectedColor,
 			mListModel.getItem(mSelectedItem));
+
+	mListModel.onHighlighted(mSelectedItem);
 }
 
 void TextList::input(InputEvent& inputEvent)
