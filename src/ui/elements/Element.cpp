@@ -12,7 +12,6 @@ Element::Element(Element* pParent, const Rect& rect)
 	}
 }
 
-
 void Element::setRect(const Rect& rect)
 {
 	auto oldSize = mRect.getSize();
