@@ -1,18 +1,21 @@
 #include "Pi2Jamma/screens/GameSelectScreen.hpp"
+
+#include "Pi2Jamma/Pi2JammaApplication.hpp"
+
 #include "ui/Point.hpp"
 #include "core/file/FilePath.hpp"
 #include "core/serialize/json/JsonSerialize.hpp"
 
 GameSelectScreen::GameSelectScreen(
+	ui::Element* pParent,
+	const ui::Rect& rect,
 	Pi2JammaApplication& application,
 	const Games& games,
 	CStr fullThemeDir,
 	std::string snapsDir)
 	: ui::Element(
-		nullptr,
-		ui::Rect(
-			ui::Point(0,0),
-			application.getScreenSize()))
+		pParent,
+		rect)
 	, mApplication(application)
 	, mGames(games)
 	, mSnapsDir(std::move(snapsDir))

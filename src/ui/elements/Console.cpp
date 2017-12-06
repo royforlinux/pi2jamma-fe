@@ -1,29 +1,38 @@
-#include 'ui/elements/Console.hpp'
+#include "ui/elements/Console.hpp"
+
+namespace ui {
 
 Console::Console(
 	Element* pParent,
 	const Rect& rect,
 	ref<BitmapFont> refBitmapFont)
-	: Element(
-		pParent,
-		rect)
+	: Element(pParent, rect)
+	, mrefBitmapFont(std::move(refBitmapFont))
 {
+	mLines.push_back("Hello.");
+	mLines.push_back("World.");
+}
+
+void Console::clear()
+{
+	mLines.clear();
 }
 
 void Console::render(RenderContext& renderContext)
 {
-	auto fontHeight = refBitmapFont->getHeight();
-	auto possibleLines = getHeight() / fontHeight;
-	auto numLinesInBuffer = mLines.size();
-	auto numLinesToShow = std::min(numLinesInBuffer, possibleLines);
-	auto startLine = numLinesInBuffer - numLinesToShow;
+	auto fontHeight = mrefBitmapFont->getHeight();
 
-	UnitType x = 0;
-	for(size_t i = 0; i < numLinesToShow; i ++)
+	Rect rect(0, 0, getWidth(), fontHeight);
+
+	for(auto&& line : mLines)
 	{
-		auto&& line = mLines[i + startLine];
-		mrefBitmapFont->draw(renderContext, line);
+		mrefBitmapFont->render(
+			renderContext,
+			line,
+			rect);
+
+		rect.setY(rect.getY() + fontHeight);
 	}
 }
 
-
+}

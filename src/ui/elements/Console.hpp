@@ -1,11 +1,13 @@
 #pragma once
 
-#include "ui/Elements/Element.hpp"
+#include "ui/BitmapFont.hpp"
+#include "ui/elements/Element.hpp"
 
-namespace ui
-{
+#include <vector>
 
-class Console
+namespace ui {
+
+class Console : public Element
 {
 public:
 
@@ -14,13 +16,15 @@ public:
 		const Rect& rect,
 		ref<BitmapFont> refBitmapFont);
 
-private:
+	void clear();
 
-	virtual void render(RenderContext& renderContext);
+protected:
+
+	virtual void render(RenderContext& renderContext) override;
 
 	ref<BitmapFont> mrefBitmapFont;
 	std::vector<std::string> mLines;
+
 };
 
 }
-

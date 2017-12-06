@@ -38,7 +38,7 @@ public:
 	
 	Result renderText(
 		ref<Surface>& refSurface,
-		const ref<Font>& font,
+		const ref<Font>& refFont,
 		const Color& color,
 		CStr text);
 

@@ -4,13 +4,19 @@
 #include "ui/elements/Image.hpp"
 #include "ui/elements/TextList.hpp"
 
-#include "Pi2Jamma/Pi2JammaApplication.hpp"
 #include "Pi2Jamma/screens/GamesListModel.hpp"
+#include "Pi2Jamma/Theme.hpp"
+#include "Pi2Jamma/games/Games.hpp"
+
+
+class Pi2JammaApplication;
 
 class GameSelectScreen : public ui::Element
 {
 public:
 	GameSelectScreen(
+		ui::Element* pParent,
+		const ui::Rect& rect,
 		Pi2JammaApplication& application,
 		const Games& games,
 		CStr fullThemeDir,

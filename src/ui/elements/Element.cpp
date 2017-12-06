@@ -33,21 +33,23 @@ void Element::renderTree(RenderContext& renderContext)
 	render(renderContext);
 
 	#ifdef DEBUG_ELEMENT
-		renderContext.drawRect(
+		/* renderContext.drawRect(
 			getRect(),
-			ui::Color(0x80, 0x80, 0x80, 0x80) );
+			ui::Color(0x80, 0x80, 0x80, 0x80) ); */
 	#endif
 
 	
 	for(auto && child : mChildren) {
-		child.render(renderContext);
+		child.renderTree(renderContext);
 	}
 }
 
 void Element::inputEvent(InputEvent& inputEvent)
 {
+	input(inputEvent);
+	
 	for(auto&& child : mChildren) {
-		child.input(inputEvent);
+		child.inputEvent(inputEvent);
 	}
 }
 

@@ -9,8 +9,12 @@ class Point
 public:
 	Point(UnitType x = 0, UnitType y = 0);
 	
-	int getX() const;
-	int getY() const;
+	UnitType getX() const;
+	void setX(UnitType x);
+
+	UnitType getY() const;
+	void setY(UnitType y);
+
 
 private:
 	SDL_Point mSdlPoint;
@@ -26,9 +30,19 @@ inline UnitType Point::getX() const
 	return mSdlPoint.x;
 }
 
+inline void Point::setX(UnitType x)
+{
+	mSdlPoint.x = x;
+}
+
 inline UnitType Point::getY() const
 {
 	return mSdlPoint.y;
+}
+
+inline void Point::setY(UnitType y)
+{
+	mSdlPoint.y = y;
 }
 
 }}}

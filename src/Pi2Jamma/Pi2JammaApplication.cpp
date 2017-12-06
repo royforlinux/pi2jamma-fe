@@ -10,6 +10,12 @@
 #include "core/serialize/json/JsonSerialize.hpp"
 #include "core/CommandLine/CommandLine.hpp"
 #include "ui/ui.hpp"
+#include "ui/Point.hpp"
+
+Pi2JammaApplication::Pi2JammaApplication()
+	: mDataDir("/home/x/arcade/pi2jamma-fe/data")
+{
+}
 
 Result Pi2JammaApplication::initialize(int argc, const char* argv[])
 {
@@ -44,8 +50,7 @@ Result Pi2JammaApplication::loadConfiguration()
 		return result;
 	}
 
-	CStr dataDir = "/home/x/arcade/pi2jamma-fe/data";
-	std::string themesDir = joinPath(dataDir, "themes");
+	std::string themesDir = joinPath(mDataDir, "themes");
 	const UiConfiguration& uiConfig = mConfiguration.getUi();
 
 	bool portrait =
@@ -61,7 +66,7 @@ Result Pi2JammaApplication::loadConfiguration()
 			? uiConfig.getPortraitTheme()
 			: uiConfig.getLandscapeTheme();
 
-	mSnapsDir = joinPath(dataDir, "snaps", orientationDir);			
+	mSnapsDir = joinPath(mDataDir, "snaps", orientationDir);			
 
 	// Load theme
 
@@ -70,7 +75,7 @@ Result Pi2JammaApplication::loadConfiguration()
 
 	// Load Games
 
-	std::string gamesPath = joinPath(dataDir, "games.txt");
+	std::string gamesPath = joinPath(mDataDir, "games.txt");
 
 	result = loadJson(mGames, gamesPath);
 	if(result.peekFailed()) {
@@ -81,12 +86,40 @@ Result Pi2JammaApplication::loadConfiguration()
 }
 Result Pi2JammaApplication::setupUi()
 {
+	ui::Rect screenRect(
+		ui::Point(0, 0),
+		getScreenSize());
+
 	mrefRootElement =
+		make_ref<ui::Element>(
+			nullptr,
+			screenRect);
+
+	mrefGameSelectScreen =
 		make_ref<GameSelectScreen>(
+			mrefRootElement.get(),
+			screenRect,
 			*this,
 			mGames,
 			mFullThemeDir,
 			mSnapsDir);
+
+	ref<ui::Font> refConsoleFont;
+	Result r = loadFont(
+		refConsoleFont,
+		16,
+		joinPath(mDataDir, "vgafix.fon"));
+
+	if(r.peekFailed()) {
+		return r;
+	}
+
+	mrefConsole = make_ref<ui::Console>(
+		mrefRootElement.get(),
+		screenRect,
+		ui::BitmapFont::fromFont(
+			refConsoleFont,
+			ui::Color(0xFF, 0xFF, 0xFF)));
 
 	return Result::makeSuccess();
 }

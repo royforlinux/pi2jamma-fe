@@ -1,22 +1,45 @@
 #pragma once
 
-class BitmapFont
+#include "core/RefCounted.hpp"
+
+#include "ui/Color.hpp"
+#include "ui/Font.hpp"
+#include "ui/Rect.hpp"
+#include "ui/RenderContext.hpp"
+#include "ui/Size.hpp"
+#include "ui/Surface.hpp"
+
+#include <array>
+
+namespace ui {
+
+class BitmapFont : public RefCounted
 {
 public:
+	using GlyphArray = std::array<ref<Surface>, 256>;
+
 	static ref<BitmapFont> fromFont(
-		ref<Font> refFont,
+		const ref<Font>& refFont,
 		const Color& color);
 
-	BitmapFont(ref<Surface> refSurface);
+	BitmapFont(GlyphArray glyphArray, UnitType glyphHeight);
 
-	Size getGlyphSize() const;	
+	UnitType getHeight() const;	
 
-	void Render(
+	void render(
 		RenderContext& renderContext,
 		StringSpan stringSpan,
 		const Rect& rect);
 
 private:
 
-	ref<Surface> mrefSurface;
+	GlyphArray mGlyphArray;
+	UnitType mGlyphHeight;
 };
+
+inline UnitType BitmapFont::getHeight() const
+{
+	return mGlyphHeight;
+}
+
+}
