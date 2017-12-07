@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+
 #define PRINT(message) \
 	fprintf(stderr, "%s", message)
 

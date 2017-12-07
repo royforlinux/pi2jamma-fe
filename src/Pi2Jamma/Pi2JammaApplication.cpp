@@ -14,6 +14,7 @@
 
 Pi2JammaApplication::Pi2JammaApplication()
 	: mDataDir("/home/x/arcade/pi2jamma-fe/data")
+	, mSnapsDir(joinPath(mDataDir, "snaps"))
 {
 }
 
@@ -95,14 +96,15 @@ Result Pi2JammaApplication::setupUi()
 			nullptr,
 			screenRect);
 
+	ref<GamesListModel> refGamesListModel
+		= make_ref<GamesListModel>(mGames, mSnapsDir);
+
 	mrefGameSelectScreen =
 		make_ref<GameSelectScreen>(
 			mrefRootElement.get(),
 			screenRect,
-			*this,
-			mGames,
-			mFullThemeDir,
-			mSnapsDir);
+			refGamesListModel,
+			mFullThemeDir.c_str());
 
 	ref<ui::Font> refConsoleFont;
 	Result r = loadFont(

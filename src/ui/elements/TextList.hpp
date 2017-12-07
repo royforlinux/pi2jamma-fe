@@ -19,9 +19,9 @@ class TextList final : public Element
 public:
 
 	TextList(
-		TextListModel& listModel,
 		Element* pParent,
 		const Rect& rect,
+		ref<TextListModel> mrefTextListModel,
 		ref<Font> refFont,
 		const Color& unselectedColor,
 		const Color& selectedColor,
@@ -47,7 +47,7 @@ private:
 		const Color& color,
 		CStr text);
 
-	TextListModel& mListModel;
+	ref<TextListModel> mrefListModel;
 	ref<Font> mrefFont;
 	Color mUnselectedColor;
 	Color mSelectedColor;

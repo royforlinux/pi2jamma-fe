@@ -8,9 +8,9 @@
 namespace ui {
 
 TextList::TextList(
-	TextListModel& listModel,
 	Element* pParent,
 	const Rect& rect,
+	ref<TextListModel> refListModel,
 	ref<Font> refFont,
 	const Color& unselectedColor,
 	const Color& selectedColor,
@@ -18,7 +18,7 @@ TextList::TextList(
 	HorizontalAlignment horizontalAlignment,
 	VerticalAlignment verticalAlignment)
 	: Element(pParent, rect)
-	, mListModel(listModel)
+	, mrefListModel(std::move(refListModel))
 	, mrefFont(std::move(refFont))
 	, mUnselectedColor(unselectedColor)
 	, mSelectedColor(selectedColor)
@@ -26,7 +26,7 @@ TextList::TextList(
 	, mHorizontalAlignment(horizontalAlignment)	
 	, mVerticalAlignment(verticalAlignment)
 {
-	auto numItems = mListModel.getNumItems();
+	auto numItems = mrefListModel->getNumItems();
 
 	mLabels.reserve(numItems);
 
@@ -37,7 +37,7 @@ TextList::TextList(
 		mLabels.emplace_back(
 			createSurface(
 				mUnselectedColor,
-				mListModel.getItem(i)));
+				mrefListModel->getItem(i)));
 	}
 
 	if(numItems > 0 ) {
@@ -58,9 +58,9 @@ void TextList::setSelection(int itemIndex)
 	mrefSelectedSurface =
 		createSurface(
 			mSelectedColor,
-			mListModel.getItem(mSelectedItem));
+			mrefListModel->getItem(mSelectedItem));
 
-	mListModel.onHighlighted(mSelectedItem);
+	mrefListModel->onItemHighlighted(mSelectedItem);
 }
 
 void TextList::input(InputEvent& inputEvent)
@@ -92,7 +92,7 @@ void TextList::up()
 
 void TextList::down()
 {
-	if( mSelectedItem < static_cast<int>(mListModel.getNumItems()) - 1 )
+	if( mSelectedItem < static_cast<int>(mrefListModel->getNumItems()) - 1 )
 	{
 		setSelection(mSelectedItem + 1);
 	}
@@ -101,7 +101,7 @@ void TextList::down()
 
 void TextList::select()
 {
-	mListModel.onSelect(mSelectedItem);
+	mrefListModel->onItemSelected(mSelectedItem);
 }
 
 ref<Surface> TextList::createSurface(

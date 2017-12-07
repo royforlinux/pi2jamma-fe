@@ -2,6 +2,7 @@
 
 #include "Pi2Jamma/Configuration/Configuration.hpp"
 #include "Pi2Jamma/games/Games.hpp"
+#include "Pi2Jamma/screens/GamesListModel.hpp"
 #include "Pi2Jamma/screens/GameSelectScreen.hpp"
 #include "Pi2Jamma/Theme.hpp"
 
@@ -40,5 +41,6 @@ private:
 
 	ref<ui::Element> mrefRootElement;
 	ref<ui::Console> mrefConsole;
+
 	ref<GameSelectScreen> mrefGameSelectScreen;
 };

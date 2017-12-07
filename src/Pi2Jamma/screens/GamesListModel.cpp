@@ -1,39 +1,45 @@
 #include "Pi2Jamma/screens/GamesListModel.hpp"
 
 #include "Pi2Jamma/screens/GameSelectScreen.hpp"
+#include "core/file/FilePath.hpp"
 
 GamesListModel::GamesListModel(
-	GameSelectScreen& gameSelectScreen)
-	: mGameSelectScreen(gameSelectScreen)
-{}
-
-size_t GamesListModel::getNumItems() const
+	Games& games,
+	std::string snapFilePath)
+	: mGames(games)
+	, mSnapFilePath(std::move(snapFilePath))
 {
-	return mGameSelectScreen.getGames().getGameList().size();
 }
 
-CStr GamesListModel::getItem(size_t index) const
+CStr GamesListModel::getTitle()
+{
+	return "Games";
+}
+
+size_t GamesListModel::getNumItems()
+{
+	return mGames.getGameList().size();
+}
+
+CStr GamesListModel::getItem(size_t index)
 {
 	return
-		mGameSelectScreen
-			.getGames()
-				.getGameList()[index]
-					.getDisplayName().c_str();
+		mGames
+			.getGameList()[index]
+				.getDisplayName().c_str();
 }
 
-void GamesListModel::onHighlighted(size_t newSelection)
+CStr GamesListModel::getSnapFilePath(size_t index)
 {
-	mGameSelectScreen.showSnapForGame(
-		mGameSelectScreen
-			.getGames()
-				.getGameList()[newSelection]);
+	return
+		joinPath(
+			mSnapFilePath,
+			mGames.getGameList()[index].getSnapName());
 }
 
-
-void GamesListModel::onSelect(size_t newSelection)
+void GamesListModel::onItemSelected(size_t newSelection)
 {
-	mGameSelectScreen.launchGame(
-		mGameSelectScreen
-			.getGames()
-				.getGameList()[newSelection]);
+	/* mGameSelectScreen.launchGame(
+		mGames.
+			.getGameList()[newSelection]); */
 }
