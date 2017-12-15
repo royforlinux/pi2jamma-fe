@@ -26,16 +26,3 @@
 
 #define ASSERT(x) \
 	ASSERTMSG(x, "")
-
-inline void Log(const char* msg)
-{
-	printf(msg);
-	printf("\n");
-}
-
-#define LogFmt(fmt, ...) \
-{ \
-	printf(fmt, __VA_ARGS__ ); \
-}
-
-

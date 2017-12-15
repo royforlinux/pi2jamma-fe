@@ -20,7 +20,6 @@ Result CommandLine::parse(int argc, const char* argv[])
 	const char** ppCurrent = ppStart;
 
 	while(ppCurrent < ppEnd) {
-		Log("Testy\n");
 		CommandLineHandler* pH = mHandlersByShortName.find(*ppCurrent);
 		if(nullptr == pH) {
 			pH = mHandlersByLongName.find(*ppCurrent);

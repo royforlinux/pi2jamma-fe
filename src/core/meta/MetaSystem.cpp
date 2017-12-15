@@ -1,6 +1,7 @@
 #include "core/meta/Meta.hpp"
 
 #include "core/meta/MetaPrimitive.hpp"
+#include "core/log/Log.hpp"
 
 Meta* Meta::spSingleton = nullptr;
 

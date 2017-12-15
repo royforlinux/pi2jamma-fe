@@ -1,5 +1,7 @@
 #include "ui/device/sdl2/Application.hpp"
 
+#include "core/log/Log.hpp"
+
 namespace ui { namespace device { namespace sdl2 {
 
 Application* Application::spSingleton = nullptr;

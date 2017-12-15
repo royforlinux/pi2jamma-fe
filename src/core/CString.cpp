@@ -1,6 +1,7 @@
 #include "core/CString.hpp"
 
 #include "core/debug.hpp"
+#include "core/log/Log.hpp"
 #include "core/Type.hpp"
 #include "core/Util.hpp"
 

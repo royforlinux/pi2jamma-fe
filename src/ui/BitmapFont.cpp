@@ -55,7 +55,7 @@ void BitmapFont::render(
 
 	for(auto&& c : stringSpan)
 	{
-		ref<Surface>& refSurface = mGlyphArray[c];
+		ref<Surface>& refSurface = mGlyphArray[static_cast<uint8_t>(c)];
 		if(refSurface.isNull()) {
 	
 			continue;

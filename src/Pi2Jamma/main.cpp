@@ -1,5 +1,7 @@
 #include "Pi2JammaApplication.hpp"
 
+#include "core/log/Log.hpp"
+
 int main(int argc, const char* argv[])
 {
 	Pi2JammaApplication application;
